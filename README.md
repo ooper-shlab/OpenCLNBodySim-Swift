@@ -16,7 +16,7 @@ You should not contact to Apple or SHLab(jp) about any faults caused by my trans
 ===========================================================================
 BUILD REQUIREMENTS:
 
-Xcode 6.1.1 or later, iOS SDK 8.1 or later
+Xcode 6.1.1 or later, OS X SDK 10.10 or later
 
 ===========================================================================
 Many common utility files are not fully translated. Their license terms are kept there just to indicate the original files.
