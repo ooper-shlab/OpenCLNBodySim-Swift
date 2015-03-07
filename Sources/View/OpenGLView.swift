@@ -71,7 +71,7 @@ class OpenGLView: NSOpenGLView {
     private var mbShowFramesMeter: Bool = false
     private var mbShowPerfMeter: Bool = false
     
-    private var mpOptions: NSDictionary!
+    private var mpOptions: [NSObject: AnyObject] = [:]
     private var mpContext: NSOpenGLContext!
     private var mpTimer: NSTimer!
     
@@ -145,7 +145,7 @@ class OpenGLView: NSOpenGLView {
     
     private func savePrefs(pBundleID: String?) {
         if pBundleID != nil {
-            let pPrefs: NSDictionary = [
+            let pPrefs: [NSObject: AnyObject] = [
                 "fullscreen": mbFullscreen,
                 "initDemo": Int(mnInitDemo),
                 "starScale": mnStarScale,
@@ -345,11 +345,11 @@ class OpenGLView: NSOpenGLView {
     //MARK: -
     //MARK: Public - Delegates
     
-    func isOpaque() -> Bool {
+    override var opaque: Bool {
         return true
     }
     
-    func acceptsFirstResponder() -> Bool {
+    override var acceptsFirstResponder: Bool {
         return true
     }
     
@@ -418,10 +418,8 @@ class OpenGLView: NSOpenGLView {
     //MARK: Public - Keys
     
     override func keyDown(event: NSEvent) {
-        let pChars = event.characters
-        
-        if (pChars?.utf16Count ?? 0) >  0 {
-            let key = event.characters!.utf16[0]
+        if let pChars = event.characters where count(pChars.utf16) >  0 {
+            let key = pChars.utf16[pChars.utf16.startIndex]
             
             if key == 27 {
                 self.toggleFullscreen(self)

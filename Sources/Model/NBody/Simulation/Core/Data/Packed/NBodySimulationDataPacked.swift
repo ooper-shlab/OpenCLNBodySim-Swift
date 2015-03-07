@@ -158,7 +158,7 @@ extension NBody.Simulation.Data.Packed {
         if pContext != nil {
             mpPacked.m_Mass.mpDevice = clCreateBuffer(pContext,
                 mnFlags,
-                UInt(mnSize),
+                mnSize,
                 mpPacked.m_Mass.mpHost,
                 &err)
             
@@ -168,7 +168,7 @@ extension NBody.Simulation.Data.Packed {
             
             mpPacked.m_Position.mpDevice = clCreateBuffer(pContext,
                 mnFlags,
-                UInt(mnSize),
+                mnSize,
                 mpPacked.m_Position.mpHost,
                 &err)
             

@@ -130,7 +130,7 @@ extension NBody.Simulation.Data.Split {
         if pContext != nil {
             mpSplit.m_Position[nIndex].mpDevice = clCreateBuffer(pContext,
                 mnFlags,
-                UInt(mnSize),
+                mnSize,
                 mpSplit.m_Position[nIndex].mpHost,
                 &err)
             
@@ -140,7 +140,7 @@ extension NBody.Simulation.Data.Split {
             
             mpSplit.m_Velocity[nIndex].mpDevice = clCreateBuffer(pContext,
                 mnFlags,
-                UInt(mnSize),
+                mnSize,
                 mpSplit.m_Velocity[nIndex].mpHost,
                 &err)
             

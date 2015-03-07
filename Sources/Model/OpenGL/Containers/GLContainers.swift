@@ -71,7 +71,7 @@ extension GLregex {
     }
     
     public func matches(string: String) -> Bool {
-        let range = NSMakeRange(0, string.utf16Count)
+        let range = NSMakeRange(0, count(string.utf16))
         return self.numberOfMatchesInString(string, options: nil, range: range) > 0
     }
 }

@@ -194,7 +194,7 @@ extension HUD.Meter.Timer {
         let nSize   = GLdouble(mnSize)
         let nMin    = GLdouble(min(mnCount, mnSize))
         let nMetric = mbAscend ? nSize : nMin
-        let nSum    = m_Vector.reduce(0, +)
+        let nSum    = m_Vector.reduce(0, combine: +)
         
         return nSum / nMetric
     }

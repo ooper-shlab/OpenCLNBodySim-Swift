@@ -148,9 +148,9 @@ extension HUD.Button {
                 let bpp     = size_t(width) * size_t(HUD.SamplesPerPixel)
                 
                 if let pContext = CGBitmapContextCreate(nil,
-                    UInt(width),
-                    UInt(height),
-                    UInt(HUD.BitsPerComponent),
+                    width.l,
+                    height.l,
+                    HUD.BitsPerComponent,
                     bpp,
                     pColorspace,
                     HUD.BitmapInfo)

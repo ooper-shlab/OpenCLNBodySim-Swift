@@ -285,7 +285,7 @@ extension NBody.Engine {
     //MARK: Privale - Utilitie - Demo Selection
     
     private func setDemo(nCommand: GLubyte) {
-        let demo = Int(nCommand - GLubyte("0"))
+        let demo = Int(nCommand - GLubyte(ascii: "0"))
         
         if demo < NBody.Simulation.Demo.kParams.count {
             mnActiveDemo = demo

@@ -96,7 +96,7 @@ extension GLU {
         //MARK: Private - Macros
         
         private func BUFFER_OFFSET(i: Int) -> UnsafePointer<GLchar> {
-            return (UnsafePointer.null().advancedBy(i))
+            return (UnsafePointer().advancedBy(i))
         }
         
         //MARK: -

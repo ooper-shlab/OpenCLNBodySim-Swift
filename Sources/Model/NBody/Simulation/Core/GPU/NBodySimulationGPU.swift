@@ -152,13 +152,13 @@ extension NBody.Simulation {
                     kSizeCLMem,
                     kSizeCLMem,
                     kSizeCLMem,
-                    mnSamples.ul,
-                    mnSamples.ul,
-                    mnSamples.ul,
-                    GLM.Size.kInt.ul,   //### taking lower 4 bytes
-                    GLM.Size.kInt.ul,   //### taking lower 4 bytes
-                    GLM.Size.kInt.ul,   //### taking lower 4 bytes
-                    4 * mnSamples.ul * mnWorkItemX.ul * kWorkItemsY.ul,
+                    mnSamples,
+                    mnSamples,
+                    mnSamples,
+                    GLM.Size.kInt,   //### taking lower 4 bytes
+                    GLM.Size.kInt,   //### taking lower 4 bytes
+                    GLM.Size.kInt,   //### taking lower 4 bytes
+                    4 * mnSamples * mnWorkItemX.l * kWorkItemsY.l,
                 ]
                 
                 for i in 0..<kKernelParams {
@@ -289,7 +289,7 @@ extension NBody.Simulation {
                 err = clGetKernelWorkGroupInfo(mpKernel,
                     mpDevice[i],
                     CL_KERNEL_WORK_GROUP_SIZE.ui,
-                    GLM.Size.kULong.ul,
+                    GLM.Size.kULong,
                     &localSize,
                     nil)
                 if err != CL_SUCCESS {
@@ -306,7 +306,7 @@ extension NBody.Simulation {
                 return CL_INVALID_WORK_DIMENSION
             }
             
-            let size: size_t = 4 * GLM.Size.kFloat.ul * mnBodyCount.ul
+            let size: size_t = 4 * GLM.Size.kFloat * mnBodyCount
             
             mpDevicePosition[0] = clCreateBuffer(mpContext,
                 stream_flags,
@@ -350,7 +350,7 @@ extension NBody.Simulation {
             
             mpBodyRangeParams = clCreateBuffer(mpContext,
                 CL_MEM_READ_WRITE.ull,
-                GLM.Size.kInt.ul * 3,
+                GLM.Size.kInt * 3,
                 nil,
                 &err)
             
@@ -369,12 +369,12 @@ extension NBody.Simulation {
             if mpKernel != nil {
                 
                 let local_dim: [size_t] = [
-                    mnWorkItemX.ul,
+                    mnWorkItemX.l,
                     1,
                 ]
                 
                 let global_dim: [size_t] = [
-                    mnMaxIndex.ul - mnMinIndex.ul,
+                    mnMaxIndex - mnMinIndex,
                     1
                 ]
                 
@@ -426,7 +426,7 @@ extension NBody.Simulation {
                 let rand = NBody.Simulation.Data.Random(nbodies: mnBodyCount, params: m_ActiveParams)
                 
                 if rand>>>(mpHostPosition, mpHostVelocity) {
-                    let size: size_t = 4 * GLM.Size.kFloat.ul * mnBodyCount.ul
+                    let size: size_t = 4 * GLM.Size.kFloat * mnBodyCount
                     
                     for i in 0..<mnDeviceCount.l {
                         if mpQueue[i] != nil {
@@ -554,7 +554,7 @@ extension NBody.Simulation {
                         readBuffer(mpQueue[i],
                             mpHostPosition,
                             mpDevicePosition[mnWriteIndex],
-                            mnSize.ul,
+                            mnSize,
                             0)
                         
                         setData(mpHostPosition)
@@ -653,9 +653,9 @@ extension NBody.Simulation {
             
             if pDst != nil {
                 let data_offset_in_floats = mnMinIndex * 4
-                let data_offset_bytes: size_t     = data_offset_in_floats.ul * mnSamples.ul
-                let data_size_in_floats   = (mnMaxIndex - mnMinIndex).ul * 4
-                let data_size_bytes       = data_size_in_floats * mnSamples.ul
+                let data_offset_bytes: size_t     = data_offset_in_floats * mnSamples
+                let data_size_in_floats   = (mnMaxIndex - mnMinIndex) * 4
+                let data_size_bytes       = data_size_in_floats * mnSamples
                 
                 let host_data = pDst.advancedBy(data_offset_in_floats)
                 
@@ -683,7 +683,7 @@ extension NBody.Simulation {
                     err = readBuffer(mpQueue[i],
                         pDst,
                         mpDevicePosition[mnReadIndex],
-                        mnSize.ul,
+                        mnSize,
                         0)
                     
                     if err != CL_SUCCESS {
@@ -704,7 +704,7 @@ extension NBody.Simulation {
                     err = writeBuffer(mpQueue[i],
                         pSrc,
                         mpDevicePosition[mnReadIndex],
-                        mnSize.ul)
+                        mnSize)
                     
                     if err != CL_SUCCESS {
                         break
@@ -724,7 +724,7 @@ extension NBody.Simulation {
                     err = readBuffer(mpQueue[i],
                         pDst,
                         mpDeviceVelocity[mnReadIndex],
-                        mnSize.ul,
+                        mnSize,
                         0)
                     
                     if err != CL_SUCCESS {
@@ -745,7 +745,7 @@ extension NBody.Simulation {
                     err = writeBuffer(mpQueue[i],
                         pSrc,
                         mpDeviceVelocity[mnReadIndex],
-                        mnSize.ul)
+                        mnSize)
                     
                     if err != CL_SUCCESS {
                         break

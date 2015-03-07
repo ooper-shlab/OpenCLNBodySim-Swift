@@ -87,7 +87,7 @@ extension NBody.Simulation {
             
             if err == CL_SUCCESS {
                 
-                var nWorkGroupCount: size_t = (mnMaxIndex.ul - mnMinIndex.ul) / mnUnits.ul
+                var nWorkGroupCount: size_t = (mnMaxIndex - mnMinIndex) / mnUnits
                 var nTimeStamp: GLfloat      = m_ActiveParams.mnTimeStamp
                 
                 var values: [UnsafePointer<Void>] = [
@@ -100,12 +100,12 @@ extension NBody.Simulation {
                 ]
                 
                 var sizes: [size_t] = [
-                    mnSamples.ul,
-                    mnSamples.ul,
-                    mnSamples.ul,
-                    GLM.Size.kInt.ul,   //### sending lower 4 byte?
-                    GLM.Size.kInt.ul,   //### sending lower 4 byte?
-                    GLM.Size.kInt.ul,   //### sending lower 4 byte?
+                    mnSamples,
+                    mnSamples,
+                    mnSamples,
+                    GLM.Size.kInt,   //### sending lower 4 byte?
+                    GLM.Size.kInt,   //### sending lower 4 byte?
+                    GLM.Size.kInt,   //### sending lower 4 byte?
                 ]
                 
                 var indices: [cl_uint] = [14, 15, 16, 17, 18, 19]
@@ -166,7 +166,7 @@ extension NBody.Simulation {
                 
                 clGetDeviceInfo(mpDevice,
                     CL_DEVICE_MAX_COMPUTE_UNITS.ui,
-                    GLM.Size.kUInt.ul,
+                    GLM.Size.kUInt,
                     &compute_units,
                     &returned_size)
                 
@@ -236,7 +236,7 @@ extension NBody.Simulation {
             if mpKernel != nil {
                 mpData.update(mpKernel)
                 
-                var nWorkGroupCount: size_t = (mnMaxIndex.ul - mnMinIndex.ul) / mnUnits.ul
+                var nWorkGroupCount: size_t = (mnMaxIndex - mnMinIndex) / mnUnits
                 
                 var values: [UnsafeMutablePointer<Void>] = [
                     withUnsafeMutablePointer(&nWorkGroupCount) {UnsafeMutablePointer($0)},
@@ -244,8 +244,8 @@ extension NBody.Simulation {
                 ]
                 
                 var sizes: [size_t] = [
-                    GLM.Size.kInt.ul,   //###
-                    GLM.Size.kInt.ul,   //###
+                    GLM.Size.kInt,   //###
+                    GLM.Size.kInt,   //###
                 ]
                 
                 var indices: [cl_uint] = [18, 19]
@@ -265,7 +265,7 @@ extension NBody.Simulation {
                     
                     var local_dim: [size_t] = [1, 1]
                     
-                    var global_dim: [size_t] = [mnUnits.ul, 1]
+                    var global_dim: [size_t] = [mnUnits, 1]
                     
                     err = clEnqueueNDRangeKernel(mpQueue,
                         mpKernel,

@@ -324,9 +324,9 @@ extension HUD {
                 let bpp = size_t(width) * size_t(SamplesPerPixel)
                 
                 if let pContext = CGBitmapContextCreate(nil,
-                    UInt(width),
-                    UInt(height),
-                    UInt(BitsPerComponent),
+                    width.l,
+                    height.l,
+                    BitsPerComponent,
                     bpp,
                     pColorspace,
                     BitmapInfo)
@@ -538,12 +538,12 @@ extension HUD {
             let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB)
             
             if pColorspace != nil {
-                let bpp = width.ul * HUD.SamplesPerPixel.ul
+                let bpp = width.l * HUD.SamplesPerPixel
                 
                 let pContext = CGBitmapContextCreate(nil,
-                    width.ul,
-                    height.ul,
-                    HUD.BitsPerComponent.ul,
+                    width.l,
+                    height.l,
+                    HUD.BitsPerComponent,
                     bpp,
                     pColorspace,
                     HUD.BitmapInfo)
@@ -577,7 +577,7 @@ extension HUD {
                     if let  pGradient = CGGradientCreateWithColorComponents(pColorspace,
                         components,
                         locations,
-                        count.ul) {
+                        count) {
                             // draw glow reflecting on inner bevel
                             let dx = -cos(angle) + 1.0
                             let dy = -sin(angle) + 1.0

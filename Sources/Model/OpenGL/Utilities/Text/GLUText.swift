@@ -94,12 +94,12 @@ extension GLU {
                 let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB)
                 
                 if pColorspace != nil {
-                    let bpp = nWidth.ul * kGLUTextSPP.ul
+                    let bpp = nWidth.l * kGLUTextSPP.l
                     
                     pContext = CGBitmapContextCreate(nil,
-                        nWidth.ul,
-                        nHeight.ul,
-                        kGLUTextBPC.ul,
+                        nWidth.l,
+                        nHeight.l,
+                        kGLUTextBPC.l,
                         bpp,
                         pColorspace,
                         kGLUTextBitmapInfo)

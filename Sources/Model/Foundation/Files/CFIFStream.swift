@@ -70,7 +70,7 @@ extension CF {
         
         private var url: NSURL? = nil
         
-        lazy var scanner: NSScanner = NSScanner(string: NSString(data: self.mpBuffer!, encoding: NSUTF8StringEncoding)!)
+        lazy var scanner: NSScanner = NSScanner(string: NSString(data: self.mpBuffer!, encoding: NSUTF8StringEncoding)! as String)
     }
 }
 
