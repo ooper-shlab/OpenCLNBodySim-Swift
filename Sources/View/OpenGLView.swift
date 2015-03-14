@@ -260,9 +260,6 @@ class OpenGLView: NSOpenGLView {
     //MARK: -
     //MARK: Public - Designated Initializer
     
-    override init() {
-        super.init()
-    }
     
     override init?(frame frameRect: NSRect, pixelFormat format: NSOpenGLPixelFormat!) {
         super.init(frame: frameRect, pixelFormat: format)
