@@ -1,3 +1,11 @@
+/*
+ <codex>
+ <abstract>
+ Geometry shader for N-Body billboard.
+ </abstract>
+ </codex>
+ */
+
 #extension GL_EXT_geometry_shader4:require
 
 vec4 billboard(vec4 p, vec2 delta)

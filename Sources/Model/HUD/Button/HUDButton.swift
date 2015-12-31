@@ -6,53 +6,11 @@
 //
 //
 /*
-     File: HUDButton.h
-     File: HUDButton.mm
- Abstract:
- Utility class for generating a button in an OpenGL view.
-
-  Version: 3.3
-
- Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
- Inc. ("Apple") in consideration of your agreement to the following
- terms, and your use, installation, modification or redistribution of
- this Apple software constitutes acceptance of these terms.  If you do
- not agree with these terms, please do not use, install, modify or
- redistribute this Apple software.
-
- In consideration of your agreement to abide by the following terms, and
- subject to these terms, Apple grants you a personal, non-exclusive
- license, under Apple's copyrights in this original Apple software (the
- "Apple Software"), to use, reproduce, modify and redistribute the Apple
- Software, with or without modifications, in source and/or binary forms;
- provided that if you redistribute the Apple Software in its entirety and
- without modifications, you must retain this notice and the following
- text and disclaimers in all such redistributions of the Apple Software.
- Neither the name, trademarks, service marks or logos of Apple Inc. may
- be used to endorse or promote products derived from the Apple Software
- without specific prior written permission from Apple.  Except as
- expressly stated in this notice, no other rights or licenses, express or
- implied, are granted by Apple herein, including but not limited to any
- patent rights that may be infringed by your derivative works or by other
- works in which the Apple Software may be incorporated.
-
- The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
- MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
- OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-
- IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
- MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
- AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
- STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
-
- Copyright (C) 2014 Apple Inc. All Rights Reserved.
-
+<codex>
+<abstract>
+Utility class for generating a button in an OpenGL view.
+</abstract>
+</codex>
  */
 
 import Cocoa
@@ -61,6 +19,8 @@ import OpenGL
 extension HUD {
     public struct Button {
         public typealias Label = String
+        public typealias Position = CGPoint
+        public typealias Bounds = CGRect
         
         //MARK: -
         //MARK: Private - Enumerated Types
@@ -71,19 +31,15 @@ extension HUD {
             case Unpressed
         }
         
-        typealias Position = CGPoint
-        typealias Bounds = CGRect
-        
         public class Image {
             
             deinit {destruct()}
             
             private var mbIsItalic: Bool = false
             private var m_Texture: [GLuint] = [0, 0]
-            private var mnSize: CGFloat = 0
+            private var mnSize: GLdouble = 0
             private var mnWidth: GLsizei = 0
             private var mnHeight: GLsizei = 0
-            private var m_Bounds: CGRect = CGRect()
             private var m_Label: Label = ""
             private var mpQuad: GLU.Quad!
             private var mpText: GLU.Text!
@@ -98,8 +54,8 @@ extension HUD {
 extension HUD {
     private static func addRoundedRectToPath(context: CGContext,
         _ rect: CGRect,
-        _ ovalWidth: GLfloat,
-        _ ovalHeight: GLfloat)
+        _ ovalWidth: GLdouble,
+        _ ovalHeight: GLdouble)
     {
         
         if ovalWidth == 0.0 || ovalHeight == 0.0 {
@@ -109,25 +65,28 @@ extension HUD {
         }
         
         CGContextSaveGState(context)
-        
-        CGContextTranslateCTM(context,
-            CGRectGetMinX(rect),
-            CGRectGetMinY(rect))
-        
-        CGContextScaleCTM(context, CGFloat(ovalWidth), CGFloat(ovalHeight))
-        
-        let fw = CGRectGetWidth(rect) / CGFloat(ovalWidth)
-        let fh = CGRectGetHeight(rect) / CGFloat(ovalHeight)
-        
-        CGContextMoveToPoint(context, fw, fh / 2.0)
-        
-        CGContextAddArcToPoint(context, fw, fh, fw / 2.0, fh, 1.0)
-        CGContextAddArcToPoint(context, 0.0, fh, 0.0, fh / 2.0, 1.0)
-        CGContextAddArcToPoint(context, 0.0, 0.0, fw / 2.0, 0.0, 1.0)
-        CGContextAddArcToPoint(context, fw, 0.0, fw, fh / 2.0, 1.0)
-        
-        CGContextClosePath(context)
-        
+        do {
+            CGContextTranslateCTM(context,
+                CGRectGetMinX(rect),
+                CGRectGetMinY(rect))
+            
+            CGContextScaleCTM(context, CGFloat(ovalWidth), CGFloat(ovalHeight))
+            
+            let width  = CGRectGetWidth(rect)  / CGFloat(ovalWidth)
+            let height = CGRectGetHeight(rect) / CGFloat(ovalHeight)
+            
+            let hWidth  = 0.5 * width;
+            let hHeight = 0.5 * height;
+            
+            CGContextMoveToPoint(context, width, hHeight)
+            
+            CGContextAddArcToPoint(context, width, height, hWidth,  height, 1.0)
+            CGContextAddArcToPoint(context, 0.0, height,   0.0, hHeight, 1.0)
+            CGContextAddArcToPoint(context, 0.0,   0.0, hWidth,    0.0, 1.0)
+            CGContextAddArcToPoint(context, width,   0.0,  width, hHeight, 1.0)
+            
+            CGContextClosePath(context)
+        }
         CGContextRestoreGState(context)
     }
 }
@@ -145,6 +104,7 @@ extension HUD.Button {
                 
                 let width  = GLsizei(rSize.width)
                 let height = GLsizei(rSize.height)
+                
                 let bpp     = size_t(width) * size_t(HUD.SamplesPerPixel)
                 
                 if let pContext = CGBitmapContextCreate(nil,
@@ -156,10 +116,10 @@ extension HUD.Button {
                     HUD.BitmapInfo)
                 {
                     
-                    let cx = HUD.CenterX * GLfloat(rSize.width)
-                    let cy = HUD.CenterY * GLfloat(rSize.height)
-                    let sx = 0.05 * GLfloat(rSize.width)
-                    let sy = 0.5  * GLfloat(rSize.height) - 32.0
+                    let cx = GLdouble(HUD.CenterX) * GLdouble(rSize.width)
+                    let cy = GLdouble(HUD.CenterY) * GLdouble(rSize.height)
+                    let sx = 0.05 * GLdouble(rSize.width)
+                    let sy = 0.5  * GLdouble(rSize.height) - 32.0
                     
                     let bound = CGRectMake(CGFloat(sx), CGFloat(sy), 0.9 * rSize.width, 64.0)
                     
@@ -175,41 +135,41 @@ extension HUD.Button {
                     
                     // top bevel
                     CGContextSaveGState(pContext)
-                    
-                    let count: size_t = 2
-                    
-                    let locations: [CGFloat] = [0.0, 1.0]
-                    
-                    let components: [CGFloat] = [
-                        1.0, 1.0, 1.0, 0.5,
-                        0.0, 0.0, 0.0, 0.0,
-                    ]
-                    
-                    HUD.addRoundedRectToPath(pContext, bound, 32.0, 32.0)
-                    
-                    CGContextEOClip(pContext)
-                    
-                    if let pGradient = CGGradientCreateWithColorComponents(pColorspace,
-                        components,
-                        locations,
-                        count)
-                    {
+                    do {
+                        let count: size_t = 2
                         
+                        let locations: [CGFloat] = [0.0, 1.0]
                         
-                        CGContextDrawLinearGradient(pContext,
-                            pGradient,
-                            CGPointMake(CGFloat(cx), CGFloat(cy) + 32.0),
-                            CGPointMake(CGFloat(cx), CGFloat(cy)),
-                            0)
+                        let components: [CGFloat] = [
+                            1.0, 1.0, 1.0, 0.5,
+                            0.0, 0.0, 0.0, 0.0,
+                        ]
                         
-                        CGContextDrawLinearGradient(pContext,
-                            pGradient,
-                            CGPointMake(CGFloat(cx), CGFloat(cy) - 32.0),
-                            CGPointMake(CGFloat(cx), CGFloat(cy) - 16.0),
-                            0)
+                        HUD.addRoundedRectToPath(pContext, bound, 32.0, 32.0)
                         
+                        CGContextEOClip(pContext)
+                        
+                        if let pGradient = CGGradientCreateWithColorComponents(pColorspace,
+                            components,
+                            locations,
+                            count)
+                        {
+                            
+                            
+                            CGContextDrawLinearGradient(pContext,
+                                pGradient,
+                                CGPointMake(CGFloat(cx), CGFloat(cy) + 32.0),
+                                CGPointMake(CGFloat(cx), CGFloat(cy)),
+                                [])
+                            
+                            CGContextDrawLinearGradient(pContext,
+                                pGradient,
+                                CGPointMake(CGFloat(cx), CGFloat(cy) - 32.0),
+                                CGPointMake(CGFloat(cx), CGFloat(cy) - 16.0),
+                                [])
+                            
+                        }
                     }
-                    
                     CGContextRestoreGState(pContext)
                     
                     let pData = CGBitmapContextGetData(pContext)
@@ -227,7 +187,6 @@ extension HUD.Button {
                 }
                 
             }
-            
             glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, 0)
         }
         
@@ -239,42 +198,44 @@ extension HUD.Button {
 //MARK: Public - Button - Utilities
 
 extension HUD.Button.Image {
-    public convenience init(bounds rBounds: CGRect,
-        size: CGFloat)
+    public convenience init(_ frame: HUD.Button.Bounds,
+        _ size: CGFloat)
     {
         self.init()
         
-        if !CGRectIsEmpty(rBounds) {
-            m_Bounds     = rBounds
+        if !CGRectIsEmpty(frame) {
             mbIsItalic   = false
-            mnSize       = (size > 12.0) ? size : 24.0
+            mnSize       = (size > 12.0) ? size.d : 24.0
             m_Label      = ""
-            mnWidth      = GLsizei(rBounds.size.width  + 0.5)
-            mnHeight     = GLsizei(rBounds.size.height + 0.5)
-            m_Texture[0] = HUD.Button.createTexture(rBounds.size)
+            mnWidth      = GLsizei(frame.size.width  + 0.5)
+            mnHeight     = GLsizei(frame.size.height + 0.5)
+            m_Texture[0] = HUD.Button.createTexture(frame.size)
             m_Texture[1] = 0;
             mpText       = nil
             mpQuad       = GLU.Quad(usage: GL_DYNAMIC_DRAW.ui)
         }
     }
     
-    public convenience init(bounds rBounds: CGRect,
-        size: CGFloat,
-        italic: Bool,
-        label: String)
+    public convenience init(_ frame: HUD.Button.Bounds,
+        _ size: CGFloat,
+        _ italic: Bool,
+        _ label: String)
     {
         self.init()
-        if !CGRectIsEmpty(rBounds) {
-            m_Bounds     = rBounds
-            mnWidth      = GLsizei(rBounds.size.width  + 0.5)
-            mnHeight     = GLsizei(rBounds.size.height + 0.5)
+        if !CGRectIsEmpty(frame) {
+            mnWidth      = GLsizei(frame.size.width  + 0.5)
+            mnHeight     = GLsizei(frame.size.height + 0.5)
             mbIsItalic   = italic
-            mnSize       = (size > 12.0) ? size : 24.0
+            mnSize       = (size > 12.0) ? size.d : 24.0
             m_Label      = label
             mpQuad       = GLU.Quad(usage: GL_DYNAMIC_DRAW.ui)
-            mpText       = GLU.Text(text: m_Label, fontSize: mnSize, isItalic: mbIsItalic, width: mnWidth, height: mnHeight)
-            m_Texture[1] = mpText.texture
-            m_Texture[0] = HUD.Button.createTexture(rBounds.size)
+            m_Texture[0] = HUD.Button.createTexture(frame.size)
+
+            mpText       = GLU.Text(m_Label, mnSize.g, mbIsItalic, mnWidth, mnHeight)
+            
+            if mpText != nil {
+                m_Texture[1] = mpText.texture
+            }
         }
     }
     
@@ -288,7 +249,7 @@ extension HUD.Button.Image {
     
     public func setLabel(label: HUD.Button.Label) -> Bool {
         if mpText != nil {
-            let pText = GLU.Text(text: m_Label, fontSize: mnSize, isItalic: mbIsItalic, width: mnWidth, height: mnHeight)
+            let pText = GLU.Text(m_Label, mnSize.g, mbIsItalic, mnWidth, mnHeight)
             
             m_Label = label
             mpText = pText
@@ -299,81 +260,82 @@ extension HUD.Button.Image {
     }
     
     public func draw(selected: Bool,
-        position: CGPoint,
-        bounds: CGRect)
+        _ position: HUD.Button.Position,
+        _ bounds: HUD.Button.Bounds)
     {
-        glPushMatrix()
-        
-        glTranslatef(position.x.f, position.y.f, 0.0)
-        
-        glColor3f(1.0, 1.0, 1.0)
-        
-        glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
-        
-        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[0])
-        
-        glMatrixMode(GL_TEXTURE.ui)
-        
-        glPushMatrix()
-        
-        glLoadIdentity()
-        glScalef(bounds.size.width.f, bounds.size.height.f, 1.0)
-        
-        glMatrixMode(GL_MODELVIEW.ui)
-        
-        if selected {
-            glColor3f(0.5, 0.5, 0.5)
-        } else {
-            glColor3f(0.3, 0.3, 0.3)
+        glBlendFunc(GL_ONE.ui, GL_ONE_MINUS_SRC_ALPHA.ui)
+        glEnable(GL_BLEND.ui)
+        do {
+            glMatrixMode(GL_MODELVIEW.ui)
+            
+            GLM.load(true, GLM.translate(position.x.f, position.y.f, 0.0))
+            
+            glColor3f(1.0, 1.0, 1.0)
+            
+            glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
+            do {
+                glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[0])
+                do {
+                    glMatrixMode(GL_TEXTURE.ui)
+                    
+                    let tm = GLM.texture(true)
+                    
+                    GLM.load(true, GLM.scale(bounds.size.width.f, bounds.size.height.f, 1.0));
+                    
+                    if selected {
+                        glColor3f(0.5, 0.5, 0.5)
+                    } else {
+                        glColor3f(0.3, 0.3, 0.3)
+                    }
+                    
+                    mpQuad.setIsInverted(false)
+                    mpQuad.setBounds(bounds)
+                    
+                    if !mpQuad.isFinalized {
+                        mpQuad.finalize()
+                    } else {
+                        mpQuad.update()
+                    }
+                    
+                    //GLU::QuadDraw(mpQuad);
+                    mpQuad.draw()
+                    
+                    GLM.load(true, tm);
+                }
+                glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, 0)
+            }
+            glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
+            
+            glEnable(GL_TEXTURE_2D.ui)
+            do {
+                glBindTexture(GL_TEXTURE_2D.ui, m_Texture[1])
+                do {
+                    if selected {
+                        glColor3f(0.4, 0.7, 1.0)
+                    } else {
+                        glColor3f(0.85, 0.2, 0.2)
+                    }
+                    
+                    glMatrixMode(GL_MODELVIEW.ui)
+                    
+                    GLM.load(true, GLM.translate(0.0, -10.0, 0.0))
+                    
+                    //GLU::QuadSetIsInverted(true, mpQuad);
+                    mpQuad.setIsInverted(true)
+                    //GLU::QuadSetBounds(bounds, mpQuad);
+                    mpQuad.setBounds(bounds)
+                    
+                    mpQuad.update()
+                    mpQuad.draw()
+                    
+                    GLM.load(true, GLM.translate(0.0, 10.0, 0.0))
+                    
+                    glColor3f(1.0, 1.0, 1.0)
+                }
+                glBindTexture(GL_TEXTURE_2D.ui, 0)
+            }
+            glDisable(GL_TEXTURE_2D.ui)
         }
-        
-        mpQuad.setIsInverted(false)
-        mpQuad.setBounds(bounds)
-        
-        if !mpQuad.isFinalized {
-            mpQuad.finalize()
-        } else {
-            mpQuad.update()
-        }
-        
-        mpQuad.draw()
-        
-        glMatrixMode(GL_TEXTURE.ui)
-        
-        glPopMatrix()
-        
-        glMatrixMode(GL_MODELVIEW.ui)
-        
-        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, 0)
-        
-        glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
-        
-        glEnable(GL_TEXTURE_2D.ui)
-        
-        glBindTexture(GL_TEXTURE_2D.ui, m_Texture[1])
-        
-        if selected {
-            glColor3f(0.4, 0.7, 1.0)
-        } else {
-            glColor3f(0.85, 0.2, 0.2)
-        }
-        
-        glTranslatef(0.0, -10.0, 0.0)
-        
-        mpQuad.setIsInverted(true)
-        mpQuad.setBounds(bounds)
-        
-        mpQuad.update()
-        mpQuad.draw()
-        
-        glTranslatef(0.0, 10.0, 0.0)
-        
-        glColor3f(1.0, 1.0, 1.0)
-        
-        glBindTexture(GL_TEXTURE_2D.ui, 0)
-        
-        glDisable(GL_TEXTURE_2D.ui)
-        
-        glPopMatrix()
+        glDisable(GL_BLEND.ui)
     }
 }

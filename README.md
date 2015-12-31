@@ -1,25 +1,15 @@
-# OpenCL_NBody_Simulation
+# OpenCL N-Body Simulation
 
-Translated by OOPer in cooperation with shlab.jp, on 2015/2/21.
+Performs an N-Body simulation which calculates a gravity field and corresponding velocity and acceleration contributions accumulated by each body in the system from every other body.  Shows how to mitigate computation between all available devices including CPU and GPU devices, as well as a hybrid combination of both, using separate threads for each simulator.
 
-The translated code does not utilize simd functionalities, which may affect the performance.
-(Sorry for who that has reached here searching simd usage example in Swift...)
+## Requirements
 
-Based on
-<https://developer.apple.com/library/mac/samplecode/OpenCL_NBody_Simulation_Example/Introduction/Intro.html#//apple_ref/doc/uid/DTS40008471>
-2014-10-16.
+### Build
 
-As this is a line-by-line translation from the original sample code, "redistribute the Apple Software in its entirety and without modifications" would apply. See license terms in each file.
-Some faults caused by my translation may exist. Not all features tested.
-You should not contact to Apple or SHLab(jp) about any faults caused by my translation.
+EL Capitan (OS X 10.11) and Xcode 7.1
 
-===========================================================================
-BUILD REQUIREMENTS:
+### Runtime
 
-Xcode 6.3, OS X SDK 10.10 or later
+EL Capitan (OS X 10.11)
 
-===========================================================================
-Many common utility files are not fully translated. Their license terms are kept there just to indicate the original files.
-
-Some utility files are used to make line-by-line translation easier. They have other license terms.
-See license terms in each file.
+Copyright (C) 2015 Apple Inc. All rights reserved.

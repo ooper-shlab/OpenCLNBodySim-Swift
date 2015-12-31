@@ -1,3 +1,11 @@
+/*
+ <codex>
+ <abstract>
+ Vertex shader for stars.
+ </abstract>
+ </codex>
+ */
+
 void main()
 {
     gl_FrontColor = gl_Color;

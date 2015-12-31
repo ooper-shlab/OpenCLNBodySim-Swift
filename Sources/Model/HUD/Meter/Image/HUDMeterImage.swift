@@ -6,57 +6,16 @@
 //
 //
 /*
-     File: HUDMeterImage.h
-     File: HUDMeterImage.mm
- Abstract:
- Utility class for generating and manging an OpenGl based 2D meter.
-
-  Version: 3.3
-
- Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
- Inc. ("Apple") in consideration of your agreement to the following
- terms, and your use, installation, modification or redistribution of
- this Apple software constitutes acceptance of these terms.  If you do
- not agree with these terms, please do not use, install, modify or
- redistribute this Apple software.
-
- In consideration of your agreement to abide by the following terms, and
- subject to these terms, Apple grants you a personal, non-exclusive
- license, under Apple's copyrights in this original Apple software (the
- "Apple Software"), to use, reproduce, modify and redistribute the Apple
- Software, with or without modifications, in source and/or binary forms;
- provided that if you redistribute the Apple Software in its entirety and
- without modifications, you must retain this notice and the following
- text and disclaimers in all such redistributions of the Apple Software.
- Neither the name, trademarks, service marks or logos of Apple Inc. may
- be used to endorse or promote products derived from the Apple Software
- without specific prior written permission from Apple.  Except as
- expressly stated in this notice, no other rights or licenses, express or
- implied, are granted by Apple herein, including but not limited to any
- patent rights that may be infringed by your derivative works or by other
- works in which the Apple Software may be incorporated.
-
- The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
- MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
- OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-
- IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
- MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
- AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
- STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
-
- Copyright (C) 2014 Apple Inc. All Rights Reserved.
-
+<codex>
+<abstract>
+Utility class for generating and manging an OpenGl based 2D meter.
+</abstract>
+</codex>
  */
 
 import Cocoa
 import OpenGL
+import simd
 
 extension HUD {
     
@@ -94,27 +53,35 @@ extension HUD {
 
 import OpenGL.GL
 
-//MARK: -
-//MARK: Private - Utilities
-
 extension HUD {
+    
+    //MARK: -
+    //MARK: Private - Constants
+    
+    private static let Center = double2(0.5, 0.5)
+    
+    //MARK: -
+    //MARK: Private - Utilities
+    
     private static func Integer2String(i: GLuint) -> String {
         
-        return String(format: "%u", i)
+        return String(i)
     }
     
-    private static func emplaceTextureWithLabel(nKey: GLuint, inout _ rHash: HUD.Meter.Hash) -> GLuint {
+    private static func emplaceTextureWithLabel(nKey: GLuint,
+        inout _ rHash: HUD.Meter.Hash) -> GLuint
+    {
         var nTexture: GLuint = 0
-        
-        let key = Integer2String(nKey)
-        
+
         var pValue: GLU.Text? = nil
-        
+
+        let key = Integer2String(nKey)
+
         if let pIter = rHash[key] {
             pValue = pIter
         } else {
-            pValue = GLU.Text(text: key, fontSize: 52.0, isItalic: true, width: GLsizei(ValueWidth), height: GLsizei(ValueHeight))
-            
+            pValue = GLU.Text(key, 52.0, true, GLsizei(ValueWidth), GLsizei(ValueHeight))
+
             rHash[key] = pValue
         }
         
@@ -130,7 +97,7 @@ extension HUD {
         _ nFontSize: CGFloat,
         _ nTextAlign: CTTextAlignment)
     {
-        let pFrame = CT.Frame(text: rText, font: rFont, fontSize: nFontSize, origin: rOrigin, textAlign: nTextAlign)
+        let pFrame = CT.Frame(rText, rFont, nFontSize, rOrigin, nTextAlign)
         
         pFrame.draw(pContext)
         
@@ -144,14 +111,18 @@ extension HUD {
         _ font: String,
         _ textAlign: CTTextAlignment)
     {
-        let radial = 0.82 * needle
-        var angle: CGFloat = 0.0
+        let radial: GLdouble = 0.82 * needle.d
+        var angle: GLdouble = 0.0
         
-        var delta = CGPoint()
         var origin = CGPoint()
-        var coord = CGPoint()
         
-        var i: size_t = 0
+        var cos: GLdouble = 0.0
+        var sin: GLdouble = 0.0
+        
+        var vCoord  = double2()
+        var vDelta  = double2()
+        var vCenter = double2()
+        var vOrigin = double2()
         
         let iDelta = iMax / Ticks
         
@@ -159,26 +130,28 @@ extension HUD {
             let text = String(i)
             
             // hardcoded text centering for this font size
-            
-            if i > 199 {
-                delta.x = -18.0
+            if i > 999 {
+                vDelta.x = -24.0
             } else if i > 99 {
-                delta.x = -17.0
+                vDelta.x = -18.0
             } else if i > 0 {
-                delta.x = -14.0
+                vDelta.x = -14.0
             } else {
-                delta.x = -12.0
+                vDelta.x = -12.0
             }
             
-            delta.y = -6.0
+            vDelta.y = -6.0
             
-            angle = GLM.k4PiDiv3.g * i.g / iMax.g - GLM.kPiDiv6.g
+            angle = GLM.k4PiDiv3 * i.d / iMax.d - GLM.kPiDiv6
             
-            coord.x = radial * cos(angle)
-            coord.y = radial * sin(angle)
+            __sincos(angle, &sin, &cos)
             
-            origin.x = center.x - coord.x + delta.x
-            origin.y = center.y + coord.y + delta.y
+            vCoord = double2(-cos, sin)
+            vCenter = double2(center.x.d, center.y.d)
+            
+            vOrigin = vCenter + vDelta + radial * vCoord;
+            
+            origin = CGPointMake(vOrigin.x.g, vOrigin.y.g);
             
             HUD.drawMark(pContext, origin, text, font, fontSize, textAlign)
             
@@ -190,17 +163,23 @@ extension HUD {
         _ height: GLsizei,
         _ max: Int)
     {
-        var angle: CGFloat = 0, tick: CGFloat = 0
-        var r0: CGFloat = 0, r1: CGFloat = 0, r2: CGFloat = 0, r3: CGFloat = 0
-        var start = 0, end = 0, section = 0
+        var start = 0, end = 0
         
-        let center = CGPointMake(CenterX.g * CGFloat(width),
-            CenterY.g * CGFloat(height))
+        var angle: GLdouble = 0, cos: GLdouble = 0, sin: GLdouble = 0, tick: GLdouble = 0
         
-        let redline = HUD.Ticks.g * HUD.SubTicks.g * 0.8
-        let radius  = 0.5 * CGFloat(width > height ? width : height)
-        
+        let redline = HUD.Ticks.d * HUD.SubTicks.d * 0.8
+        let radius  = 0.5 * GLdouble(width > height ? width : height)
         let needle  = radius * 0.85
+        
+        var c = double2(GLdouble(width), GLdouble(height))
+        
+        c *= HUD.Center
+        
+        var u = double2()
+        var v = double2()
+        
+        let q = double4(c.x, c.x, c.y, c.y)
+        var r = double4()
         
         for section in 0..<2 {
             start = section != 0 ? Int(redline) + 1 : 0
@@ -213,24 +192,29 @@ extension HUD {
             }
             
             // inner tick ring
-            r0 = 0.97 * needle
-            r1 = 1.04 * needle
-            r2 = 1.00 * needle
-            r3 = 1.01 * needle
+            r.x = 0.97 * needle
+            r.y = 1.04 * needle
+            r.z = 1.00 * needle
+            r.w = 1.01 * needle
             
             for i in start...end {
-                tick  = CGFloat(i) / (SubTicks.g * Ticks.g)
-                angle = GLM.k4PiDiv3.g * tick  -  GLM.kPiDiv6.g
+                tick  = GLdouble(i) / (SubTicks.d * Ticks.d)
+                angle = GLM.k4PiDiv3 * tick  -  GLM.kPiDiv6
                 
-                let c = cos(angle)
-                let s = sin(angle)
+                __sincos(angle, &sin, &cos)
                 
                 if i % SubTicks != 0 {
-                    CGContextMoveToPoint(pContext, center.x - r0 * c, center.y + r0 * s)
-                    CGContextAddLineToPoint(pContext, center.x - r1 * c, center.y + r1 * s)
+                    u = double2(q.x, q.y) - cos * double2(r.x, r.y)
+                    v = double2(q.z, q.w) + sin * double2(r.x, r.y)
+                    
+                    CGContextMoveToPoint(pContext, u.x.g, v.x.g)
+                    CGContextAddLineToPoint(pContext, u.y.g, v.y.g)
                 } else {
-                    CGContextMoveToPoint(pContext, center.x - r2 * c, center.y + r2 * s)
-                    CGContextAddLineToPoint(pContext, center.x - r3 * c, center.y + r3 * s)
+                    u = double2(q.x, q.y) - cos * double2(r.z, r.w)
+                    v = double2(q.z, q.w) + sin * double2(r.z, r.w)
+                    
+                    CGContextMoveToPoint(pContext, u.x.g, v.x.g)
+                    CGContextAddLineToPoint(pContext, u.y.g, v.y.g)
                 }
             }
             
@@ -241,31 +225,35 @@ extension HUD {
             start = (start / SubTicks) + section
             end   = end / SubTicks
             
-            r0 = 1.05 * needle
-            r1 = 1.14 * needle
+            r.x = 1.05 * needle
+            r.y = 1.14 * needle
             
             for i in start...end {
-                tick  = CGFloat(i) / Ticks.g
-                angle = GLM.k4PiDiv3.g * tick - GLM.kPiDiv6.g
+                tick  = GLdouble(i) / Ticks.d
+                angle = GLM.k4PiDiv3 * tick - GLM.kPiDiv6
                 
-                let c = cos(angle)
-                let s = sin(angle)
+                __sincos(angle, &sin, &cos)
                 
-                CGContextMoveToPoint(pContext, center.x - r0 * c, center.y + r0 * s)
-                CGContextAddLineToPoint(pContext, center.x - r1 * c, center.y + r1 * s)
+                u = double2(q.x, q.y) - cos * double2(r.x, r.y)
+                v = double2(q.z, q.w) + sin * double2(r.x, r.y)
+                
+                CGContextMoveToPoint(pContext, u.x.g, v.x.g)
+                CGContextAddLineToPoint(pContext, u.y.g, v.y.g)
             }
             
             CGContextSetLineWidth(pContext, 3.0)
             CGContextStrokePath(pContext)
         }
         
+        let center = CGPointMake(c.x.g, c.y.g)
+        
         HUD.drawMarks(pContext,
             center,
             max,
-            needle,
+            needle.g,
             18.0,
             "Helvetica-Bold",
-            .TextAlignmentCenter)
+            .Center)
     }
     
     private static func acquireShadowWithColor(pContext: CGContext,
@@ -273,22 +261,20 @@ extension HUD {
         _ blur: CGFloat,
         _ pColors: [CGFloat])
     {
-        if let pShadowColor = CGColorCreateGenericRGB(pColors[0],
+        let pShadowColor = CGColorCreateGenericRGB(pColors[0],
             pColors[1],
             pColors[2],
             pColors[3])
-        {
+        
+        CGContextSetShadowWithColor(pContext,
+            offset,
+            blur,
+            pShadowColor)
             
-            CGContextSetShadowWithColor(pContext,
-                offset,
-                blur,
-                pShadowColor)
-            
-        }
     }
     
     private static func shadowAcquireWithColor(pContext: CGContext) {
-        let offset = CGSizeMake(0.0, CGFloat(HUD.Offscreen))
+        let offset = CGSizeMake(0.0, HUD.Offscreen.g)
         let colors: [CGFloat] = [0.5, 0.5, 1.0, 0.7]
         
         HUD.acquireShadowWithColor(pContext, offset, 48.0, colors)
@@ -315,156 +301,160 @@ extension HUD {
         var texture: GLuint = 0
         
         glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
-        
-        glGenTextures(1, &texture)
-        
-        if texture != 0 {
-            if let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB) {
-                
-                let bpp = size_t(width) * size_t(SamplesPerPixel)
-                
-                if let pContext = CGBitmapContextCreate(nil,
-                    width.l,
-                    height.l,
-                    BitsPerComponent,
-                    bpp,
-                    pColorspace,
-                    BitmapInfo)
-                {
+        do {
+            glGenTextures(1, &texture)
+            
+            if texture != 0 {
+                if let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB) {
                     
-                    let cx = CGFloat(CenterX) * CGFloat(width)
-                    let cy = CGFloat(CenterY) * CGFloat(height)
+                    let bpp = size_t(width) * size_t(SamplesPerPixel)
                     
-                    let radius = 0.5 * CGFloat(width > height ? width : height)
-                    let needle = radius * 0.85
-                    
-                    // background
-                    CGContextTranslateCTM(pContext, 0.0, CGFloat(height))
-                    CGContextScaleCTM(pContext, 1.0, -1.0)
-                    CGContextClearRect(pContext, CGRectMake(0, 0, CGFloat(width), CGFloat(height)))
-                    CGContextSetRGBFillColor(pContext, 0.0, 0.0, 0.0, 0.7)
-                    CGContextAddArc(pContext, cx, cy, radius, 0.0, GLM.kTwoPi.g, false)
-                    CGContextFillPath(pContext)
-                    
-                    let count: size_t = 2
-                    var locations: [CGFloat] = [0.0, 1.0]
-                    var components: [CGFloat] = [
-                        1.0, 1.0, 1.0, 0.5,  // Start color
-                        0.0, 0.0, 0.0, 0.0, // End color
-                    ]
-                    
-                    if let pGradient = CGGradientCreateWithColorComponents(pColorspace,
-                        components,
-                        locations,
-                        count)
+                    if let pContext = CGBitmapContextCreate(nil,
+                        width.l,
+                        height.l,
+                        BitsPerComponent,
+                        bpp,
+                        pColorspace,
+                        BitmapInfo)
                     {
-                        CGContextSaveGState(pContext)
+                        var c = double2(GLdouble(width), GLdouble(height))
                         
-                        CGContextAddArc(pContext, cx, cy, radius, 0.0, GLM.kTwoPi.g, false)
-                        CGContextAddArc(pContext, cx, cy, needle * 1.05, 0.0, GLM.kTwoPi.g, false)
-                        CGContextEOClip(pContext)
+                        c *= HUD.Center;
                         
-                        CGContextDrawRadialGradient(pContext,
-                            pGradient,
-                            CGPointMake(cx, cy),
-                            radius * 1.01,
-                            CGPointMake(cx, cy * 0.96),
-                            radius * 0.98,
-                            0)
-                        // bottom rim light
-                        CGContextDrawRadialGradient(pContext,
-                            pGradient,
-                            CGPointMake(cx, cy),
-                            radius * 1.01,
-                            CGPointMake(cx, cy * 1.04),
-                            radius * 0.98,
-                            0)
-                        // top bevel
-                        CGContextDrawRadialGradient(pContext,
-                            pGradient,
-                            CGPointMake(cx, cy * 2.2),
-                            radius * 0.2,
-                            CGPointMake(cx, cy),
-                            radius,
-                            0)
+                        let radius = 0.5 * GLdouble(width > height ? width : height)
+                        let needle = radius * 0.85
                         
-                        CGContextRestoreGState(pContext)
+                        // background
+                        CGContextTranslateCTM(pContext, 0.0, CGFloat(height))
+                        CGContextScaleCTM(pContext, 1.0, -1.0)
+                        CGContextClearRect(pContext, CGRectMake(0, 0, CGFloat(width), CGFloat(height)))
+                        CGContextSetRGBFillColor(pContext, 0.0, 0.0, 0.0, 0.7)
+                        CGContextAddArc(pContext, c.x.g, c.y.g, radius.g, 0.0, GLM.kTwoPi.g, false)
+                        CGContextFillPath(pContext)
                         
-                        // bottom bevel
-                        CGContextSaveGState(pContext)
+                        let count: size_t = 2
                         
-                        CGContextAddArc(pContext, cx, cy, needle * 1.05, 0.0, GLM.kTwoPi.g, false)
-                        CGContextAddArc(pContext, cx, cy, needle * 0.96, 0.0, GLM.kTwoPi.g, false)
-                        CGContextEOClip(pContext)
+                        let locations: [CGFloat] = [0.0, 1.0]
+                        let components: [CGFloat] = [
+                            1.0, 1.0, 1.0, 0.5,  // Start color
+                            0.0, 0.0, 0.0, 0.0, // End color
+                        ]
                         
-                        CGContextDrawRadialGradient(pContext,
-                            pGradient,
-                            CGPointMake(cx, -0.5 * cy),
-                            radius * 0.2,
-                            CGPointMake(cx, cy),
-                            radius,
-                            0)
+                        if let pGradient = CGGradientCreateWithColorComponents(pColorspace,
+                            components,
+                            locations,
+                            count)
+                        {
+                            let center = CGPointMake(c.x.g, c.y.g)
+                            
+                            CGContextSaveGState(pContext)
+                            do {
+                                CGContextAddArc(pContext, c.x.g, c.y.g, radius.g, 0.0, GLM.kTwoPi.g, false)
+                                CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 1.05, 0.0, GLM.kTwoPi.g, false)
+                                CGContextEOClip(pContext)
+                                
+                                CGContextDrawRadialGradient(pContext,
+                                    pGradient,
+                                    center,
+                                    radius.g * 1.01,
+                                    CGPointMake(c.x.g, c.y.g * 0.96),
+                                    radius.g * 0.98,
+                                    [])
+                                // bottom rim light
+                                CGContextDrawRadialGradient(pContext,
+                                    pGradient,
+                                    center,
+                                    radius.g * 1.01,
+                                    CGPointMake(c.x.g, c.y.g * 1.04),
+                                    radius.g * 0.98,
+                                    [])
+                                // top bevel
+                                CGContextDrawRadialGradient(pContext,
+                                    pGradient,
+                                    CGPointMake(c.x.g, c.y.g * 2.2),
+                                    radius.g * 0.2,
+                                    center,
+                                    radius.g,
+                                    [])
+                            }
+                            CGContextRestoreGState(pContext)
+                            
+                            // bottom bevel
+                            CGContextSaveGState(pContext)
+                            do {
+                                CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 1.05, 0.0, GLM.kTwoPi.g, false)
+                                CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 0.96, 0.0, GLM.kTwoPi.g, false)
+                                CGContextEOClip(pContext)
+                                
+                                CGContextDrawRadialGradient(pContext,
+                                    pGradient,
+                                    CGPointMake(c.x.g, -0.5 * c.y.g),
+                                    radius.g * 0.2,
+                                    center,
+                                    radius.g,
+                                    [])
+                            }
+                            CGContextRestoreGState(pContext)
+                            
+                        }
                         
-                        CGContextRestoreGState(pContext)
+                        // top rim light
+                        
+                        CGContextSetRGBFillColor(pContext, 0.9, 0.9, 1.0, 1.0)
+                        CGContextSetRGBStrokeColor(pContext, 0.9, 0.9, 1.0, 1.0)
+                        CGContextSetLineCap(pContext, .Round)
+                        
+                        // draw several glow passes, with the content offscreen
+                        CGContextTranslateCTM(pContext, 0.0, CGFloat(Offscreen) - 10.0)
+                        
+                        HUD.shadowAcquireWithColor(pContext)
+                        
+                        HUD.drawMarks(pContext, width, height, max)
+                        
+                        CGContextTranslateCTM(pContext, 0.0, 20.0)
+                        
+                        HUD.shadowAcquireWithColor(pContext)
+                        
+                        HUD.drawMarks(pContext, width, height, max)
+                        
+                        CGContextTranslateCTM(pContext, -10.0, -10.0)
+                        
+                        HUD.shadowAcquireWithColor(pContext)
+                        
+                        HUD.drawMarks(pContext, width, height, max)
+                        
+                        CGContextTranslateCTM(pContext, 20.0, 0.0)
+                        
+                        HUD.shadowAcquireWithColor(pContext)
+                        
+                        HUD.drawMarks(pContext, width, height, max)
+                        
+                        CGContextTranslateCTM(pContext, -10.0, CGFloat(-HUD.Offscreen))
+                        
+                        // draw real content
+                        HUD.backgroundShadowAcquireWithColor(pContext)
+                        
+                        HUD.drawMarks(pContext, width, height, max)
+                        
+                        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
+                        
+                        let pData  = CGBitmapContextGetData(pContext)
+                        
+                        glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
+                            0,
+                            GL_RGBA,
+                            width,
+                            height,
+                            0,
+                            GL_RGBA.ui,
+                            GL_UNSIGNED_BYTE.ui,
+                            pData)
                         
                     }
                     
-                    // top rim light
-                    
-                    CGContextSetRGBFillColor(pContext, 0.9, 0.9, 1.0, 1.0)
-                    CGContextSetRGBStrokeColor(pContext, 0.9, 0.9, 1.0, 1.0)
-                    CGContextSetLineCap(pContext, kCGLineCapRound)
-                    
-                    // draw several glow passes, with the content offscreen
-                    CGContextTranslateCTM(pContext, 0.0, CGFloat(Offscreen) - 10.0)
-                    
-                    HUD.shadowAcquireWithColor(pContext)
-                    
-                    HUD.drawMarks(pContext, width, height, max)
-                    
-                    CGContextTranslateCTM(pContext, 0.0, 20.0)
-                    
-                    HUD.shadowAcquireWithColor(pContext)
-                    
-                    HUD.drawMarks(pContext, width, height, max)
-                    
-                    CGContextTranslateCTM(pContext, -10.0, -10.0)
-                    
-                    HUD.shadowAcquireWithColor(pContext)
-                    
-                    HUD.drawMarks(pContext, width, height, max)
-                    
-                    CGContextTranslateCTM(pContext, 20.0, 0.0)
-                    
-                    HUD.shadowAcquireWithColor(pContext)
-                    
-                    HUD.drawMarks(pContext, width, height, max)
-                    
-                    CGContextTranslateCTM(pContext, -10.0, CGFloat(-HUD.Offscreen))
-                    
-                    // draw real content
-                    HUD.backgroundShadowAcquireWithColor(pContext)
-                    
-                    HUD.drawMarks(pContext, width, height, max)
-                    glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
-                    
-                    let pData  = CGBitmapContextGetData(pContext)
-                    
-                    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
-                        0,
-                        GL_RGBA,
-                        width,
-                        height,
-                        0,
-                        GL_RGBA.ui,
-                        GL_UNSIGNED_BYTE.ui,
-                        pData)
-                    
                 }
-                
             }
         }
-        
         glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
         
         return texture
@@ -478,7 +468,7 @@ extension HUD {
             val = 0.0
         }
         
-        var max_f = GLdouble(max)
+        let max_f = GLdouble(max)
         
         if val > max_f * 1.05 {
             val = max_f * 1.05  //###
@@ -490,40 +480,44 @@ extension HUD {
     private static func needleDraw(pContext: CGContext,
         _ width: GLsizei,
         _ height: GLsizei,
-        _ angle: CGFloat)
+        _ angle: GLdouble)
     {
-        let cx     = HUD.CenterX.g * CGFloat(width)
-        let cy     = HUD.CenterY.g * CGFloat(height)
-        let dx     = -cos(angle)
-        let dy     = -sin(angle)
-        let hdx    = 0.5 * dx
-        let hdy    = 0.5 * dy
-        let radius = 0.5 * CGFloat(width > height ? width : height)
+        var c = double2(GLdouble(width), GLdouble(height))
+        
+        c *= Center;
+        
+        var cos: GLdouble = 0.0
+        var sin: GLdouble = 0.0
+        
+        __sincos(angle, &sin, &cos);
+        
+        var d  = double2(cos, sin)
+        var hd = -0.5 * d;
+        
+        let radius = 0.5 * GLdouble(width > height ? width : height)
         let needle = radius * 0.85
         
-        CGContextMoveToPoint(pContext,
-            cx + needle * dx - hdy,
-            cy + needle * dy + hdx)
+        var p = c - needle * d
         
-        CGContextAddLineToPoint(pContext,
-            cx + needle * dx + hdy,
-            cy + needle * dy - hdx)
+        CGContextMoveToPoint(pContext, p.x.g - hd.y.g, p.y.g + hd.x.g)
+        CGContextAddLineToPoint(pContext, p.x.g + hd.y.g, p.y.g - hd.x.g)
         
-        CGContextAddLineToPoint(pContext,
-            cx - HUD.NeedleThickness.g * (dx + hdy),
-            cy - HUD.NeedleThickness.g * (dy - hdx))
+        d  *= NeedleThickness.d
+        hd *= NeedleThickness.d
+        
+        p = c + d;
+        
+        CGContextAddLineToPoint(pContext, p.x.g - hd.y.g, p.y.g + hd.x.g)
         
         CGContextAddArc(pContext,
-            cx - HUD.NeedleThickness.g * dx,
-            cy - HUD.NeedleThickness.g * dy,
-            0.5 * HUD.NeedleThickness.g,
-            angle - GLM.kHalfPi.g,
-            angle + GLM.kHalfPi.g,
+            p.x.g,
+            p.y.g,
+            0.5 * NeedleThickness.g,
+            angle.g - GLM.kHalfPi.g,
+            angle.g + GLM.kHalfPi.g,
             false)
         
-        CGContextAddLineToPoint(pContext,
-            cx - HUD.NeedleThickness.g * (dx - hdy),
-            cy - HUD.NeedleThickness.g * (dy + hdx))
+        CGContextAddLineToPoint(pContext, p.x.g + hd.y.g, p.y.g - hd.x.g)
         
         CGContextFillPath(pContext)
     }
@@ -532,117 +526,130 @@ extension HUD {
         var texture: GLuint = 0
         
         glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
-        glGenTextures(1, &texture)
-        
-        if texture != 0 {
-            let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB)
+        do {
+            glGenTextures(1, &texture)
             
-            if pColorspace != nil {
-                let bpp = width.l * HUD.SamplesPerPixel
+            if texture != 0 {
+                let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB)
                 
-                let pContext = CGBitmapContextCreate(nil,
-                    width.l,
-                    height.l,
-                    HUD.BitsPerComponent,
-                    bpp,
-                    pColorspace,
-                    HUD.BitmapInfo)
-                
-                if pContext != nil {
-                    let angle: CGFloat  = 0.0
-                    let cx     = HUD.CenterX.g * width.g
-                    let cy     = HUD.CenterY.g * height.g
+                if pColorspace != nil {
+                    let bpp = width.l * HUD.SamplesPerPixel
                     
-                    CGContextTranslateCTM(pContext, 0.0, height.g)
-                    CGContextScaleCTM(pContext, 1.0, -1.0)
-                    CGContextClearRect(pContext, CGRectMake(0.0, 0.0, width.g, height.g))
+                    if let pContext = CGBitmapContextCreate(nil,
+                        width.l,
+                        height.l,
+                        HUD.BitsPerComponent,
+                        bpp,
+                        pColorspace,
+                        HUD.BitmapInfo)
+                    {
                     
-                    CGContextSaveGState(pContext)
-                    let radius = 0.5 * (width > height ? width : height).g
-                    let needle = radius * 0.85
-                    
-                    let count = 2
-                    
-                    let locations: [CGFloat] = [0.0, 1.0]
-                    let components: [CGFloat] = [
-                        0.7, 0.7, 1.0, 0.7,  // Start color
-                        0.0, 0.0, 0.0, 0.0 // End color
-                    ]
-                    
-                    CGContextAddArc(pContext, cx, cy, needle * 1.05, 0.0, GLM.kTwoPi.g, false)
-                    CGContextAddArc(pContext, cx, cy, needle * 0.96, 0.0, GLM.kTwoPi.g, false)
-                    
-                    CGContextEOClip(pContext)
-                    
-                    if let  pGradient = CGGradientCreateWithColorComponents(pColorspace,
-                        components,
-                        locations,
-                        count) {
-                            // draw glow reflecting on inner bevel
-                            let dx = -cos(angle) + 1.0
-                            let dy = -sin(angle) + 1.0
+                        let angle: GLdouble  = 0.0
                             
-                            CGContextDrawRadialGradient(pContext,
-                                pGradient,
-                                CGPointMake(cx * dx, cy * dy),
-                                radius * 0.1,
-                                CGPointMake(cx, cy),
-                                radius,
-                                0)
+                        var c = double2(GLdouble(width), GLdouble(height))
+                        
+                        c *= Center
+                        
+                        CGContextTranslateCTM(pContext, 0.0, height.g)
+                        CGContextScaleCTM(pContext, 1.0, -1.0)
+                        CGContextClearRect(pContext, CGRectMake(0.0, 0.0, width.g, height.g))
+                        
+                        CGContextSaveGState(pContext)
+                        do {
+                            let radius = 0.5 * (width > height ? width : height).d
+                            let needle = radius * 0.85
                             
+                            let count = 2
+                            
+                            let locations: [CGFloat] = [0.0, 1.0]
+                            let components: [CGFloat] = [
+                                0.7, 0.7, 1.0, 0.7,  // Start color
+                                0.0, 0.0, 0.0, 0.0 // End color
+                            ]
+                            
+                            CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 1.05, 0.0, GLM.kTwoPi.g, false)
+                            CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 0.96, 0.0, GLM.kTwoPi.g, false)
+                            
+                            CGContextEOClip(pContext)
+                            
+                            if let  pGradient = CGGradientCreateWithColorComponents(pColorspace,
+                                components,
+                                locations,
+                                count)
+                            {
+                                    // draw glow reflecting on inner bevel
+                                var cos: GLdouble = 0.0
+                                var sin: GLdouble = 0.0
+                                
+                                __sincos(angle, &sin, &cos);
+                                
+                                var d = double2(cos, sin)
+                                
+                                d = c * (double2(1.0, 1.0) - d);
+                                
+                                CGContextDrawRadialGradient(pContext,
+                                    pGradient,
+                                    CGPointMake(d.x.g, d.y.g),
+                                    0.1 * radius.g,
+                                    CGPointMake(c.x.g, c.y.g),
+                                    radius.g,
+                                    [])
+                                
+                            }
+                        }
+                        CGContextRestoreGState(pContext)
+                        
+                        CGContextSetRGBFillColor(pContext, 0.9, 0.9, 1.0, 1.0)
+                        
+                        // draw several glow passes, with the content offscreen
+                        CGContextTranslateCTM(pContext, 0.0, HUD.Offscreen.g - 10.0)
+                        
+                        shadowAcquireWithColor(pContext)
+                        
+                        needleDraw(pContext, width, height, angle)
+                        
+                        CGContextTranslateCTM(pContext, 0.0, 20.0)
+                        
+                        shadowAcquireWithColor(pContext)
+                        
+                        needleDraw(pContext, width, height, angle)
+                        
+                        CGContextTranslateCTM(pContext, -10.0, -10.0)
+                        
+                        shadowAcquireWithColor(pContext)
+                        
+                        needleDraw(pContext, width, height, angle)
+                        
+                        CGContextTranslateCTM(pContext, 20.0, 0.0)
+                        
+                        shadowAcquireWithColor(pContext)
+                        
+                        needleDraw(pContext, width, height, angle)
+                        
+                        CGContextTranslateCTM(pContext, -10.0, -HUD.Offscreen.g)
+                        
+                        // draw real content
+                        needleShadowAcquireWithColor(pContext)
+                        
+                        needleDraw(pContext, width, height, angle)
+                        
+                        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
+                        
+                        let pData  = CGBitmapContextGetData(pContext)
+                        
+                        glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
+                            0,
+                            GL_RGBA,
+                            width,
+                            height,
+                            0,
+                            GL_RGBA.ui,
+                            GL_UNSIGNED_BYTE.ui,
+                            pData)
+                        
                     }
-                    CGContextRestoreGState(pContext)
-                    
-                    CGContextSetRGBFillColor(pContext, 0.9, 0.9, 1.0, 1.0)
-                    
-                    // draw several glow passes, with the content offscreen
-                    CGContextTranslateCTM(pContext, 0.0, HUD.Offscreen.g - 10.0)
-                    
-                    shadowAcquireWithColor(pContext)
-                    
-                    needleDraw(pContext, width, height, angle)
-                    
-                    CGContextTranslateCTM(pContext, 0.0, 20.0)
-                    
-                    shadowAcquireWithColor(pContext)
-                    
-                    needleDraw(pContext, width, height, angle)
-                    
-                    CGContextTranslateCTM(pContext, -10.0, -10.0)
-                    
-                    shadowAcquireWithColor(pContext)
-                    
-                    needleDraw(pContext, width, height, angle)
-                    
-                    CGContextTranslateCTM(pContext, 20.0, 0.0)
-                    
-                    shadowAcquireWithColor(pContext)
-                    
-                    needleDraw(pContext, width, height, angle)
-                    
-                    CGContextTranslateCTM(pContext, -10.0, -HUD.Offscreen.g)
-                    
-                    // draw real content
-                    needleShadowAcquireWithColor(pContext)
-                    
-                    needleDraw(pContext, width, height, angle)
-                    
-                    glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
-                    
-                    let pData  = CGBitmapContextGetData(pContext)
-                    
-                    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
-                        0,
-                        GL_RGBA,
-                        width,
-                        height,
-                        0,
-                        GL_RGBA.ui,
-                        GL_UNSIGNED_BYTE.ui,
-                        pData)
                     
                 }
-                
             }
         }
         glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
@@ -661,40 +668,49 @@ extension HUD.Meter.Image {
         legend: String)
     {
         self.init()
-        mnWidth  = width
-        mnHeight = height
-        mnMax    = max
-        mnLimit  = GLdouble(mnMax)
-        m_Legend = legend
-        
-        mnValue  = 0.0
-        mnSmooth = 0.0
-        
-        mpLegend = nil
-        
-        m_Texture[HUD.Meter.Background] = 0
-        m_Texture[HUD.Meter.Needle]     = 0
-        m_Texture[HUD.Meter.Legend]     = 0
-        
-        let fWidth  = CGFloat(mnWidth)
-        let fHeight = CGFloat(mnHeight)
-        
-        let fx = -0.5 * fWidth
-        let fy = -0.5 * fHeight
-        
-        m_Bounds[0] = CGRectMake(fx, fy, fWidth, fHeight)
-        
-        m_Bounds[1] = CGRectMake(-0.5 * HUD.LegendWidth.g,
-            -220.0,
-            HUD.LegendWidth.g,
-            HUD.LegendHeight.g)
-        
-        m_Bounds[2] = CGRectMake(-0.5 * HUD.ValueWidth.g,
-            -110.0,
-            HUD.ValueWidth.g,
-            HUD.ValueHeight.g)
-        
-        mpQuad = GLU.Quad(usage: GL_DYNAMIC_DRAW.ui)
+        do {
+            mnWidth  = width
+            mnHeight = height
+            mnMax    = max
+            mnLimit  = GLdouble(mnMax)
+            m_Legend = legend
+            
+            mnValue  = 0.0
+            mnSmooth = 0.0
+            
+            let fWidth  = CGFloat(mnWidth)
+            let fHeight = CGFloat(mnHeight)
+            
+            let fx = -0.5 * fWidth
+            let fy = -0.5 * fHeight
+            
+            m_Bounds[0] = CGRectMake(fx, fy, fWidth, fHeight)
+            
+            m_Bounds[1] = CGRectMake(-0.5 * HUD.LegendWidth.g,
+                -220.0,
+                HUD.LegendWidth.g,
+                HUD.LegendHeight.g);
+            
+            m_Bounds[2] = CGRectMake(-0.5 * HUD.ValueWidth.g,
+                -110.0,
+                HUD.ValueWidth.g,
+                HUD.ValueHeight.g);
+            
+            mpQuad = GLU.Quad(usage: GL_DYNAMIC_DRAW.ui)
+            
+            m_Texture[HUD.Meter.Background] = HUD.backgroundCreateTexture(mnWidth, mnHeight, mnMax)
+            m_Texture[HUD.Meter.Needle]     = HUD.needleCreateTexture(mnWidth, mnHeight)
+            
+            mpLegend = GLU.Text(m_Legend,
+                36.0,
+                false,
+                GLsizei(HUD.LegendWidth),
+                GLsizei(HUD.LegendHeight))
+            
+            m_Texture[HUD.Meter.Legend] = mpLegend!.texture
+//        } catch let ba {
+//            NSLog(">> ERROR: Failed an OpenGL text label for meter's legend: \"\(ba)\"")
+        }
     }
     
     private func destruct() {
@@ -712,8 +728,13 @@ extension HUD.Meter.Image {
         
     }
     
-    public func setTarget(target: GLdouble) {
-        mnValue = target
+    public var target: GLdouble {
+        get {
+            return mnValue
+        }
+        set {
+            mnValue = newValue
+        }
     }
     
     public func reset() {
@@ -734,93 +755,177 @@ extension HUD.Meter.Image {
         }
     }
     
-    private func render() {
-        if m_Texture[HUD.Meter.Background] == 0 {
-            m_Texture[HUD.Meter.Background] = HUD.backgroundCreateTexture(mnWidth, mnHeight, mnMax)
-        }
-        
-        if m_Texture[HUD.Meter.Needle] == 0 {
-            m_Texture[HUD.Meter.Needle] = HUD.needleCreateTexture(mnWidth, mnHeight)
-        }
-        
-        if mpLegend == nil {
-            mpLegend = GLU.Text(text: m_Legend,
-                fontSize: 36.0,
-                isItalic: false,
-                width: GLsizei(HUD.LegendWidth),
-                height: GLsizei(HUD.LegendHeight))
-            
-            m_Texture[HUD.Meter.Legend] = mpLegend!.texture
-        }
-        
-        glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
-        glMatrixMode(GL_TEXTURE.ui)
-        
-        glPushMatrix()
-        glLoadIdentity()
-        glScalef(mnWidth.f, mnHeight.f, 1.0)
-        
-        mpQuad!.setIsInverted(false)
-        mpQuad!.setBounds(m_Bounds[0])
-        
-        if !mpQuad!.isFinalized {
-            mpQuad!.finalize()
-        } else {
-            mpQuad!.update()
-        }
-        
-        glMatrixMode(GL_MODELVIEW.ui)
-        
-        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[HUD.Meter.Background])
-        mpQuad!.draw()
-        
-        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[HUD.Meter.Needle])
-        
-        glPushMatrix()
-        let angle = GLM.k180DivPi.f * HUD.angleForValue(mnSmooth, mnMax).f
-        
-        glRotatef(angle, 0.0, 0.0, 1.0)
-        
-        mpQuad!.draw()
-        glPopMatrix()
-        
-        glMatrixMode(GL_TEXTURE.ui)
-        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, 0)
-        glPopMatrix()
-        
-        glMatrixMode(GL_MODELVIEW.ui)
-        glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
-        
-        glEnable(GL_TEXTURE_2D.ui)
-        glBindTexture(GL_TEXTURE_2D.ui, m_Texture[HUD.Meter.Legend])
-        mpQuad!.setIsInverted(true)
-        mpQuad!.setBounds(m_Bounds[1])
-        
-        mpQuad!.update()
-        mpQuad!.draw()
-        glBindTexture(GL_TEXTURE_2D.ui, 0)
-        
-        let nValue = GLuint(lrint(mnSmooth))
-        let nTex   = HUD.emplaceTextureWithLabel(nValue, &m_Hash)
-        
-        if nTex != 0 {
-            glBindTexture(GL_TEXTURE_2D.ui, nTex)
-            mpQuad!.setIsInverted(true)
-            mpQuad!.setBounds(m_Bounds[2])
-            
-            mpQuad!.update()
-            mpQuad!.draw()
-            glBindTexture(GL_TEXTURE_2D.ui, 0)
-        }
-        glDisable(GL_TEXTURE_2D.ui)
-    }
+//    private func render() {
+//        if m_Texture[HUD.Meter.Background] == 0 {
+//            m_Texture[HUD.Meter.Background] = HUD.backgroundCreateTexture(mnWidth, mnHeight, mnMax)
+//        }
+//        
+//        if m_Texture[HUD.Meter.Needle] == 0 {
+//            m_Texture[HUD.Meter.Needle] = HUD.needleCreateTexture(mnWidth, mnHeight)
+//        }
+//        
+//        if mpLegend == nil {
+//            mpLegend = GLU.Text(text: m_Legend,
+//                fontSize: 36.0,
+//                isItalic: false,
+//                width: GLsizei(HUD.LegendWidth),
+//                height: GLsizei(HUD.LegendHeight))
+//            
+//            m_Texture[HUD.Meter.Legend] = mpLegend!.texture
+//        }
+//        
+//        glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
+//        glMatrixMode(GL_TEXTURE.ui)
+//        
+//        glPushMatrix()
+//        glLoadIdentity()
+//        glScalef(mnWidth.f, mnHeight.f, 1.0)
+//        
+//        mpQuad!.setIsInverted(false)
+//        mpQuad!.setBounds(m_Bounds[0])
+//        
+//        if !mpQuad!.isFinalized {
+//            mpQuad!.finalize()
+//        } else {
+//            mpQuad!.update()
+//        }
+//        
+//        glMatrixMode(GL_MODELVIEW.ui)
+//        
+//        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[HUD.Meter.Background])
+//        mpQuad!.draw()
+//        
+//        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[HUD.Meter.Needle])
+//        
+//        glPushMatrix()
+//        let angle = GLM.k180DivPi.f * HUD.angleForValue(mnSmooth, mnMax).f
+//        
+//        glRotatef(angle, 0.0, 0.0, 1.0)
+//        
+//        mpQuad!.draw()
+//        glPopMatrix()
+//        
+//        glMatrixMode(GL_TEXTURE.ui)
+//        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, 0)
+//        glPopMatrix()
+//        
+//        glMatrixMode(GL_MODELVIEW.ui)
+//        glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
+//        
+//        glEnable(GL_TEXTURE_2D.ui)
+//        glBindTexture(GL_TEXTURE_2D.ui, m_Texture[HUD.Meter.Legend])
+//        mpQuad!.setIsInverted(true)
+//        mpQuad!.setBounds(m_Bounds[1])
+//        
+//        mpQuad!.update()
+//        mpQuad!.draw()
+//        glBindTexture(GL_TEXTURE_2D.ui, 0)
+//        
+//        let nValue = GLuint(lrint(mnSmooth))
+//        let nTex   = HUD.emplaceTextureWithLabel(nValue, &m_Hash)
+//        
+//        if nTex != 0 {
+//            glBindTexture(GL_TEXTURE_2D.ui, nTex)
+//            mpQuad!.setIsInverted(true)
+//            mpQuad!.setBounds(m_Bounds[2])
+//            
+//            mpQuad!.update()
+//            mpQuad!.draw()
+//            glBindTexture(GL_TEXTURE_2D.ui, 0)
+//        }
+//        glDisable(GL_TEXTURE_2D.ui)
+//    }
     
-    public func draw(x: GLfloat, y: GLfloat) {
-        glPushMatrix()
-        glTranslatef(x, y, 0.0)
-        glColor3f(1.0, 1.0, 1.0)
-        
-        render()
-        glPopMatrix()
+    public func draw(x: GLfloat, _ y: GLfloat) {
+        glBlendFunc(GL_ONE.ui, GL_ONE_MINUS_SRC_ALPHA.ui)
+        glEnable(GL_BLEND.ui)
+        do {
+            let mv1 = GLM.modelview(true)
+            
+            let translate = GLM.translate(x, y, 0.0)
+            
+            GLM.load(true, mv1 * translate);
+            
+            glColor3f(1.0, 1.0, 1.0)
+                
+            glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
+            do {
+                glMatrixMode(GL_TEXTURE.ui)
+                
+                let tm = GLM.texture(true);
+                
+                GLM.load(true, GLM.scale(mnWidth.f, mnHeight.f, 1.0))
+                
+                mpQuad!.setIsInverted(false)
+                mpQuad!.setBounds(m_Bounds[0])
+                
+                if !mpQuad!.isFinalized {
+                    mpQuad!.finalize()
+                } else {
+                    mpQuad!.update()
+                }
+                
+                glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[HUD.Meter.Background])
+                do {
+                    mpQuad!.draw()
+                    
+                    glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[HUD.Meter.Needle])
+                    
+                    glMatrixMode(GL_MODELVIEW.ui)
+                    
+                    let mv2 = GLM.modelview(false);
+                    
+                    let angle = GLM.k180DivPi.f * HUD.angleForValue(mnSmooth, mnMax).f
+                    
+                    let rotate = GLM.rotate(angle, 0.0, 0.0, 1.0)
+                    
+                    GLM.load(false, rotate * mv2)
+                    
+                    mpQuad!.draw()
+                    
+                    GLM.load(false, mv2)
+                }
+                glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, 0)
+                
+                glMatrixMode(GL_TEXTURE.ui)
+                
+                GLM.load(true, tm)
+            }
+            glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
+            
+            glEnable(GL_TEXTURE_2D.ui)
+            do {
+                glBindTexture(GL_TEXTURE_2D.ui, m_Texture[HUD.Meter.Legend])
+                do {
+                    mpQuad!.setIsInverted(true)
+                    mpQuad!.setBounds(m_Bounds[1])
+                    
+                    mpQuad!.update()
+                    mpQuad!.draw()
+                }
+                glBindTexture(GL_TEXTURE_2D.ui, 0)
+                
+                let nValue = GLuint(lrint(mnSmooth));
+                let nTex: GLuint   = HUD.emplaceTextureWithLabel(nValue, &m_Hash);
+                
+                if nTex != 0 {
+                    glBindTexture(GL_TEXTURE_2D.ui, nTex)
+                    do {
+                        mpQuad!.setIsInverted(true)
+                        mpQuad!.setBounds(m_Bounds[2])
+                        
+                        mpQuad!.update();
+                        mpQuad!.draw()
+                    }
+                    glBindTexture(GL_TEXTURE_2D.ui, 0)
+                }
+            }
+            glDisable(GL_TEXTURE_2D.ui)
+            
+            glMatrixMode(GL_MODELVIEW.ui)
+            
+            GLM.load(true, mv1)
+        }
+        glDisable(GL_BLEND.ui)
     }
 }

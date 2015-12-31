@@ -6,57 +6,16 @@
 //
 //
 /*
-     File: NBodySimulationVisualizer.h
-     File: NBodySimulationVisualizer.mm
- Abstract:
-A Visualizer mediator object for managing of rendering n-bodies to an OpenGL view.
-
-  Version: 3.3
-
- Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
- Inc. ("Apple") in consideration of your agreement to the following
- terms, and your use, installation, modification or redistribution of
- this Apple software constitutes acceptance of these terms.  If you do
- not agree with these terms, please do not use, install, modify or
- redistribute this Apple software.
-
- In consideration of your agreement to abide by the following terms, and
- subject to these terms, Apple grants you a personal, non-exclusive
- license, under Apple's copyrights in this original Apple software (the
- "Apple Software"), to use, reproduce, modify and redistribute the Apple
- Software, with or without modifications, in source and/or binary forms;
- provided that if you redistribute the Apple Software in its entirety and
- without modifications, you must retain this notice and the following
- text and disclaimers in all such redistributions of the Apple Software.
- Neither the name, trademarks, service marks or logos of Apple Inc. may
- be used to endorse or promote products derived from the Apple Software
- without specific prior written permission from Apple.  Except as
- expressly stated in this notice, no other rights or licenses, express or
- implied, are granted by Apple herein, including but not limited to any
- patent rights that may be infringed by your derivative works or by other
- works in which the Apple Software may be incorporated.
-
- The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
- MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
- OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-
- IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
- MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
- AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
- STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
-
- Copyright (C) 2014 Apple Inc. All Rights Reserved.
-
+<codex>
+<abstract>
+A Visualizer mediator object for managing of rendering n-particles to an OpenGL view.
+</abstract>
+</codex>
  */
 
 import Cocoa
 import OpenGL
+import simd
 
 extension NBody.Simulation {
     public class Visualizer {
@@ -88,21 +47,33 @@ extension NBody.Simulation {
             LocSampler2D: GLint,
             LocPointSize: GLint
         )
-        typealias Params = NBody.Simulation.Params
         
         deinit {
             destruct()
         }
         
+        public var m_Center: Float3 = Float3()
+        public var m_Up: Float3 = Float3()
+        
         private var m_Flag: Flags = (false, false, false, false)
+        
+        private var m_Eye: Float3 = Float3()
+        
+        private var m_ModelView: Float4x4 = Float4x4()
+        private var m_Projection: Float4x4 = Float4x4()
+        
         private var m_ViewRotation: CGPoint = CGPoint()
         private var m_Rotation: CGPoint = CGPoint()
         private var m_Frame: CGSize = CGSize()
+        
         private var m_Bounds: [GLsizei] = [0, 0]
         private var m_Property: Properties = (0, 0, 0, 0, 0, 0, 0, 0, 0)
         private var m_Graphic: Graphics = (0, 0, 0, 0, 0)
         private var mnActiveDemo: Int = 0
-        private var mpParams: [Params] = []
+        private var mnCount: Int = 0
+        
+        private var mpProperties: [NBody.Simulation.Properties] = []
+        
         private var mpProgram: GLU.Program!
         private var mpGausssian: GLU.Gaussian!
         private var mpTexture: GLU.Texture!
@@ -114,14 +85,14 @@ extension NBody.Simulation {
 
 extension NBody.Simulation.Visualizer {
     private func advance(nDemo: Int) {
-        if nDemo < mpParams.count {
+        if nDemo < mnCount {
             let t = sinf(m_Property.ViewTime)
             let T = 1.0 - t
             
-            m_Property.ViewDistance = t * mpParams[nDemo].mnViewDistance + T * m_Property.ViewZoom
+            m_Property.ViewDistance = t * mpProperties[nDemo].mnViewDistance + T * m_Property.ViewZoom
             
-            m_Rotation.x = (t * mpParams[nDemo].mnRotateX).g + T.g * m_ViewRotation.x
-            m_Rotation.y = (t * mpParams[nDemo].mnRotateY).g + T.g * m_ViewRotation.y
+            m_Rotation.x = (t.g * mpProperties[nDemo].mnRotateX) + T.g * m_ViewRotation.x
+            m_Rotation.y = (t.g * mpProperties[nDemo].mnRotateY) + T.g * m_ViewRotation.y
         }
     }
     
@@ -129,21 +100,19 @@ extension NBody.Simulation.Visualizer {
     //MARK: Private - Utilities - Transformations
     
     public func projection() {
-        glMatrixMode(GL_PROJECTION.ui)
-        
         // DEPRECATED gluPerspective():
         //
         //    glLoadIdentity();
         //    gluPerspective(60, (GLfloat)mnWidth / (GLfloat)mnHeight, 0.1, 10000);
         
-        let proj = GLM.projection(60, GLfloat(m_Frame.width), GLfloat(m_Frame.height), 1.0, 10000)
+        m_Projection = GLM.projection(60, GLfloat(m_Frame.width), GLfloat(m_Frame.height), 1.0, 10000)
         
-        GLM.load(true, proj)
+        glMatrixMode(GL_PROJECTION.ui)
+        
+        GLM.load(true, m_Projection)
     }
     
     private func lookAt(pPosition: UnsafePointer<GLfloat>) {
-        glMatrixMode(GL_MODELVIEW.ui)
-        
         // DEPRECATED gluLookAt():
         //
         //    glLoadIdentity();
@@ -158,20 +127,19 @@ extension NBody.Simulation.Visualizer {
         //        gluLookAt(-m_Property[eNBodyViewDistance], 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
         //    }
         
-        var eye: Float3 = (0.0, 0.0, 0.0)
-        let center: Float3 = (0.0, 0.0, 0.0)
-        let up: Float3 = (0.0, 1.0, 0.0)
-        
         if mnActiveDemo == 0 && m_Flag.IsEarthView {
+            let pEye = pPosition + 3472;
             
-            eye = (pPosition[3472], pPosition[3473], pPosition[3474])
+            m_Eye = Float3(pEye[0], pEye[1], pEye[2])
         } else {
-            eye = (-m_Property.ViewDistance, 0.0, 0.0)
+            m_Eye = Float3(-m_Property.ViewDistance, 0.0, 0.0)
         }
         
-        let mv = GLM.lookAt(eye, center, up)
+        m_ModelView = GLM.lookAt(m_Eye, m_Center, m_Up)
         
-        GLM.load(false, mv)
+        glMatrixMode(GL_MODELVIEW.ui)
+        
+        GLM.load(false, m_ModelView)
     }
     
     //MARK: -
@@ -236,83 +204,92 @@ extension NBody.Simulation.Visualizer {
         
         glBlendFunc(GL_ONE.ui, GL_ONE.ui)
         glEnable(GL_BLEND.ui)
-        
-        mpProgram.enable()
-        glActiveTexture(GL_TEXTURE0.ui)
-        
-        glEnableClientState(GL_VERTEX_ARRAY.ui)
-        glBindBuffer(GL_ARRAY_BUFFER.ui, m_Graphic.BufferID)
-        glBufferSubData(GL_ARRAY_BUFFER.ui, 0, m_Graphic.BufferSize, pPosition)
-        glVertexPointer(4, GL_FLOAT.ui, 0, nil)
-        glBindBuffer(GL_ARRAY_BUFFER.ui, 0)
-        
-        glPushMatrix()
-        if !m_Flag.IsResetting {
-            let rotFactor = 1.0 - 0.5 * (1.0 + cosf(m_Property.RotationSpeed))
-            
-            m_Rotation.x += 1.6 * m_Property.TimeScale.g * rotFactor.g
-            m_Rotation.y += 0.8 * m_Property.TimeScale.g * rotFactor.g
-        }
-        
-        if mnActiveDemo != 0 || !m_Flag.IsEarthView {
-            glRotatef(m_Rotation.y.f, 1, 0, 0)
-            glRotatef(m_Rotation.x.f, 0, 1, 0)
-        }
-        
-        glUniform1f(m_Graphic.LocPointSize,
-            m_Property.StarSize * mpParams[mnActiveDemo].mnPointSize)
-        
-        mpTexture.enable()
-        
-        // white stars
-        glColor3f(0.8, 0.8, 0.8)
-        glDrawArrays(GL_POINTS.ui, 0, m_Graphic.BufferCount / 8)
-        
-        // blue stars
-        glColor3f(0.4, 0.6, 1.0)
-        glDrawArrays(GL_POINTS.ui, m_Graphic.BufferCount / 8, m_Graphic.BufferCount / 4)
-        
-        // red stars
-        glColor3f(1.0, 0.6, 0.6)
-        glDrawArrays(GL_POINTS.ui, m_Graphic.BufferCount / 12, m_Graphic.BufferCount / 4)
-        mpGausssian.enable()
-        if mnActiveDemo != 0 {
-            glUniform1f(m_Graphic.LocPointSize,
-                300 * mpParams[mnActiveDemo].mnPointSize)
-            
-            // purple clouds
-            glColor3f(0.032, 0.01, 0.026)
-            glDrawArrays(GL_POINTS.ui, 0, 64)
-            
-            // blue clouds
-            glColor3f(0.018, 0.01, 0.032)
-            glDrawArrays(GL_POINTS.ui, 64, 64)
-        } else {
-            glUniform1f(m_Graphic.LocPointSize, 300)
-            
-            let step = m_Graphic.BufferCount / 24
-            
-            // pink
-            glColor3f(0.04, 0.015, 0.025)
-            
-            for var i: GLsizei = 0; i < m_Graphic.BufferCount / 84; i += step {
-                glDrawArrays(GL_POINTS.ui, i, 1)
+        do {
+            mpProgram.enable()
+            do {
+                glActiveTexture(GL_TEXTURE0.ui)
+                
+                glEnableClientState(GL_VERTEX_ARRAY.ui)
+                do {
+                    glBindBuffer(GL_ARRAY_BUFFER.ui, m_Graphic.BufferID)
+                    do {
+                        glBufferSubData(GL_ARRAY_BUFFER.ui, 0, m_Graphic.BufferSize, pPosition)
+                        glVertexPointer(4, GL_FLOAT.ui, 0, nil)
+                    }
+                    glBindBuffer(GL_ARRAY_BUFFER.ui, 0)
+                    
+                    if !m_Flag.IsResetting {
+                        let rotFactor = 1.0 - 0.5 * (1.0 + cosf(m_Property.RotationSpeed))
+                        
+                        m_Rotation.x += 1.6 * m_Property.TimeScale.g * rotFactor.g
+                        m_Rotation.y += 0.8 * m_Property.TimeScale.g * rotFactor.g
+                    }
+                    
+                    if mnActiveDemo != 0 || !m_Flag.IsEarthView {
+                        let r1 = GLM.rotate(m_Rotation.y.f, 1.0, 0.0, 0.0)
+                        let r2 = GLM.rotate(m_Rotation.x.f, 0.0, 1.0, 0.0)
+                        
+                        GLM.load(false, r2 * r1 * m_ModelView)
+                    }
+                    
+                    glUniform1f(m_Graphic.LocPointSize,
+                        m_Property.StarSize * mpProperties[mnActiveDemo].mnPointSize)
+                    
+                    mpTexture.enable()
+                    
+                    // white stars
+                    glColor3f(0.8, 0.8, 0.8)
+                    glDrawArrays(GL_POINTS.ui, 0, m_Graphic.BufferCount / 8)
+                    
+                    // blue stars
+                    glColor3f(0.4, 0.6, 1.0)
+                    glDrawArrays(GL_POINTS.ui, m_Graphic.BufferCount / 8, m_Graphic.BufferCount / 4)
+                    
+                    // red stars
+                    glColor3f(1.0, 0.6, 0.6)
+                    glDrawArrays(GL_POINTS.ui, m_Graphic.BufferCount / 12, m_Graphic.BufferCount / 4)
+                    
+                    mpGausssian.enable()
+                    
+                    if mnActiveDemo != 0 {
+                        glUniform1f(m_Graphic.LocPointSize,
+                            300 * mpProperties[mnActiveDemo].mnPointSize)
+                        
+                        // purple clouds
+                        glColor3f(0.032, 0.01, 0.026)
+                        glDrawArrays(GL_POINTS.ui, 0, 64)
+                        
+                        // blue clouds
+                        glColor3f(0.018, 0.01, 0.032)
+                        glDrawArrays(GL_POINTS.ui, 64, 64)
+                    } else {
+                        glUniform1f(m_Graphic.LocPointSize, 300)
+                        
+                        let step = m_Graphic.BufferCount / 24
+                        
+                        // pink
+                        glColor3f(0.04, 0.015, 0.025)
+                        
+                        for var i: GLsizei = 0; i < m_Graphic.BufferCount / 84; i += step {
+                            glDrawArrays(GL_POINTS.ui, i, 1)
+                        }
+                        
+                        // blue
+                        glColor3f(0.04, 0.001, 0.08)
+                        
+                        for var i: GLsizei = 64; i < m_Graphic.BufferCount / 84; i += step {
+                            glDrawArrays(GL_POINTS.ui, i, 1)
+                        }
+                    }
+                    
+                    glBindTexture(GL_TEXTURE_2D.ui, 0)
+                    
+                    glColor3f(1.0, 1.0, 1.0)
+                }
+                glDisableClientState(GL_VERTEX_ARRAY.ui)
             }
-            
-            // blue
-            glColor3f(0.04, 0.001, 0.08)
-            
-            for var i: GLsizei = 64; i < m_Graphic.BufferCount / 84; i += step {
-                glDrawArrays(GL_POINTS.ui, i, 1)
-            }
+            mpProgram.disable()
         }
-        
-        glBindTexture(GL_TEXTURE_2D.ui, 0)
-        
-        glColor3f(1.0, 1.0, 1.0)
-        glPopMatrix()
-        glDisableClientState(GL_VERTEX_ARRAY.ui)
-        mpProgram.disable()
         glDisable(GL_BLEND.ui)
     }
     
@@ -327,22 +304,24 @@ extension NBody.Simulation.Visualizer {
         glEnableClientState(GL_VERTEX_ARRAY.ui)
         
         glGenBuffers(1, &m_Graphic.BufferID)
-        
-        if m_Graphic.BufferID != 0 {
-            glBindBuffer(GL_ARRAY_BUFFER.ui, m_Graphic.BufferID)
-            glBufferData(GL_ARRAY_BUFFER.ui, m_Graphic.BufferSize, nil, GL_DYNAMIC_DRAW_ARB.ui)
-            glVertexPointer(4, GL_FLOAT.ui, 0, nil)
-            glBindBuffer(GL_ARRAY_BUFFER.ui, 0)
+        do {
+            if m_Graphic.BufferID != 0 {
+                glBindBuffer(GL_ARRAY_BUFFER.ui, m_Graphic.BufferID)
+                do {
+                    glBufferData(GL_ARRAY_BUFFER.ui, m_Graphic.BufferSize, nil, GL_DYNAMIC_DRAW.ui)
+                    glVertexPointer(4, GL_FLOAT.ui, 0, nil)
+                }
+                glBindBuffer(GL_ARRAY_BUFFER.ui, 0)
+            }
+            glDisableClientState(GL_VERTEX_ARRAY.ui)
         }
-        glDisableClientState(GL_VERTEX_ARRAY.ui)
-        
         return m_Graphic.BufferID != 0
     }
     
-    private func textures(pName: String, _ pExt: String, _ texRes: GLint = 32) -> Bool {
-        mpTexture = GLU.Texture(name: pName, ext: pExt)
+    private func textures(pName: String, _ pExt: String, _ texRes: GLuint = 32) -> Bool {
+        mpTexture = GLU.Texture(pName, pExt)
         
-        mpGausssian = GLU.Gaussian(texRes: GLuint(texRes))
+        mpGausssian = GLU.Gaussian(texRes)
         
         return mpTexture.texture != 0 && mpGausssian.texture != 0
     }
@@ -354,21 +333,23 @@ extension NBody.Simulation.Visualizer {
         
         if nPID != 0 {
             mpProgram.enable()
-            m_Graphic.LocSampler2D = glGetUniformLocation(nPID, "splatTexture")
-            m_Graphic.LocPointSize = glGetUniformLocation(nPID, "pointSize")
-            
-            glUniform1i(m_Graphic.LocSampler2D, 0)
+            do {
+                m_Graphic.LocSampler2D = glGetUniformLocation(nPID, "splatTexture")
+                m_Graphic.LocPointSize = glGetUniformLocation(nPID, "pointSize")
+                
+                glUniform1i(m_Graphic.LocSampler2D, 0)
+            }
             mpProgram.disable()
         }
         
         return nPID != 0
     }
     
-    private func acquire(nCount: Int) -> Bool {
-        var bSuccess = nCount > 0
+    private func acquire(rProperties: NBody.Simulation.Properties) -> Bool {
+        var bSuccess = rProperties.mnParticles > 0
         
         if bSuccess {
-            bSuccess = buffer(nCount)
+            bSuccess = buffer(rProperties.mnParticles)
                 && textures("star", "png")
                 && program("nbody")
         }
@@ -379,17 +360,17 @@ extension NBody.Simulation.Visualizer {
     //MARK: -
     //MARK: Public - Constructor
     
-    public convenience init(bodies nBodies: Int) {
+    public convenience init(_ rProperties: NBody.Simulation.Properties) {
         self.init()
-        m_Flag.IsAcquired = acquire(nBodies)
+        m_Flag.IsAcquired = acquire(rProperties)
         
         if m_Flag.IsAcquired {
-            m_Property.RotationDelta = NBody.Defaults.kRotationDelta
-            m_Property.ViewDistance = NBody.Defaults.kViewDistance
-            m_Property.ViewZoomSpeed = NBody.Defaults.kScrollZoomSpeed
-            m_Property.TimeScale = NBody.Scale.kTime
-            m_Property.StarScale = NBody.Star.kScale
-            m_Property.StarSize = NBody.Star.kSize * m_Property.StarScale
+            m_Property.RotationDelta = NBody.Defaults.kRotationDelta.f
+            m_Property.ViewDistance = NBody.Defaults.kViewDistance.f
+            m_Property.ViewZoomSpeed = NBody.Defaults.kScrollZoomSpeed.f
+            m_Property.TimeScale = NBody.Scale.kTime.f
+            m_Property.StarScale = NBody.Star.kScale.f
+            m_Property.StarSize = NBody.Star.kSize.f * m_Property.StarScale
             m_Property.RotationSpeed = 0.0
             m_Property.ViewTime = 0.0
             m_Property.ViewZoom = 0.0
@@ -402,12 +383,20 @@ extension NBody.Simulation.Visualizer {
             m_Frame.height   = NBody.Window.kHeight.g
             m_Bounds[0]      = GLsizei(m_Frame.width + 0.5)
             m_Bounds[1]      = GLsizei(m_Frame.height + 0.5)
-            mpParams         = NBody.Simulation.Demo.kParams
+            mnCount          = rProperties.mnDemos;
+            mpProperties     = NBody.Simulation.Properties.create()
             mnActiveDemo     = 0
             m_Rotation.x     = 0.0
             m_Rotation.y     = 0.0
             m_ViewRotation.x = 0.0
             m_ViewRotation.y = 0.0
+            
+            m_ModelView  = Float4x4(0.0);
+            m_Projection = Float4x4(0.0);
+            
+            m_Eye    = Float3(0.0);
+            m_Center = Float3(0.0);
+            m_Up     = Float3(0.0, 1.0, 0.0)
         }
     }
     
@@ -427,23 +416,25 @@ extension NBody.Simulation.Visualizer {
     //MARK: Public - Utilities
     
     public func reset(nDemo: Int) {
-        if nDemo < mpParams.count {
+        if nDemo < mnCount && !mpProperties.isEmpty {
             mnActiveDemo = nDemo
             
-            m_Property.ViewDistance = mpParams[nDemo].mnViewDistance
+            m_Property.ViewDistance = mpProperties[nDemo].mnViewDistance
             
-            m_Rotation.x = mpParams[nDemo].mnRotateX.g
-            m_Rotation.y = mpParams[nDemo].mnRotateY.g
+            m_Rotation.x = mpProperties[nDemo].mnRotateX
+            m_Rotation.y = mpProperties[nDemo].mnRotateY
         }
     }
     
     public func draw(pPosition: UnsafePointer<GLfloat>) {
-        update()
-        
-        projection()
-        lookAt(pPosition)
-        
-        render(pPosition)
+        if pPosition != nil {
+            update()
+            
+            projection()
+            lookAt(pPosition)
+            
+            render(pPosition)
+        }
     }
     
     public func stopRotation() {
@@ -461,12 +452,16 @@ extension NBody.Simulation.Visualizer {
     //MARK: -
     //MARK: Public - Query
     
-    public var isValid: Bool {
+    public var valid: Bool {
         return m_Flag.IsAcquired
     }
     
     //MARK: -
     //MARK: Public - Accessors
+    
+    public var eye: Float3 {
+        return m_Eye
+    }
     
     public func setIsResetting(bReset: Bool) {
         m_Flag.IsResetting = bReset
@@ -484,12 +479,19 @@ extension NBody.Simulation.Visualizer {
         }
     }
     
-    public func setParams(params: [NBody.Simulation.Params]) -> Bool {
+    public func setProperties(nPropertiesCount: Int,
+        _ Properties: [NBody.Simulation.Properties]) -> Bool {
         var bSuccess = m_Flag.IsAcquired
         
         if bSuccess {
+            let pDecriptorDst = NBody.Simulation.Properties.create(nPropertiesCount)
             
-            mpParams = params
+            bSuccess = !pDecriptorDst.isEmpty
+            
+            if bSuccess {
+                mpProperties = pDecriptorDst
+                mnCount = nPropertiesCount
+            }
         }
         
         return bSuccess

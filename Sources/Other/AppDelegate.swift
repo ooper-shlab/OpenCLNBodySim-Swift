@@ -1,9 +1,9 @@
 //
 //  AppDelegate.swift
-//  MyDocumentApp
+//  OpenCL_NBody_Simulation
 //
-//  Translated by OOPer in cooperation with shlab.jp, on 2015/1/1.
-//  Copyright (c) 2015 nagata_kobo. All rights reserved.
+//  Created by OOPer in cooperation with shlab.jp, on 2015/1/1.
+//
 //
 
 import Cocoa

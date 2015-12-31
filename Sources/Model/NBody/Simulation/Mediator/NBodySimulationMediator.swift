@@ -6,53 +6,11 @@
 //
 //
 /*
-     File: NBodySimulationMediator.h
-     File: NBodySimulationMediator.mm
- Abstract:
- A mediator object for managing cpu and gpu bound simulators, along with their labeled-buttons.
-
-  Version: 3.3
-
- Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
- Inc. ("Apple") in consideration of your agreement to the following
- terms, and your use, installation, modification or redistribution of
- this Apple software constitutes acceptance of these terms.  If you do
- not agree with these terms, please do not use, install, modify or
- redistribute this Apple software.
-
- In consideration of your agreement to abide by the following terms, and
- subject to these terms, Apple grants you a personal, non-exclusive
- license, under Apple's copyrights in this original Apple software (the
- "Apple Software"), to use, reproduce, modify and redistribute the Apple
- Software, with or without modifications, in source and/or binary forms;
- provided that if you redistribute the Apple Software in its entirety and
- without modifications, you must retain this notice and the following
- text and disclaimers in all such redistributions of the Apple Software.
- Neither the name, trademarks, service marks or logos of Apple Inc. may
- be used to endorse or promote products derived from the Apple Software
- without specific prior written permission from Apple.  Except as
- expressly stated in this notice, no other rights or licenses, express or
- implied, are granted by Apple herein, including but not limited to any
- patent rights that may be infringed by your derivative works or by other
- works in which the Apple Software may be incorporated.
-
- The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
- MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
- OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-
- IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
- MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
- AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
- STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
-
- Copyright (C) 2014 Apple Inc. All Rights Reserved.
-
+<codex>
+<abstract>
+A mediator object for managing cpu and gpu bound simulators, along with their labeled-buttons.
+</abstract>
+</codex>
  */
 
 import Cocoa
@@ -63,13 +21,13 @@ extension NBody.Simulation {
     public class Mediator {
         
         private var mbCPUs: Bool = false
-        private var mnBodies: Int = 0
+        private var mnParticles: Int = 0
         private var mnSize: Int = 0
         private var mnCount: Int = 0
         private var mnGPUs: Int = 0
         private var mpPosition: UnsafeMutablePointer<GLfloat> = nil
         private var mnActive: Types = Types.CPUMulti
-        private var m_Params: Params = Params()
+        private var m_Properties: Properties = Properties()
         private var mpSimulators: [NBody.Simulation.Types: Facade] = [:]
         private var mpActive: Facade!
     }
@@ -87,7 +45,7 @@ extension NBody {
         let err = clGetDeviceIDs(nil, type, cl_uint(kNBodyMaxDeviceCount), &ids, &count)
         
         if err != CL_SUCCESS {
-            println(">> ERROR: NBody Simulation Mediator - Failed acquiring maximum device count!")
+            print(">> ERROR: NBody Simulation Mediator - Failed acquiring maximum device count!")
         }
         
         return count.l
@@ -95,17 +53,11 @@ extension NBody {
 }
 
 extension NBody.Simulation.Mediator {
-    // Set the current active n-body parameters
-    public func setParams(rParams: NBody.Simulation.Params) {
-        
-        m_Params = rParams
-    }
-    
     // Set the defaults for simulator compute
-    public func setCompute(bGPUOnly: Bool) {
+    public func setCompute(rProperties: NBody.Simulation.Properties) {
         mnGPUs = NBody.getComputeDeviceCount(CL_DEVICE_TYPE_GPU.ull)
         
-        if !bGPUOnly {
+        if !rProperties.mbIsGPUOnly {
             mbCPUs = NBody.getComputeDeviceCount(CL_DEVICE_TYPE_CPU.ull) > 0
         }
         
@@ -115,10 +67,10 @@ extension NBody.Simulation.Mediator {
     }
     
     // Initialize all instance variables to their default values
-    public func setDefaults(nBodies: Int) {
+    public func setDefaults(rProperties: NBody.Simulation.Properties) {
         
-        mnBodies = nBodies
-        mnSize   = 4 * mnBodies * GLM.Size.kFloat
+        mnParticles = rProperties.mnParticles
+        mnSize   = 4 * mnParticles * GLM.Size.kFloat
         
         mnCount    = 0
         mnGPUs     = 0
@@ -130,12 +82,12 @@ extension NBody.Simulation.Mediator {
     }
     
     // Acquire all simulators
-    public func acquire(rParams: NBody.Simulation.Params) {
-        setParams(rParams)
+    public func acquire(rProperties: NBody.Simulation.Properties) {
+        m_Properties = rProperties;
         
         if mnGPUs > 0 {
             mpSimulators[.GPUPrimary]
-                = NBody.Simulation.Facade(type: .GPUPrimary, count: mnBodies, params: m_Params)
+                = NBody.Simulation.Facade(.GPUPrimary, rProperties)
             
             if mpSimulators[.GPUPrimary] != nil {
                 mnCount++
@@ -144,7 +96,7 @@ extension NBody.Simulation.Mediator {
         
         if mnGPUs > 1 {
             mpSimulators[.GPUSecondary]
-                = NBody.Simulation.Facade(type: .GPUSecondary, count: mnBodies, params: m_Params);
+                = NBody.Simulation.Facade(.GPUSecondary, rProperties)
             
             if mpSimulators[.GPUSecondary] != nil {
                 mnCount++
@@ -153,14 +105,14 @@ extension NBody.Simulation.Mediator {
         
         if mbCPUs {
             mpSimulators[.CPUSingle]
-                = NBody.Simulation.Facade(type: .CPUSingle, count: mnBodies, params: m_Params)
+                = NBody.Simulation.Facade(.CPUSingle, rProperties)
             
             if mpSimulators[.CPUSingle] != nil {
                 mnCount++
             }
             
             mpSimulators[.CPUMulti]
-                = NBody.Simulation.Facade(type: .CPUMulti, count: mnBodies, params: m_Params)
+                = NBody.Simulation.Facade(.CPUMulti, rProperties)
             
             if mpSimulators[.CPUMulti] != nil {
                 mnCount++
@@ -172,15 +124,13 @@ extension NBody.Simulation.Mediator {
     }
     
     // Construct a mediator object for GPUs, or CPU and CPUs
-    public convenience init(params rParams: NBody.Simulation.Params,
-        GPUOnly bGPUOnly: Bool,
-        count nCount: Int)
+    public convenience init(_ rProperties: NBody.Simulation.Properties)
     {
         self.init()
-        setDefaults(nCount)
-        setCompute(bGPUOnly)
+        setDefaults(rProperties)
+        setCompute(rProperties)
         
-        acquire(rParams)
+        acquire(rProperties)
     }
     
     // Active simulator query
@@ -203,6 +153,16 @@ extension NBody.Simulation.Mediator {
     // Is secondary (or offline) gpu simulator active?
     public var isGPUSecondary: Bool {
         return mpActive.isGPUSecondary
+    }
+    
+    // Label for a type of simulator
+    public func label(nType: NBody.Simulation.Types) -> String? {
+        return mpSimulators[nType]?.label
+    }
+    
+    // Active simulator type
+    public var type: NBody.Simulation.Types {
+        return mpActive.type
     }
     
     // Check to see if position was acquired
@@ -241,22 +201,15 @@ extension NBody.Simulation.Mediator {
         }
     }
     
-    // Set the button for the current simulator object
-    public func button(selected: Bool,
-        position: CGPoint,
-        bounds: CGRect) {
-            mpActive.button(selected, position: position, bounds: bounds)
-    }
-    
     // Select the current simulator to use
     public func select(type: NBody.Simulation.Types) {
         if mpSimulators[type] != nil {
             mnActive = type
             mpActive = mpSimulators[mnActive]
             
-            println(">> N-body Simulation: Using \"\(mpActive.label)\" simulator with [\(mnBodies)] bodies.")
+            print(">> N-body Simulation: Using \"\(mpActive.label)\" simulator with [\(mnParticles)] bodies.")
         } else {
-            println(">> ERROR: N-body Simulation: Requested simulator is nil!")
+            print(">> ERROR: N-body Simulation: Requested simulator is nil!")
         }
     }
     
@@ -331,7 +284,7 @@ extension NBody.Simulation.Mediator {
                 mpActive.data().dealloc(length)
             }
             
-            mpActive.resetParams(m_Params)
+            mpActive.resetProperties(m_Properties)
             
             if    mnActive == .GPUPrimary
                 &&  mpSimulators[.GPUSecondary] != nil {

@@ -1,5 +1,14 @@
+/*
+ <codex>
+ <abstract>
+ N-Body vertex shader.
+ </abstract>
+ </codex>
+ */
+
 uniform sampler2D splatTexture;
 uniform float pointSize;
+
 void main()
 {
     gl_Position = gl_Vertex;

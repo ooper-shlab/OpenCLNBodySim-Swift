@@ -1,3 +1,11 @@
+/*
+ <codex>
+ <abstract>
+ Fragment shader for display splat texture.
+ </abstract>
+ </codex>
+ */
+
 uniform sampler2D splatTexture;
 
 void main()

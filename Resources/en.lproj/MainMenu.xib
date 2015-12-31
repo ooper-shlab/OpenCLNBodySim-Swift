@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6751" systemVersion="14D130a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6751"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication"/>
@@ -120,28 +120,32 @@
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="euQ-AM-hTc" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES" HUD="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="274" width="330" height="229"/>
+            <rect key="contentRect" x="196" y="274" width="303" height="306"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1578"/>
             <view key="contentView" id="87E-3O-mcN">
-                <rect key="frame" x="0.0" y="0.0" width="330" height="229"/>
+                <rect key="frame" x="0.0" y="-5" width="303" height="306"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="usJ-po-OAl">
-                        <rect key="frame" x="21" y="20" width="291" height="195"/>
+                        <rect key="frame" x="21" y="20" width="264" height="272"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" allowsEditingTextAttributes="YES" id="jZW-JC-lwy">
                             <font key="font" metaFont="system"/>
                             <string key="title">Keyboard	Command	
-e			Earth View
-r			Rotate
-R			Restart
-n			Next Demo
-0-9			Set Demo
-h			Hide/Show Meters
+0-6			Set Demo
+a			Show all meters
+c			Hide/Show CPU Meter
 d			Hide/Show Dock
-u			Hide/Show Update Meter
-f			Hide/Show Performance Meter
+e			Earth View
+f			Hide/Show Frames Meter
+g			Swap Visualizer
+h			Hide all Meters
+n			Next Demo
+r			Toggle Rotation
+R			Restart
 s			Swap Simulators
+u			Hide/Show Update Meter
+z			Reset the current demo
 </string>
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -149,6 +153,7 @@ s			Swap Simulators
                     </textField>
                 </subviews>
             </view>
+            <point key="canvasLocation" x="392.5" y="881"/>
         </window>
     </objects>
 </document>

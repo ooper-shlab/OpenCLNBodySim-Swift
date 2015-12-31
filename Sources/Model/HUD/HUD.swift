@@ -10,12 +10,12 @@ import Cocoa
 import OpenGL
 import OpenGL.GL
 
-public struct HUD {
+public enum HUD {
     //MARK: -
     //MARK: Private - Constants
     //see. HUDMeterImage.mm, HUDButton.mm
     
-    static let BitmapInfo: CGBitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedLast.rawValue)
+    static let BitmapInfo = CGImageAlphaInfo.PremultipliedLast.rawValue
     
     static let Ticks           = 8
     static let SubTicks        = 4

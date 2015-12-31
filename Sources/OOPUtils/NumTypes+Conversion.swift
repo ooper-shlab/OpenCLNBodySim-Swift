@@ -3,6 +3,7 @@
 //  OOPUtils
 //
 //  Created by OOPer in cooperation with shlab.jp, on 2014/12/31.
+//  Last updated on 2015/12/29.
 //
 //
 /*
@@ -60,7 +61,7 @@ extension UInt32: BooleanLiteralConvertible {
     }
 }
 
-//long
+//long, size_t
 extension Int {
     public var g: CGFloat {
         return CGFloat(self)
@@ -103,7 +104,7 @@ extension Int {
     }
 }
 
-//unsigned long, size_t
+//unsigned long
 extension UInt {
     public var g: CGFloat {
         return CGFloat(self)
@@ -304,15 +305,21 @@ extension CGFloat {
 }
 
 //Int8
-extension CChar {
-    public init(_ v: UnicodeScalar) {
-        self = CChar(v.value)
+extension CChar: UnicodeScalarLiteralConvertible {
+//    public init(_ v: UnicodeScalar) {
+//        self = CChar(v.value)
+//    }
+    public init(unicodeScalarLiteral value: UnicodeScalar) {
+        self = CChar(value.value)
     }
 }
 
 //UInt16
-extension unichar {
-    public init(_ v: UnicodeScalar) {
-        self = unichar(v.value)
+extension unichar: UnicodeScalarLiteralConvertible {
+//    public init(_ v: UnicodeScalar) {
+//        self = unichar(v.value)
+//    }
+    public init(unicodeScalarLiteral value: UnicodeScalar) {
+        self = unichar(value.value)
     }
 }

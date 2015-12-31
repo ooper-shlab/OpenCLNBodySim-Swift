@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:OpenCL_NBody_Simulation.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>

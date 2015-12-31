@@ -6,53 +6,11 @@
 //
 //
 /*
-     File: NBodySimulationGPU.h
-     File: NBodySimulationGPU.mm
- Abstract:
- Utility class for managing gpu bound computes for n-body simulation.
-
-  Version: 3.3
-
- Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
- Inc. ("Apple") in consideration of your agreement to the following
- terms, and your use, installation, modification or redistribution of
- this Apple software constitutes acceptance of these terms.  If you do
- not agree with these terms, please do not use, install, modify or
- redistribute this Apple software.
-
- In consideration of your agreement to abide by the following terms, and
- subject to these terms, Apple grants you a personal, non-exclusive
- license, under Apple's copyrights in this original Apple software (the
- "Apple Software"), to use, reproduce, modify and redistribute the Apple
- Software, with or without modifications, in source and/or binary forms;
- provided that if you redistribute the Apple Software in its entirety and
- without modifications, you must retain this notice and the following
- text and disclaimers in all such redistributions of the Apple Software.
- Neither the name, trademarks, service marks or logos of Apple Inc. may
- be used to endorse or promote products derived from the Apple Software
- without specific prior written permission from Apple.  Except as
- expressly stated in this notice, no other rights or licenses, express or
- implied, are granted by Apple herein, including but not limited to any
- patent rights that may be infringed by your derivative works or by other
- works in which the Apple Software may be incorporated.
-
- The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
- MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
- OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-
- IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
- MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
- AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
- STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
-
- Copyright (C) 2014 Apple Inc. All Rights Reserved.
-
+<codex>
+<abstract>
+Utility class for managing gpu bound computes for n-body simulation.
+</abstract>
+</codex>
  */
 
 import Cocoa
@@ -61,9 +19,6 @@ import OpenCL
 
 extension NBody.Simulation {
     public class GPU: Base {
-        private override init(nbodies: Int, params: NBody.Simulation.Params) {
-            super.init(nbodies: nbodies, params: params)
-        }
         
         private var mbTerminated: Bool = false
         private var mpHostPosition: UnsafeMutablePointer<GLfloat> = nil
@@ -88,7 +43,7 @@ extension NBody.Simulation {
         private let kWorkItemsY: GLuint = 1
         
         private let kKernelParams = 11
-        private let kSizeCLMem    = size_t(strideof(cl_mem))
+        private let kSizeCLMem    = strideof(cl_mem)
         
         private var kIntegrateSystem: String = "IntegrateSystem"
         
@@ -133,19 +88,18 @@ extension NBody.Simulation {
             
             if mpKernel != nil {
                 
-                let pValues: [UnsafePointer<Void>] = [
-                    withUnsafePointer(&mpDevicePosition[mnWriteIndex]){UnsafePointer($0)},
-                    withUnsafePointer(&mpDeviceVelocity[mnWriteIndex]){UnsafePointer($0)},
-                    withUnsafePointer(&mpDevicePosition[mnReadIndex]){UnsafePointer($0)},
-                    withUnsafePointer(&mpDeviceVelocity[mnReadIndex]){UnsafePointer($0)},
-                    withUnsafePointer(&m_ActiveParams.mnTimeStamp){UnsafePointer($0)},
-                    withUnsafePointer(&m_ActiveParams.mnDamping){UnsafePointer($0)},
-                    withUnsafePointer(&m_ActiveParams.mnSoftening){UnsafePointer($0)},
-                    withUnsafePointer(&mnBodyCount){UnsafePointer($0)},   //### taking lower 4 bytes
-                    withUnsafePointer(&mnMinIndex){UnsafePointer($0)},   //### taking lower 4 bytes
-                    withUnsafePointer(&mnMaxIndex){UnsafePointer($0)},   //### taking lower 4 bytes
-                    nil,
-                ]
+                var pValues: [UnsafePointer<Void>] = Array(count: kKernelParams, repeatedValue: nil)
+                pValues[0] =&! &mpDevicePosition[mnWriteIndex]
+                pValues[1] =&! &mpDeviceVelocity[mnWriteIndex]
+                pValues[2] =&! &mpDevicePosition[mnReadIndex]
+                pValues[3] =&! &mpDeviceVelocity[mnReadIndex]
+                pValues[4] =&! &m_Properties.mnTimeStep
+                pValues[5] =&! &m_Properties.mnDamping
+                pValues[6] =&! &m_Properties.mnSoftening
+                pValues[7] =&! &m_Properties.mnParticles   //### taking lower 4 bytes
+                pValues[8] =&! &mnMinIndex   //### taking lower 4 bytes
+                pValues[9] =&! &mnMaxIndex   //### taking lower 4 bytes
+                pValues[10] = nil
                 
                 let sizes: [size_t] = [
                     kSizeCLMem,
@@ -174,9 +128,9 @@ extension NBody.Simulation {
         }
         
         private func setup(options: String) -> cl_int {
-            var stream_flags: cl_mem_flags = CL_MEM_READ_WRITE.ull
+            let file_flags: cl_mem_flags = CL_MEM_READ_WRITE.ull
             
-            var i = mnDeviceIndex
+            let i = mnDeviceIndex
             
             var err = CL_SUCCESS
             
@@ -186,7 +140,7 @@ extension NBody.Simulation {
                 return err
             }
             
-            println(">> N-body Simulation: Found \(mnDevices) devices...")
+            print(">> N-body Simulation: Found \(mnDevices) devices...")
             
             var nSize: size_t = 0
             
@@ -205,9 +159,10 @@ extension NBody.Simulation {
                 &vendor,
                 &nSize)
             
-            m_DeviceName = String(name)
+            m_DeviceName = GLstring.fromCString(name)!
             
-            println(">> N-body Simulation: Using Device[\(i)] = \"\(m_DeviceName)\"")
+            print(">> N-body Simulation: Using Device[\(i)] = \"\(m_DeviceName)\"")
+            
             mpDevice[0] = mpDevice[i]
             
             mpContext = clCreateContext(nil,
@@ -230,30 +185,41 @@ extension NBody.Simulation {
                 return err
             }
             
-            let pStream = CF.IFStream(name: "nbody_gpu", ext: "ocl")!
+            let file = CF.File("nbody_gpu", "ocl")
             
-            if !pStream.isValid {
+            let nLength = file.length
+            
+            if nLength == 0 {
                 return CL_INVALID_VALUE
             }
             
-            var pBuffer = UnsafePointer<CChar>(pStream.buffer)
+            let source  = file.string!
+            err = source.withCString {pSource in
+                var err: GLint = 0
+                var ptrSource = pSource
             
-            mpProgram = clCreateProgramWithSource(mpContext,
-                1,
-                &pBuffer,
-                nil,
-                &err)
+                self.mpProgram = clCreateProgramWithSource(mpContext,
+                    1,
+                    &ptrSource,
+                    nil,
+                    &err)
+                
+                return err
+            }
             
             if err != CL_SUCCESS {
                 return err
             }
             
-            err = clBuildProgram(mpProgram,
-                mnDeviceCount,
-                mpDevice,
-                options,
-                nil,
-                nil)
+            err = options.withCString { pOptions in
+                let ptrOptions = !options.isEmpty ? pOptions : nil
+                return clBuildProgram(mpProgram,
+                    mnDeviceCount,
+                    mpDevice,
+                    ptrOptions,
+                    nil,
+                    nil)
+            }
             
             if err != CL_SUCCESS {
                 var length: size_t = 0
@@ -268,8 +234,7 @@ extension NBody.Simulation {
                         &info_log,
                         &length)
                     
-                    NSLog(">> N-body Simulation: Build Log for Device [\(i)]:")
-                    NSLog(String(info_log))
+                    NSLog(">> N-body Simulation: Build Log for Device [\(i)]:\n%@", GLstring.fromCString(info_log)!)
                 }
                 
                 return err
@@ -299,17 +264,17 @@ extension NBody.Simulation {
                 mnWorkItemX = (mnWorkItemX <= localSize.ui) ? mnWorkItemX : localSize.ui
             }
             
-            let isInvalidWorkDim = (mnBodyCount.ui % mnWorkItemX) != 0
+            let isInvalidWorkDim = (m_Properties.mnParticles.ui % mnWorkItemX) != 0
             
             if isInvalidWorkDim {
-                NSLog(">> N-body Simulation: Number of particlces [\(mnBodyCount)] must be evenly divisble work group size [\(mnWorkItemX)] for device!")
+                NSLog(">> N-body Simulation: Number of particlces [\(m_Properties.mnParticles)] must be evenly divisble work group size [\(mnWorkItemX)] for device!")
                 return CL_INVALID_WORK_DIMENSION
             }
             
-            let size: size_t = 4 * GLM.Size.kFloat * mnBodyCount
+            let size: size_t = 4 * GLM.Size.kFloat * m_Properties.mnParticles
             
             mpDevicePosition[0] = clCreateBuffer(mpContext,
-                stream_flags,
+                file_flags,
                 size,
                 nil,
                 &err)
@@ -319,7 +284,7 @@ extension NBody.Simulation {
             }
             
             mpDevicePosition[1] = clCreateBuffer(mpContext,
-                stream_flags,
+                file_flags,
                 size,
                 nil,
                 &err)
@@ -358,9 +323,9 @@ extension NBody.Simulation {
                 return -104
             }
             
-            err = bind()
+            bind()
             
-            return err
+            return 0
         }
         
         private func execute() -> cl_int {
@@ -378,12 +343,11 @@ extension NBody.Simulation {
                     1
                 ]
                 
-                let values: [UnsafePointer<Void>] = [
-                    withUnsafePointer(&mpDevicePosition[mnWriteIndex]) {UnsafePointer($0)},
-                    withUnsafePointer(&mpDeviceVelocity[mnWriteIndex]) {UnsafePointer($0)},
-                    withUnsafePointer(&mpDevicePosition[mnReadIndex]) {UnsafePointer($0)},
-                    withUnsafePointer(&mpDeviceVelocity[mnReadIndex]) {UnsafePointer($0)},
-                ]
+                var values: [UnsafePointer<Void>] = Array(count: 4, repeatedValue: nil)
+                values[0] =&! &mpDevicePosition[mnWriteIndex]
+                values[1] =&! &mpDeviceVelocity[mnWriteIndex]
+                values[2] =&! &mpDevicePosition[mnReadIndex]
+                values[3] =&! &mpDeviceVelocity[mnReadIndex]
                 
                 let sizes: [size_t] = [kSizeCLMem, kSizeCLMem, kSizeCLMem, kSizeCLMem]
                 
@@ -423,10 +387,10 @@ extension NBody.Simulation {
             var err = CL_INVALID_KERNEL
             
             if mpKernel != nil {
-                let rand = NBody.Simulation.Data.Random(nbodies: mnBodyCount, params: m_ActiveParams)
+                let urdp = NBody.Simulation.Data.URDP(m_Properties)
                 
-                if rand>>>(mpHostPosition, mpHostVelocity) {
-                    let size: size_t = 4 * GLM.Size.kFloat * mnBodyCount
+                if urdp.setTo(mpHostPosition, mpHostVelocity) {
+                    let size: size_t = 4 * GLM.Size.kFloat * m_Properties.mnParticles
                     
                     for i in 0..<mnDeviceCount.l {
                         if mpQueue[i] != nil {
@@ -470,8 +434,11 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Constructor
         
-        public convenience init(nbodies: Int, params: NBody.Simulation.Params, index: Int) {
-            self.init(nbodies: nbodies, params: params)
+        public init(
+            _ Properties: NBody.Simulation.Properties,
+            _ index: Int)
+        {
+            super.init(Properties)
             mnDeviceCount = 1
             mnDeviceIndex = index
             mnWorkItemX   = kWorkItemsX
@@ -514,7 +481,7 @@ extension NBody.Simulation {
         
         public override func initialize(options: String) {
             if !mbTerminated {
-                mnReadIndex  = 0//        mnWriteIndex = 1;
+                mnReadIndex  = 0
                 mnWriteIndex = 1
                 
                 mpHostPosition = UnsafeMutablePointer<GLfloat>.alloc(mnLength)
@@ -522,31 +489,32 @@ extension NBody.Simulation {
                 
                 let err = setup(options)
                 
-                mbAcquired = err == CL_SUCCESS
+                let mbAcquired = err == CL_SUCCESS
                 
                 if !mbAcquired {
-                    NSLog(">> N-body Simulation[\(err)]: Failed setting up gpu compute device!")
+                    print(">> N-body Simulation[\(err)]: Failed setting up gpu compute device!")
+                } else {
+                    signalAcquisition()
                 }
-                signalAcquisition()
             }
         }
         
-        public override func reset() -> Int {
-            var err = restart()
+        public override func reset() -> GLint {
+            let err = restart()
             
             if err != CL_SUCCESS {
-                NSLog(">> N-body Simulation[\(err)]: Failed resetting devices!")
+                print(">> N-body Simulation[\(err)]: Failed resetting devices!")
             }
             
-            return err.l
+            return err
         }
         
         public override func step() {
             if !isPaused || !isStopped {
-                var err = execute()
+                let err = execute()
                 
                 if err != CL_SUCCESS {
-                    NSLog(">> N-body Simulation[\(err)]: Failed executing gpu bound kernel!")
+                    print(">> N-body Simulation[\(err)]: Failed executing gpu bound kernel!")
                 }
                 
                 if mbIsUpdated {
@@ -648,7 +616,7 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Accessors
         
-        public override func positionInRange(pDst: UnsafeMutablePointer<GLfloat>) -> Int {
+        public override func positionInRange(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pDst != nil {
@@ -666,15 +634,15 @@ extension NBody.Simulation {
                         data_size_bytes,
                         data_offset_bytes)
                     if err != CL_SUCCESS {
-                        return err.l
+                        return err
                     }
                 }
             }
             
-            return err.l
+            return err
         }
         
-        public override func position(pDst: UnsafeMutablePointer<GLfloat>) -> Int {
+        public override func position(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pDst != nil {
@@ -692,10 +660,10 @@ extension NBody.Simulation {
                 }
             }
             
-            return err.l
+            return err
         }
         
-        public override func setPosition(pSrc: UnsafePointer<GLfloat>) -> Int {
+        public override func setPosition(pSrc: UnsafePointer<GLfloat>) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pSrc != nil {
@@ -712,10 +680,10 @@ extension NBody.Simulation {
                 }
             }
             
-            return err.l
+            return err
         }
         
-        public override func velocity(pDst: UnsafeMutablePointer<GLfloat>) -> Int {
+        public override func velocity(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pDst != nil {
@@ -733,10 +701,10 @@ extension NBody.Simulation {
                 }
             }
             
-            return err.l
+            return err
         }
         
-        public override func setVelocity(pSrc: UnsafePointer<GLfloat>) -> Int {
+        public override func setVelocity(pSrc: UnsafePointer<GLfloat>) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pSrc != nil {
@@ -753,7 +721,7 @@ extension NBody.Simulation {
                 }
             }
             
-            return err.l
+            return err
         }
     }
 }

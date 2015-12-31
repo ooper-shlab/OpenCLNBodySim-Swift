@@ -11,6 +11,6 @@ import Foundation
 //MARK: -
 //MARK: Namespaces
 
-public struct CF {}
-public struct CG {}
-public struct CT {}
+public enum CF {}
+public enum CG {}
+public enum CT {}
