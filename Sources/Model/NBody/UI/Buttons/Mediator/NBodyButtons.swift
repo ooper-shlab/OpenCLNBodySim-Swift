@@ -122,7 +122,7 @@ class NBodyButtons: NSObject {
 //{
         set {
 //    _index = (index < _count) ? index : 0;
-            _index = (0 <= newValue && newValue < _count) ? index : 0
+            _index = (0 <= newValue && newValue < _count) ? newValue : 0
 //
 //    mpButton = mpButtons[_index];
             mpButton = mpButtons[_index]
