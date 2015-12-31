@@ -26,7 +26,7 @@ extension GLU {
         private var mnTexRes: GLuint = 0
         private var mnTarget: GLenum = 0
         
-        private static func initImage(nTexRes: GLuint,
+        private static func initImage(nTexRes: Int,
             _ queue_x: dispatch_queue_t,
             _ queue_y: dispatch_queue_t,
             _ pImage: UnsafeMutablePointer<GLubyte>)
@@ -38,10 +38,10 @@ extension GLU {
             
             var w = Float2(-1.0)
             
-            dispatch_apply(nTexRes.l, queue_y) {y in
+            dispatch_apply(nTexRes, queue_y) {y in
                 w.y += nDelta
                 
-                dispatch_apply(nTexRes.l, queue_x) {x in
+                dispatch_apply(nTexRes, queue_x) {x in
                     w.x += nDelta
                     
                     let d = length(w)
@@ -61,8 +61,8 @@ extension GLU {
             }
         }
         
-        private class func createImage(nTexRes: GLuint) -> [GLubyte] {
-            var pImage: [GLubyte] = []
+        private class func createImage(nTexRes: Int) -> [GLubyte] {
+            var pImage: [GLubyte] = Array(count: nTexRes * nTexRes, repeatedValue: 0)
             
             let queue = CF.Queue()
             
@@ -78,10 +78,10 @@ extension GLU {
         //MARK: -
         //MARK: Private - Utilities - Constructors
         
-        private class func createTexture(nTexRes: GLsizei) -> GLuint {
+        private class func createTexture(nTexRes: Int) -> GLuint {
             var texture: GLuint = 0
             
-            let pImage = createImage(GLuint(nTexRes))
+            let pImage = createImage(nTexRes)
             
             if !pImage.isEmpty {
                 glGenTextures(1, &texture)
@@ -96,8 +96,8 @@ extension GLU {
                     glTexImage2D(GL_TEXTURE_2D.ui,
                         0,
                         GL_LUMINANCE8,
-                        nTexRes,
-                        nTexRes,
+                        nTexRes.i,
+                        nTexRes.i,
                         0,
                         GL_LUMINANCE.ui,
                         GL_UNSIGNED_BYTE.ui,
@@ -112,10 +112,10 @@ extension GLU {
         //MARK: -
         //MARK: Public - Interfaces
         
-        public init(_ nTexRes: GLuint) {
+        public init(_ nTexRes: Int) {
             mnTarget = GL_TEXTURE_2D.ui
-            mnTexRes = nTexRes
-            mnTexture = GLU.Gaussian.createTexture(mnTexRes.i)
+            mnTexRes = nTexRes.ui
+            mnTexture = GLU.Gaussian.createTexture(mnTexRes.l)
         }
         
         private func destruct() {
@@ -128,7 +128,7 @@ extension GLU {
         public init(_ rTexture: Gaussian) {
             mnTarget = GL_TEXTURE_2D.ui
             mnTexRes = (rTexture.mnTexRes != 0) ? rTexture.mnTexRes : 64
-            mnTexture = GLU.Gaussian.createTexture(GLsizei(mnTexRes))
+            mnTexture = GLU.Gaussian.createTexture(mnTexRes.l)
         }
         
         public func enable() {

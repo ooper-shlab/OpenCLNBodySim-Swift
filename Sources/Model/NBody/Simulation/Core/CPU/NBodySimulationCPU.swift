@@ -51,11 +51,11 @@ extension NBody.Simulation {
                 
                 var values: [UnsafePointer<Void>] = Array(count: 6, repeatedValue: nil)
                     values[0] =&! &nTimeStamp
-                    values[0] =&! &m_Properties.mnDamping
-                    values[0] =&! &m_Properties.mnSoftening
-                    values[0] =&! &m_Properties.mnParticles
-                    values[0] =&! &nWorkGroupCount
-                    values[0] =&! &mnMinIndex
+                    values[1] =&! &m_Properties.mnDamping
+                    values[2] =&! &m_Properties.mnSoftening
+                    values[3] =&! &m_Properties.mnParticles
+                    values[4] =&! &nWorkGroupCount
+                    values[5] =&! &mnMinIndex
                 
                 var sizes: [size_t] = [
                     mnSamples,

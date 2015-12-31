@@ -42,7 +42,7 @@ extension CF {
 //
 //    public:
 //        dispatch_queue_attr_t attribute;  // Dispatch queue attribute
-        var attribute: dispatch_queue_attr_t
+        var attribute: dispatch_queue_attr_t?
 //
 //    private:
 //
@@ -62,7 +62,7 @@ extension CF {
 //
 //CF::Queue::Queue(const dispatch_queue_attr_t& attrib)
 //{
-        init(_ attrib: dispatch_queue_attr_t = DISPATCH_QUEUE_SERIAL) {
+        init(_ attrib: dispatch_queue_attr_t? = DISPATCH_QUEUE_SERIAL) {
 //    attribute = attrib;
             attribute = attrib
 //    m_SQID    = "";

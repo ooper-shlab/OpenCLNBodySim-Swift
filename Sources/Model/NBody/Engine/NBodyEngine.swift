@@ -427,7 +427,7 @@ class NBodyEngine: NSObject {
 //    try
 //    {
 //        mpVisualizer = new NBody::Simulation::Visualizer(m_Properties);
-        mpVisualizer = NBody.Simulation.Visualizer(m_Properties!)
+        mpVisualizer = NBody.Simulation.Visualizer(m_Properties)
 //
 //        bSuccess = mpVisualizer->isValid();
         bSuccess = mpVisualizer!.valid
@@ -816,7 +816,7 @@ class NBodyEngine: NSObject {
 //
 //- (void) _setEnginePreferences:(NBodyPreferences *)preferences
 //{
-    private func _setEnginePreferences(preference: NBodyPreferences?) {
+    private func _setEnginePreferences(preferences: NBodyPreferences?) {
 //    [self _setPreferences:preferences];
         self._setPreferences(preferences)
 //    [self _setDefaults];

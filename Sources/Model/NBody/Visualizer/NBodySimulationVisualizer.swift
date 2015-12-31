@@ -318,7 +318,7 @@ extension NBody.Simulation.Visualizer {
         return m_Graphic.BufferID != 0
     }
     
-    private func textures(pName: String, _ pExt: String, _ texRes: GLuint = 32) -> Bool {
+    private func textures(pName: String, _ pExt: String, _ texRes: Int = 32) -> Bool {
         mpTexture = GLU.Texture(pName, pExt)
         
         mpGausssian = GLU.Gaussian(texRes)
@@ -345,11 +345,11 @@ extension NBody.Simulation.Visualizer {
         return nPID != 0
     }
     
-    private func acquire(rProperties: NBody.Simulation.Properties) -> Bool {
-        var bSuccess = rProperties.mnParticles > 0
+    private func acquire(rProperties: NBody.Simulation.Properties?) -> Bool {
+        var bSuccess = rProperties?.mnParticles ?? 0 > 0
         
         if bSuccess {
-            bSuccess = buffer(rProperties.mnParticles)
+            bSuccess = buffer(rProperties!.mnParticles)
                 && textures("star", "png")
                 && program("nbody")
         }
@@ -360,7 +360,7 @@ extension NBody.Simulation.Visualizer {
     //MARK: -
     //MARK: Public - Constructor
     
-    public convenience init(_ rProperties: NBody.Simulation.Properties) {
+    public convenience init(_ rProperties: NBody.Simulation.Properties?) {
         self.init()
         m_Flag.IsAcquired = acquire(rProperties)
         
@@ -383,7 +383,7 @@ extension NBody.Simulation.Visualizer {
             m_Frame.height   = NBody.Window.kHeight.g
             m_Bounds[0]      = GLsizei(m_Frame.width + 0.5)
             m_Bounds[1]      = GLsizei(m_Frame.height + 0.5)
-            mnCount          = rProperties.mnDemos;
+            mnCount          = rProperties!.mnDemos;
             mpProperties     = NBody.Simulation.Properties.create()
             mnActiveDemo     = 0
             m_Rotation.x     = 0.0

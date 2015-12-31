@@ -96,14 +96,14 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Utilities
         
-        internal class func simulate(pBase: Base) {
+        class func simulate(pBase: Base) {
             
             pBase.run()
             
             dispatch_semaphore_signal(pBase.m_TerminationSemaphore)
         }
         
-        internal init(_ properties: NBody.Simulation.Properties) {
+        init(_ properties: NBody.Simulation.Properties) {
             m_Properties = properties
                 if properties.mnParticles != 0 {
                     m_Options = kOptions
