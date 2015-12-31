@@ -319,15 +319,15 @@ extension HUD {
                     {
                         var c = double2(GLdouble(width), GLdouble(height))
                         
-                        c *= HUD.Center;
+                        c *= HUD.Center
                         
                         let radius = 0.5 * GLdouble(width > height ? width : height)
                         let needle = radius * 0.85
                         
                         // background
-                        CGContextTranslateCTM(pContext, 0.0, CGFloat(height))
+                        CGContextTranslateCTM(pContext, 0.0, height.g)
                         CGContextScaleCTM(pContext, 1.0, -1.0)
-                        CGContextClearRect(pContext, CGRectMake(0, 0, CGFloat(width), CGFloat(height)))
+                        CGContextClearRect(pContext, CGRectMake(0, 0, width.g, height.g))
                         CGContextSetRGBFillColor(pContext, 0.0, 0.0, 0.0, 0.7)
                         CGContextAddArc(pContext, c.x.g, c.y.g, radius.g, 0.0, GLM.kTwoPi.g, false)
                         CGContextFillPath(pContext)

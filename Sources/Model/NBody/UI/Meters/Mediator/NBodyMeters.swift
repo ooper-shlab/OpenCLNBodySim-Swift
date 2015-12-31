@@ -286,7 +286,7 @@ class NBodyMeters: NSObject {
 //{
         set {
 //    mpMeter.bound = bound;
-            mpMeter.bound = bound
+            mpMeter.bound = newValue
 //} // setBound
         }
     }

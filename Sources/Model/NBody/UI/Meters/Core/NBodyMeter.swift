@@ -238,7 +238,7 @@ class NBodyMeter: NSObject {
 //{
         set {
 //    mpMeter->setTarget(value);
-            mpMeter?.target = value
+            mpMeter?.target = newValue
 //} // setValue
         }
 //

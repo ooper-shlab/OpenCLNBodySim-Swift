@@ -42,12 +42,12 @@ public typealias Float3 = float3
 public typealias Float4 = float4
 public typealias Float4x4 = float4x4
 
-func *= (inout v: Float3, r: Float) {
-    v = v * r
-}
-func *= (inout v: Float4, r: Float) {
-    v = v * r
-}
+//func *= (inout v: Float3, r: Float) {
+//    v = v * r
+//}
+//func *= (inout v: Float4, r: Float) {
+//    v = v * r
+//}
 
 func + (lhs: Float, rhs: float3) -> float3 {
     return float3(lhs+rhs.x, lhs+rhs.y, lhs+rhs.z)
