@@ -481,20 +481,20 @@ extension NBody.Simulation.Visualizer {
     
     public func setProperties(nPropertiesCount: Int,
         _ Properties: [NBody.Simulation.Properties]) -> Bool {
-        var bSuccess = m_Flag.IsAcquired
-        
-        if bSuccess {
-            let pDecriptorDst = NBody.Simulation.Properties.create(nPropertiesCount)
-            
-            bSuccess = !pDecriptorDst.isEmpty
+            var bSuccess = m_Flag.IsAcquired
             
             if bSuccess {
-                mpProperties = pDecriptorDst
-                mnCount = nPropertiesCount
+                let pDecriptorDst = NBody.Simulation.Properties.create(nPropertiesCount)
+                
+                bSuccess = !pDecriptorDst.isEmpty
+                
+                if bSuccess {
+                    mpProperties = pDecriptorDst
+                    mnCount = nPropertiesCount
+                }
             }
-        }
-        
-        return bSuccess
+            
+            return bSuccess
     }
     
     public func setRotation(rRotation: CGPoint) {

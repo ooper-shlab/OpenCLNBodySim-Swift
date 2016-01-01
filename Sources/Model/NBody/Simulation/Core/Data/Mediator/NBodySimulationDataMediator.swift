@@ -30,93 +30,93 @@ extension NBody.Simulation.Data {
         private var mpPacked: Packed
         private var mpSplit: [Split]
         private var m_Queue: dispatch_queue_t
-    //MARK: -
-    //MARK: Public - Constructor
-    
-    public init(_ rProperties: NBody.Simulation.Properties) {
-        let queue = CF.Queue()
+        //MARK: -
+        //MARK: Public - Constructor
         
-        mnParticles     = rProperties.mnParticles
-        mnReadIndex  = 0
-        mnWriteIndex = 1
-        mpPacked     = NBody.Simulation.Data.Packed(rProperties)
-        mpSplit   = [
-            NBody.Simulation.Data.Split(rProperties),
-            NBody.Simulation.Data.Split(rProperties)
-        ]
-        m_Queue      = queue.createQueue("com.apple.nbody.simulation.data.mediator.main");
-    }
-    
-    //MARK: -
-    //MARK: Public - Utilities
-    
-    public func swap() {
-        Swift.swap(&mnReadIndex, &mnWriteIndex)
-    }
-    
-    public func acquire(pContext: cl_context) -> cl_int {
-        var err = mpSplit[0].acquire(pContext)
-        
-        if err == CL_SUCCESS {
-            err = mpSplit[1].acquire(pContext)
+        public init(_ rProperties: NBody.Simulation.Properties) {
+            let queue = CF.Queue()
             
-            if err == CL_SUCCESS {
-                err = mpPacked.acquire(pContext)
-            }
+            mnParticles     = rProperties.mnParticles
+            mnReadIndex  = 0
+            mnWriteIndex = 1
+            mpPacked     = NBody.Simulation.Data.Packed(rProperties)
+            mpSplit   = [
+                NBody.Simulation.Data.Split(rProperties),
+                NBody.Simulation.Data.Split(rProperties)
+            ]
+            m_Queue      = queue.createQueue("com.apple.nbody.simulation.data.mediator.main");
         }
         
-        return err
-    }
-    
-    public func bind(pKernel: cl_kernel) -> cl_int {
-        var err = mpSplit[mnWriteIndex].bind(0, pKernel)
+        //MARK: -
+        //MARK: Public - Utilities
         
-        if err == CL_SUCCESS {
-            err = mpSplit[mnReadIndex].bind(6, pKernel)
-            
-            if err == CL_SUCCESS {
-                err = mpPacked.bind(13, pKernel)
-            }
+        public func swap() {
+            Swift.swap(&mnReadIndex, &mnWriteIndex)
         }
         
-        return err
-    }
-    
-    public func update(pKernel: cl_kernel) -> cl_int {
-        var err = mpSplit[mnWriteIndex].bind(0, pKernel)
-        
-        if err == CL_SUCCESS {
-            err = mpSplit[mnReadIndex].bind(6, pKernel)
+        public func acquire(pContext: cl_context) -> cl_int {
+            var err = mpSplit[0].acquire(pContext)
             
             if err == CL_SUCCESS {
-                err = mpPacked.update(13, pKernel)
+                err = mpSplit[1].acquire(pContext)
+                
+                if err == CL_SUCCESS {
+                    err = mpPacked.acquire(pContext)
+                }
             }
+            
+            return err
         }
         
-        return err
-    }
-    
-    public func reset(rProperties: NBody.Simulation.Properties) {
-        let urds = URDS(rProperties)
+        public func bind(pKernel: cl_kernel) -> cl_int {
+            var err = mpSplit[mnWriteIndex].bind(0, pKernel)
+            
+            if err == CL_SUCCESS {
+                err = mpSplit[mnReadIndex].bind(6, pKernel)
+                
+                if err == CL_SUCCESS {
+                    err = mpPacked.bind(13, pKernel)
+                }
+            }
+            
+            return err
+        }
         
-        urds.setTo(mpSplit[mnReadIndex])
+        public func update(pKernel: cl_kernel) -> cl_int {
+            var err = mpSplit[mnWriteIndex].bind(0, pKernel)
+            
+            if err == CL_SUCCESS {
+                err = mpSplit[mnReadIndex].bind(6, pKernel)
+                
+                if err == CL_SUCCESS {
+                    err = mpPacked.update(13, pKernel)
+                }
+            }
+            
+            return err
+        }
         
-        let copier = Copier(mnParticles)
+        public func reset(rProperties: NBody.Simulation.Properties) {
+            let urds = URDS(rProperties)
+            
+            urds.setTo(mpSplit[mnReadIndex])
+            
+            let copier = Copier(mnParticles)
+            
+            copier.copy(mpSplit[mnReadIndex], to: mpPacked);
+        }
         
-        copier.copy(mpSplit[mnReadIndex], to: mpPacked);
-    }
-    
-    //MARK: -
-    //MARK: Public - Accessors
-    
-    public var data: UnsafePointer<GLfloat> {
-        return UnsafePointer(mpPacked.data)
-    }
-    
-    public func positionInRange(range: CFRange,
-        var _ pDst: UnsafeMutablePointer<GLfloat>)
-        -> GLint
-    {
+        //MARK: -
+        //MARK: Public - Accessors
+        
+        public var data: UnsafePointer<GLfloat> {
+            return UnsafePointer(mpPacked.data)
+        }
+        
+        public func positionInRange(range: CFRange,
+            var _ pDst: UnsafeMutablePointer<GLfloat>)
+            -> GLint
+        {
             var err = CL_INVALID_VALUE
             
             if pDst != nil {
@@ -142,110 +142,110 @@ extension NBody.Simulation.Data {
             }
             
             return err
-    }
-        
-    public func positionInRange(nMin: size_t,
-        _ nMax: size_t,
-        _ pDst: UnsafeMutablePointer<GLfloat>) -> GLint
-    {
-        let nLen  = (nMax != 0) ? (nMax - nMin + 1) : mnParticles;
-        let range = CFRangeMake(nMin, nLen);
-        
-        return positionInRange(range, pDst);
-    } // positionInRange
-    
-    public func position(nMax: size_t,
-        _ pDst: UnsafeMutablePointer<GLfloat>) -> GLint
-    {
-        var err = CL_INVALID_VALUE
-        
-        if pDst != nil {
-            let pData = mpPacked.data
-            
-            dispatch_apply(nMax, m_Queue) {i in
-                let j = 4 * i
-                
-                pDst[j]   = pData[j]
-                pDst[j+1] = pData[j+1]
-                pDst[j+2] = pData[j+2]
-                pDst[j+3] = pData[j+3]
-            }
-    
-            err = CL_SUCCESS
         }
         
-        return err
-    }
-    
-    public func setPosition(pSrc: UnsafePointer<GLfloat>) -> GLint {
-        var err = CL_INVALID_VALUE
+        public func positionInRange(nMin: size_t,
+            _ nMax: size_t,
+            _ pDst: UnsafeMutablePointer<GLfloat>) -> GLint
+        {
+            let nLen  = (nMax != 0) ? (nMax - nMin + 1) : mnParticles;
+            let range = CFRangeMake(nMin, nLen);
+            
+            return positionInRange(range, pDst);
+        } // positionInRange
         
-        if pSrc != nil {
-            let pData  = mpPacked.data
+        public func position(nMax: size_t,
+            _ pDst: UnsafeMutablePointer<GLfloat>) -> GLint
+        {
+            var err = CL_INVALID_VALUE
             
-            let pPositionX = mpSplit[mnReadIndex].position(.X)
-            let pPositionY = mpSplit[mnReadIndex].position(.Y)
-            let pPositionZ = mpSplit[mnReadIndex].position(.Z)
-            
-            dispatch_apply(mnParticles, m_Queue) {i in
-                let j = 4 * i
+            if pDst != nil {
+                let pData = mpPacked.data
                 
-                pData[j]   = pSrc[j]
-                pData[j+1] = pSrc[j+1]
-                pData[j+2] = pSrc[j+2]
+                dispatch_apply(nMax, m_Queue) {i in
+                    let j = 4 * i
+                    
+                    pDst[j]   = pData[j]
+                    pDst[j+1] = pData[j+1]
+                    pDst[j+2] = pData[j+2]
+                    pDst[j+3] = pData[j+3]
+                }
                 
-                pPositionX[i] = pData[j]
-                pPositionY[i] = pData[j+1]
-                pPositionZ[i] = pData[j+2]
+                err = CL_SUCCESS
             }
             
-            err = CL_SUCCESS
+            return err
         }
         
-        return err
-    }
-    
-    public func velocity(pDest: UnsafeMutablePointer<GLfloat>) -> GLint {
-        var err = CL_INVALID_VALUE
-        
-        if pDest != nil {
-            let pVelocityX = mpSplit[mnReadIndex].velocity(.X)
-            let pVelocityY = mpSplit[mnReadIndex].velocity(.Y)
-            let pVelocityZ = mpSplit[mnReadIndex].velocity(.Z)
+        public func setPosition(pSrc: UnsafePointer<GLfloat>) -> GLint {
+            var err = CL_INVALID_VALUE
             
-            dispatch_apply(mnParticles, m_Queue) {i in
-                let j = 4 * i
+            if pSrc != nil {
+                let pData  = mpPacked.data
                 
-                pDest[j]   = pVelocityX[i]
-                pDest[j+1] = pVelocityY[i]
-                pDest[j+2] = pVelocityZ[i]
+                let pPositionX = mpSplit[mnReadIndex].position(.X)
+                let pPositionY = mpSplit[mnReadIndex].position(.Y)
+                let pPositionZ = mpSplit[mnReadIndex].position(.Z)
+                
+                dispatch_apply(mnParticles, m_Queue) {i in
+                    let j = 4 * i
+                    
+                    pData[j]   = pSrc[j]
+                    pData[j+1] = pSrc[j+1]
+                    pData[j+2] = pSrc[j+2]
+                    
+                    pPositionX[i] = pData[j]
+                    pPositionY[i] = pData[j+1]
+                    pPositionZ[i] = pData[j+2]
+                }
+                
+                err = CL_SUCCESS
             }
             
-            err = CL_SUCCESS
+            return err
         }
         
-        return err
-    }
-    
-    public func setVelocity(pSrc: UnsafePointer<GLfloat>) -> GLint {
-        var err = CL_INVALID_VALUE
-        if pSrc != nil  {
-            let pVelocityX = mpSplit[mnReadIndex].velocity(.X)
-            let pVelocityY = mpSplit[mnReadIndex].velocity(.Y)
-            let pVelocityZ = mpSplit[mnReadIndex].velocity(.Z)
+        public func velocity(pDest: UnsafeMutablePointer<GLfloat>) -> GLint {
+            var err = CL_INVALID_VALUE
             
-            dispatch_apply(mnParticles, m_Queue) {i in
-                let j = 4 * i
+            if pDest != nil {
+                let pVelocityX = mpSplit[mnReadIndex].velocity(.X)
+                let pVelocityY = mpSplit[mnReadIndex].velocity(.Y)
+                let pVelocityZ = mpSplit[mnReadIndex].velocity(.Z)
                 
-                pVelocityX[i] = pSrc[j]
-                pVelocityY[i] = pSrc[j+1]
-                pVelocityZ[i] = pSrc[j+2]
+                dispatch_apply(mnParticles, m_Queue) {i in
+                    let j = 4 * i
+                    
+                    pDest[j]   = pVelocityX[i]
+                    pDest[j+1] = pVelocityY[i]
+                    pDest[j+2] = pVelocityZ[i]
+                }
+                
+                err = CL_SUCCESS
             }
             
-            err = CL_SUCCESS
+            return err
         }
         
-        return err
-    }
+        public func setVelocity(pSrc: UnsafePointer<GLfloat>) -> GLint {
+            var err = CL_INVALID_VALUE
+            if pSrc != nil  {
+                let pVelocityX = mpSplit[mnReadIndex].velocity(.X)
+                let pVelocityY = mpSplit[mnReadIndex].velocity(.Y)
+                let pVelocityZ = mpSplit[mnReadIndex].velocity(.Z)
+                
+                dispatch_apply(mnParticles, m_Queue) {i in
+                    let j = 4 * i
+                    
+                    pVelocityX[i] = pSrc[j]
+                    pVelocityY[i] = pSrc[j+1]
+                    pVelocityZ[i] = pSrc[j+2]
+                }
+                
+                err = CL_SUCCESS
+            }
+            
+            return err
+        }
     }
 }

@@ -65,9 +65,9 @@ protocol IntegerInitializable: IntegerLiteralConvertible {
 protocol IntegerComputable: IntegerInitializable, Computable {
     func &+(lhs: Self, rhs: Self) -> Self
     func &-(lhs: Self, rhs: Self) -> Self
-//    func &/(lhs: Self, rhs: Self) -> Self
+    //    func &/(lhs: Self, rhs: Self) -> Self
     func &*(lhs: Self, rhs: Self) -> Self
-//    func &%(lhs: Self, rhs: Self) -> Self
+    //    func &%(lhs: Self, rhs: Self) -> Self
     
     func << (lhs: Self, rhs: Self) -> Self
     func >> (lhs: Self, rhs: Self) -> Self

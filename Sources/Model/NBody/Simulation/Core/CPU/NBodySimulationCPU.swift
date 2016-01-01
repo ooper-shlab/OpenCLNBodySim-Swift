@@ -50,12 +50,12 @@ extension NBody.Simulation {
                 
                 
                 var values: [UnsafePointer<Void>] = Array(count: 6, repeatedValue: nil)
-                    values[0] =&! &nTimeStamp
-                    values[1] =&! &m_Properties.mnDamping
-                    values[2] =&! &m_Properties.mnSoftening
-                    values[3] =&! &m_Properties.mnParticles
-                    values[4] =&! &nWorkGroupCount
-                    values[5] =&! &mnMinIndex
+                values[0] =&! &nTimeStamp
+                values[1] =&! &m_Properties.mnDamping
+                values[2] =&! &m_Properties.mnSoftening
+                values[3] =&! &m_Properties.mnParticles
+                values[4] =&! &nWorkGroupCount
+                values[5] =&! &mnMinIndex
                 
                 var sizes: [size_t] = [
                     mnSamples,
@@ -95,44 +95,44 @@ extension NBody.Simulation {
             }
             
             err = clGetDeviceIDs(nil,
-                    CL_DEVICE_TYPE_CPU.ull,
-                    1,
-                    &mpDevice,
-                    &mnDeviceCount)
-                
+                CL_DEVICE_TYPE_CPU.ull,
+                1,
+                &mpDevice,
+                &mnDeviceCount)
+            
             if err != CL_SUCCESS {
                 return err
             }
             
             mpContext = clCreateContext(nil,
-                    mnDeviceCount,
-                    &mpDevice,
-                    nil,
-                    nil,
-                    &err)
-                
+                mnDeviceCount,
+                &mpDevice,
+                nil,
+                nil,
+                &err)
+            
             if err != CL_SUCCESS {
                 return err
             }
-                
+            
             mpQueue = clCreateCommandQueue(mpContext,
                 mpDevice,
                 0,
                 &err)
-                
+            
             if err != CL_SUCCESS {
                 return err
             }
-                
+            
             var returned_size: size_t = 0
             var compute_units: cl_uint = 0
             
             clGetDeviceInfo(mpDevice,
-                    CL_DEVICE_MAX_COMPUTE_UNITS.ui,
-                    GLM.Size.kUInt,
-                    &compute_units,
-                    &returned_size)
-                
+                CL_DEVICE_MAX_COMPUTE_UNITS.ui,
+                GLM.Size.kUInt,
+                &compute_units,
+                &returned_size)
+            
             mnUnits = threaded ? compute_units.l : 1
             
             let source = file.string!
@@ -162,39 +162,39 @@ extension NBody.Simulation {
                     nil)
             }
             
-                if err != CL_SUCCESS {
-                    var length: size_t = 0
-                    
-                    var info_log: [CChar] = Array(count: 2000, repeatedValue: 0)
-                    
-                    clGetProgramBuildInfo(mpProgram,
-                        mpDevice,
-                        CL_PROGRAM_BUILD_LOG.ui,
-                        2000,
-                        &info_log,
-                        &length)
-                    
-                    NSLog(">> N-body Simulation:\n%@", GLstring.fromCString(info_log)!)
-                    
-                    return err
-                }
+            if err != CL_SUCCESS {
+                var length: size_t = 0
                 
-                let kernelName = vectorized ? "IntegrateSystemVectorized" : "IntegrateSystemNonVectorized"
-                mpKernel = clCreateKernel(mpProgram,
-                    kernelName,
-                    &err)
+                var info_log: [CChar] = Array(count: 2000, repeatedValue: 0)
                 
-                if err != CL_SUCCESS {
-                    return err
-                }
+                clGetProgramBuildInfo(mpProgram,
+                    mpDevice,
+                    CL_PROGRAM_BUILD_LOG.ui,
+                    2000,
+                    &info_log,
+                    &length)
                 
-                err = mpData.acquire(mpContext)
+                NSLog(">> N-body Simulation:\n%@", GLstring.fromCString(info_log)!)
                 
-                if err != CL_SUCCESS {
-                    return err
-                }
-                
-                return bind()
+                return err
+            }
+            
+            let kernelName = vectorized ? "IntegrateSystemVectorized" : "IntegrateSystemNonVectorized"
+            mpKernel = clCreateKernel(mpProgram,
+                kernelName,
+                &err)
+            
+            if err != CL_SUCCESS {
+                return err
+            }
+            
+            err = mpData.acquire(mpContext)
+            
+            if err != CL_SUCCESS {
+                return err
+            }
+            
+            return bind()
         }
         
         private func execute() -> cl_int {

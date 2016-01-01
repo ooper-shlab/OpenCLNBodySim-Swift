@@ -147,25 +147,25 @@ extension GLU {
             _ nTextAlign: CTTextAlignment)
             -> GLuint
         {
-                var nTexture: GLuint = 0
+            var nTexture: GLuint = 0
+            
+            let pFrame = CT.Frame(rText, rFont, nFontSize, nWidth, nHeight, nTextAlign)
+            
+            m_Bounds = pFrame.bounds
+            m_Range = pFrame.range
+            
+            let pContext = create(nWidth, nHeight)
+            
+            if pContext != nil {
+                pFrame.draw(pContext)
                 
-                let pFrame = CT.Frame(rText, rFont, nFontSize, nWidth, nHeight, nTextAlign)
+                nTexture = create(pContext!)
                 
-                m_Bounds = pFrame.bounds
-                m_Range = pFrame.range
-                
-                let pContext = create(nWidth, nHeight)
-                
-                if pContext != nil {
-                    pFrame.draw(pContext)
-                    
-                    nTexture = create(pContext!)
-                    
-                } else {
-                    NSLog(">> ERROR: Failed creating Core-Text frame object")
-                }
-                
-                return nTexture
+            } else {
+                NSLog(">> ERROR: Failed creating Core-Text frame object")
+            }
+            
+            return nTexture
         }
         
         //MARK: -
@@ -178,7 +178,7 @@ extension GLU {
             _ rOrigin: CGPoint,
             _ nTextAlign: CTTextAlignment = .Center)
         {
-                mnTexture = create(rText, rFont, nFontSize, rOrigin, nTextAlign)
+            mnTexture = create(rText, rFont, nFontSize, rOrigin, nTextAlign)
         }
         
         // Create a texture with bounds derived from the input width and height.
@@ -189,7 +189,7 @@ extension GLU {
             _ nHeight: GLsizei,
             _ nTextAlign: CTTextAlignment = .Center)
         {
-                mnTexture = create(rText, rFont, nFontSize, nWidth, nHeight, nTextAlign)
+            mnTexture = create(rText, rFont, nFontSize, nWidth, nHeight, nTextAlign)
         }
         
         // Create a texture with bounds derived from the text size using
@@ -200,9 +200,9 @@ extension GLU {
             _ rOrigin: CGPoint,
             _ nTextAlign: CTTextAlignment = .Center)
         {
-                let font = bIsItalic ? "Helvetica-BoldOblique" : "Helvetica-Bold"
-                
-                mnTexture = create(rText, font, nFontSize, rOrigin, nTextAlign)
+            let font = bIsItalic ? "Helvetica-BoldOblique" : "Helvetica-Bold"
+            
+            mnTexture = create(rText, font, nFontSize, rOrigin, nTextAlign)
         }
         
         // Create a texture with bounds derived from input width and height,
@@ -214,9 +214,9 @@ extension GLU {
             _ nHeight: GLsizei,
             _ nTextAlign: CTTextAlignment = .Center)
         {
-                let font = bIsItalic ? "Helvetica-BoldOblique" : "Helvetica-Bold"
-                
-                mnTexture = create(rText, font, nFontSize, nWidth, nHeight, nTextAlign)
+            let font = bIsItalic ? "Helvetica-BoldOblique" : "Helvetica-Bold"
+            
+            mnTexture = create(rText, font, nFontSize, nWidth, nHeight, nTextAlign)
         }
         
         //MARK: -

@@ -230,7 +230,7 @@ extension HUD.Button.Image {
             m_Label      = label
             mpQuad       = GLU.Quad(usage: GL_DYNAMIC_DRAW.ui)
             m_Texture[0] = HUD.Button.createTexture(frame.size)
-
+            
             mpText       = GLU.Text(m_Label, mnSize.g, mbIsItalic, mnWidth, mnHeight)
             
             if mpText != nil {

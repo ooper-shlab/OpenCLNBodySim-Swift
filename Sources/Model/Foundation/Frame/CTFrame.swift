@@ -34,17 +34,17 @@ extension CT {
             _ rFont: String,
             _ nFontSize: CGFloat,
             _ nTextAlign: CTTextAlignment) -> CTFramesetter? {
-            var pFrameSetter: CTFramesetter? = nil
-            
-            if let pText = CF.Text(string: rText, fontName: rFont, fontSize: nFontSize, alignment: nTextAlign) {
+                var pFrameSetter: CTFramesetter? = nil
                 
-                m_Range = CFRangeMake(0, CFAttributedStringGetLength(pText))
+                if let pText = CF.Text(string: rText, fontName: rFont, fontSize: nFontSize, alignment: nTextAlign) {
+                    
+                    m_Range = CFRangeMake(0, CFAttributedStringGetLength(pText))
+                    
+                    pFrameSetter = CTFramesetterCreateWithAttributedString(pText)
+                    
+                }
                 
-                pFrameSetter = CTFramesetterCreateWithAttributedString(pText)
-                
-            }
-            
-            return pFrameSetter
+                return pFrameSetter
         }
         
         //MARK: -
@@ -98,23 +98,23 @@ extension CT {
             _ nTextAlign: CTTextAlignment)
             -> CTFrame?
         {
-                var pFrame: CTFrame? = nil
-                
-                if !rText.isEmpty {
-                    if let pFrameSetter = create(rText, rFont, nFontSize, nTextAlign) {
-                        
-                        let size = CTFramesetterSuggestFrameSizeWithConstraints(pFrameSetter,
-                            m_Range,
-                            nil,
-                            kCTFrameDefaultMaxSz,
-                            nil)
-                        
-                        pFrame = create(rOrigin, size, pFrameSetter)
-                        
-                    }
+            var pFrame: CTFrame? = nil
+            
+            if !rText.isEmpty {
+                if let pFrameSetter = create(rText, rFont, nFontSize, nTextAlign) {
+                    
+                    let size = CTFramesetterSuggestFrameSizeWithConstraints(pFrameSetter,
+                        m_Range,
+                        nil,
+                        kCTFrameDefaultMaxSz,
+                        nil)
+                    
+                    pFrame = create(rOrigin, size, pFrameSetter)
+                    
                 }
-                
-                return pFrame
+            }
+            
+            return pFrame
         }
         
         private func create(rText: String,
@@ -125,17 +125,17 @@ extension CT {
             _ nTextAlign: CTTextAlignment)
             -> CTFrame?
         {
-                var pFrame: CTFrame? = nil
-                
-                if !rText.isEmpty {
-                    if let pFrameSetter = create(rText, rFont, nFontSize, nTextAlign) {
-                        
-                        pFrame = create(nWidth, nHeight, pFrameSetter)
-                        
-                    }
+            var pFrame: CTFrame? = nil
+            
+            if !rText.isEmpty {
+                if let pFrameSetter = create(rText, rFont, nFontSize, nTextAlign) {
+                    
+                    pFrame = create(nWidth, nHeight, pFrameSetter)
+                    
                 }
-                
-                return pFrame
+            }
+            
+            return pFrame
         }
         
         //MARK: -

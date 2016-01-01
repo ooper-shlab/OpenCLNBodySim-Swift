@@ -90,4 +90,3 @@ extension NBody {
         public static let Two = 1
     }
 }
-

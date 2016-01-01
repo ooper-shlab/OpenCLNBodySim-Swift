@@ -130,7 +130,7 @@ extension NBody.Simulation.Data.Packed {
         if pKernel != nil {
             err = withUnsafePointer(&mpPacked.mpDevice) {pValue in
                 let nSize  = kNBodySimPackedDataMemSize
-            
+                
                 return clSetKernelArg(pKernel,
                     nIndex,
                     nSize,
@@ -143,17 +143,17 @@ extension NBody.Simulation.Data.Packed {
     
     public func update(nIndex: cl_uint,
         _ pKernel: cl_kernel) -> GLint {
-        var err = CL_INVALID_KERNEL
-        
-        if pKernel != nil {
-            let nSize  = kNBodySimPackedDataMemSize
-            err = withUnsafePointer(&mpPacked.mpDevice) {pValue in
-                
-                return clSetKernelArg(pKernel, nIndex, nSize, pValue)
-                
+            var err = CL_INVALID_KERNEL
+            
+            if pKernel != nil {
+                let nSize  = kNBodySimPackedDataMemSize
+                err = withUnsafePointer(&mpPacked.mpDevice) {pValue in
+                    
+                    return clSetKernelArg(pKernel, nIndex, nSize, pValue)
+                    
+                }
             }
-        }
-        
-        return err
+            
+            return err
     }
 }

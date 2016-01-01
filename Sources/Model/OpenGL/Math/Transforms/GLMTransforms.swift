@@ -35,68 +35,68 @@ extension GLM {
     //                            const GLenum& name)
     //{
     static func getMatrix(transpose: Bool, _ name: GLenum) -> Float4x4 {
-    //    simd::float4x4 M = 0.0f;
+        //    simd::float4x4 M = 0.0f;
         var M = Float4x4()
-    //
-    //    GLfloat m[16];
+        //
+        //    GLfloat m[16];
         var m: [GLfloat] = Array(count: 16, repeatedValue: 0)
-    //
-    //    glGetFloatv(name, m);
+        //
+        //    glGetFloatv(name, m);
         glGetFloatv(name, &m)
-    //
-    //    if(transpose)
-    //    {
+        //
+        //    if(transpose)
+        //    {
         if transpose {
-    //        M.columns[0] = {m[0], m[1], m[2], m[3]};
+            //        M.columns[0] = {m[0], m[1], m[2], m[3]};
             M[0] = Float4(m[0], m[1], m[2], m[3])
-    //        M.columns[1] = {m[4], m[5], m[6], m[7]};
+            //        M.columns[1] = {m[4], m[5], m[6], m[7]};
             M[1] = Float4(m[4], m[5], m[6], m[7])
-    //        M.columns[2] = {m[8], m[9], m[10], m[11]};
+            //        M.columns[2] = {m[8], m[9], m[10], m[11]};
             M[2] = Float4(m[8], m[9], m[10], m[11])
-    //        M.columns[3] = {m[12], m[13], m[14], m[15]};
+            //        M.columns[3] = {m[12], m[13], m[14], m[15]};
             M[3] = Float4(m[12], m[13], m[14], m[15])
-    //    } // if
-    //    else
-    //    {
+            //    } // if
+            //    else
+            //    {
         } else {
-    //        M.columns[0] = {m[0], m[4], m[8], m[12]};
+            //        M.columns[0] = {m[0], m[4], m[8], m[12]};
             M[0] = Float4(m[0], m[4], m[8], m[12])
-    //        M.columns[1] = {m[1], m[5], m[9], m[13]};
+            //        M.columns[1] = {m[1], m[5], m[9], m[13]};
             M[1] = Float4(m[1], m[5], m[9], m[13])
-    //        M.columns[2] = {m[2], m[6], m[10], m[14]};
+            //        M.columns[2] = {m[2], m[6], m[10], m[14]};
             M[2] = Float4(m[2], m[6], m[10], m[14])
-    //        M.columns[3] = {m[3], m[7], m[11], m[15]};
+            //        M.columns[3] = {m[3], m[7], m[11], m[15]};
             M[3] = Float4(m[3], m[7], m[11], m[15])
-    //    } // else
+            //    } // else
         }
-    //
-    //    return M;
+        //
+        //    return M;
         return M
-    //} // GLMGetMatrix
+        //} // GLMGetMatrix
     }
     //
     //simd::float4x4 GLM::modelview(const bool& transpose)
     //{
     static func modelview(transpose: Bool) -> Float4x4 {
-    //    return GLMGetMatrix(transpose, GL_MODELVIEW_MATRIX);
+        //    return GLMGetMatrix(transpose, GL_MODELVIEW_MATRIX);
         return getMatrix(transpose, GL_MODELVIEW_MATRIX.ui)
-    //} // modelview
+        //} // modelview
     }
     //
     //simd::float4x4 GLM::projection(const bool& transpose)
     //{
     static func projection(transpose: Bool) -> Float4x4 {
-    //    return GLMGetMatrix(transpose, GL_PROJECTION_MATRIX);
+        //    return GLMGetMatrix(transpose, GL_PROJECTION_MATRIX);
         return getMatrix(transpose, GL_PROJECTION_MATRIX.ui)
-    //} // projection
+        //} // projection
     }
     //
     //simd::float4x4 GLM::texture(const bool& transpose)
     //{
     static func texture(transpose: Bool) -> Float4x4 {
-    //    return GLMGetMatrix(transpose, GL_TEXTURE_MATRIX);
+        //    return GLMGetMatrix(transpose, GL_TEXTURE_MATRIX);
         return getMatrix(transpose, GL_TEXTURE_MATRIX.ui)
-    //} // texture
+        //} // texture
     }
     
     public static func load(transpose: Bool, _ M: Float4x4) {
@@ -153,7 +153,7 @@ extension GLM {
     
     public static func identity(mode: GLenum) {
         glMatrixMode(mode)
-    
+        
         glLoadMatrixf(kIdentity)
     }
     
@@ -185,7 +185,7 @@ extension GLM {
             Float4(0.0, 1.0, 0.0, 0.0),
             Float4(0.0, 0.0, 1.0, 0.0),
             Float4(t.x, t.y, t.z, 1.0)
-        ])
+            ])
         
     }
     
@@ -199,7 +199,7 @@ extension GLM {
             Float4(0, 1, 0, 0),
             Float4(0, 0, 1, 0),
             Float4(x, y, z, 1)
-        ])
+            ])
         
     }
     
@@ -292,9 +292,9 @@ extension GLM {
         _ far: Float)
         -> Float4x4
     {
-            let aspect = width / height
-            
-            return perspective(fovy, aspect, near, far)
+        let aspect = width / height
+        
+        return perspective(fovy, aspect, near, far)
     }
     
     //MARK: -
@@ -334,9 +334,9 @@ extension GLM {
         _ far: Float)
         -> Float4x4
     {
-            let aspect = width / height
-            
-            return projection(fovy, aspect, near, far)
+        let aspect = width / height
+        
+        return projection(fovy, aspect, near, far)
     }
     
     //MARK: -
@@ -409,7 +409,7 @@ extension GLM {
     public static func ortho(origin: Float3,
         _ size: Float3) -> Float4x4
     {
-            return ortho(origin.x, origin.y, origin.z, size.x, size.y, size.z)
+        return ortho(origin.x, origin.y, origin.z, size.x, size.y, size.z)
     }
     
     //MARK: -
@@ -423,17 +423,17 @@ extension GLM {
         _ far: Float)
         -> Float4x4
     {
-            let sWidth  = 1.0 / (right - left)
-            let sHeight = 1.0 / (top - bottom)
-            let sDepth  = 1.0 / (near - far)
-            let sNear   = 2.0 * near
-            
-            let P = Float4(sWidth  * sNear, 0, sWidth  * (right + left), 0)
-            let Q = Float4(0, sHeight * sNear, sHeight * (top + bottom), 0)
-            let R = Float4(0, 0, sDepth  * (far + near), sDepth  * sNear * far)
-            let S = Float4(0, 0, 0, -1.0)
-            
-            return Float4x4([P, Q, R, S])
+        let sWidth  = 1.0 / (right - left)
+        let sHeight = 1.0 / (top - bottom)
+        let sDepth  = 1.0 / (near - far)
+        let sNear   = 2.0 * near
+        
+        let P = Float4(sWidth  * sNear, 0, sWidth  * (right + left), 0)
+        let Q = Float4(0, sHeight * sNear, sHeight * (top + bottom), 0)
+        let R = Float4(0, 0, sDepth  * (far + near), sDepth  * sNear * far)
+        let S = Float4(0, 0, 0, -1.0)
+        
+        return Float4x4([P, Q, R, S])
     }
     
     public static func frustum(fovy: Float,

@@ -37,8 +37,8 @@ let  kOpenGLAttribsLegacyDefault: [NSOpenGLPixelFormatAttribute] =
 
 @objc(OpenGLView)
 class OpenGLView: NSOpenGLView {
-//    private var mnInitDemo: Int = 0
-//    private var mnStarScale: GLfloat = 0
+    //    private var mnInitDemo: Int = 0
+    //    private var mnStarScale: GLfloat = 0
     
     private var mbFullscreen: Bool = false
     
@@ -67,9 +67,9 @@ class OpenGLView: NSOpenGLView {
     private func _cleanUpPrefs() {
         if mpPrefs != nil {
             mpPrefs!.addEntries(mpEngine?.preferences)
-    
+            
             mpPrefs!.write()
-    
+            
             mpPrefs = nil;
         }
     }
@@ -153,25 +153,25 @@ class OpenGLView: NSOpenGLView {
     //- (NSOpenGLPixelFormat *) _newPixelFormat
     //{
     private static func _newPixelFormat() -> NSOpenGLPixelFormat? {
-    //    NSOpenGLPixelFormat* pFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:kOpenGLAttribsLegacyProfile];
+        //    NSOpenGLPixelFormat* pFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:kOpenGLAttribsLegacyProfile];
         var pFormat = NSOpenGLPixelFormat(attributes: kOpenGLAttribsLegacyProfile)
-    //
-    //    if(!pFormat)
-    //    {
+        //
+        //    if(!pFormat)
+        //    {
         if pFormat == nil {
-    //        NSLog(@">> WARNING: Failed to initialize an OpenGL context with the desired pixel format!");
+            //        NSLog(@">> WARNING: Failed to initialize an OpenGL context with the desired pixel format!");
             NSLog(">> WARNING: Failed to initialize an OpenGL context with the desired pixel format!")
-    //        NSLog(@">> MESSAGE: Attempting to initialize with a fallback pixel format!");
+            //        NSLog(@">> MESSAGE: Attempting to initialize with a fallback pixel format!");
             NSLog(">> MESSAGE: Attempting to initialize with a fallback pixel format!")
-    //
-    //        pFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:kOpenGLAttribsLegacyDefault];
+            //
+            //        pFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:kOpenGLAttribsLegacyDefault];
             pFormat = NSOpenGLPixelFormat(attributes: kOpenGLAttribsLegacyDefault)
-    //    } // if
+            //    } // if
         }
-    //
-    //    return pFormat;
+        //
+        //    return pFormat;
         return pFormat
-    //} // _newPixelFormat
+        //} // _newPixelFormat
     }
     
     //MARK: -
@@ -297,13 +297,13 @@ class OpenGLView: NSOpenGLView {
     
     //MARK: -
     //MARK: Public - Updates
-
+    
     //### deprecation message says this is useless.
-//    override func renewGState() {
-//        super.renewGState()
-//        
-//        self.window?.disableScreenUpdatesUntilFlush()
-//    }
+    //    override func renewGState() {
+    //        super.renewGState()
+    //
+    //        self.window?.disableScreenUpdatesUntilFlush()
+    //    }
     
     //MARK: -
     //MARK: Public - Display

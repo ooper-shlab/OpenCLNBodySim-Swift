@@ -11,4 +11,4 @@ import Foundation
 //MARK: -
 //MARK: Namespaces
 
-public struct GLU {}
+public enum GLU {}

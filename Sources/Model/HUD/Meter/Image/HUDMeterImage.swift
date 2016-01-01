@@ -72,16 +72,16 @@ extension HUD {
         inout _ rHash: HUD.Meter.Hash) -> GLuint
     {
         var nTexture: GLuint = 0
-
+        
         var pValue: GLU.Text? = nil
-
+        
         let key = Integer2String(nKey)
-
+        
         if let pIter = rHash[key] {
             pValue = pIter
         } else {
             pValue = GLU.Text(key, 52.0, true, GLsizei(ValueWidth), GLsizei(ValueHeight))
-
+            
             rHash[key] = pValue
         }
         
@@ -270,7 +270,7 @@ extension HUD {
             offset,
             blur,
             pShadowColor)
-            
+        
     }
     
     private static func shadowAcquireWithColor(pContext: CGContext) {
@@ -543,9 +543,9 @@ extension HUD {
                         pColorspace,
                         HUD.BitmapInfo)
                     {
-                    
+                        
                         let angle: GLdouble  = 0.0
-                            
+                        
                         var c = double2(GLdouble(width), GLdouble(height))
                         
                         c *= Center
@@ -577,7 +577,7 @@ extension HUD {
                                 locations,
                                 count)
                             {
-                                    // draw glow reflecting on inner bevel
+                                // draw glow reflecting on inner bevel
                                 var cos: GLdouble = 0.0
                                 var sin: GLdouble = 0.0
                                 
@@ -708,8 +708,8 @@ extension HUD.Meter.Image {
                 GLsizei(HUD.LegendHeight))
             
             m_Texture[HUD.Meter.Legend] = mpLegend!.texture
-//        } catch let ba {
-//            NSLog(">> ERROR: Failed an OpenGL text label for meter's legend: \"\(ba)\"")
+            //        } catch let ba {
+            //            NSLog(">> ERROR: Failed an OpenGL text label for meter's legend: \"\(ba)\"")
         }
     }
     
@@ -755,87 +755,6 @@ extension HUD.Meter.Image {
         }
     }
     
-//    private func render() {
-//        if m_Texture[HUD.Meter.Background] == 0 {
-//            m_Texture[HUD.Meter.Background] = HUD.backgroundCreateTexture(mnWidth, mnHeight, mnMax)
-//        }
-//        
-//        if m_Texture[HUD.Meter.Needle] == 0 {
-//            m_Texture[HUD.Meter.Needle] = HUD.needleCreateTexture(mnWidth, mnHeight)
-//        }
-//        
-//        if mpLegend == nil {
-//            mpLegend = GLU.Text(text: m_Legend,
-//                fontSize: 36.0,
-//                isItalic: false,
-//                width: GLsizei(HUD.LegendWidth),
-//                height: GLsizei(HUD.LegendHeight))
-//            
-//            m_Texture[HUD.Meter.Legend] = mpLegend!.texture
-//        }
-//        
-//        glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
-//        glMatrixMode(GL_TEXTURE.ui)
-//        
-//        glPushMatrix()
-//        glLoadIdentity()
-//        glScalef(mnWidth.f, mnHeight.f, 1.0)
-//        
-//        mpQuad!.setIsInverted(false)
-//        mpQuad!.setBounds(m_Bounds[0])
-//        
-//        if !mpQuad!.isFinalized {
-//            mpQuad!.finalize()
-//        } else {
-//            mpQuad!.update()
-//        }
-//        
-//        glMatrixMode(GL_MODELVIEW.ui)
-//        
-//        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[HUD.Meter.Background])
-//        mpQuad!.draw()
-//        
-//        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, m_Texture[HUD.Meter.Needle])
-//        
-//        glPushMatrix()
-//        let angle = GLM.k180DivPi.f * HUD.angleForValue(mnSmooth, mnMax).f
-//        
-//        glRotatef(angle, 0.0, 0.0, 1.0)
-//        
-//        mpQuad!.draw()
-//        glPopMatrix()
-//        
-//        glMatrixMode(GL_TEXTURE.ui)
-//        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, 0)
-//        glPopMatrix()
-//        
-//        glMatrixMode(GL_MODELVIEW.ui)
-//        glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
-//        
-//        glEnable(GL_TEXTURE_2D.ui)
-//        glBindTexture(GL_TEXTURE_2D.ui, m_Texture[HUD.Meter.Legend])
-//        mpQuad!.setIsInverted(true)
-//        mpQuad!.setBounds(m_Bounds[1])
-//        
-//        mpQuad!.update()
-//        mpQuad!.draw()
-//        glBindTexture(GL_TEXTURE_2D.ui, 0)
-//        
-//        let nValue = GLuint(lrint(mnSmooth))
-//        let nTex   = HUD.emplaceTextureWithLabel(nValue, &m_Hash)
-//        
-//        if nTex != 0 {
-//            glBindTexture(GL_TEXTURE_2D.ui, nTex)
-//            mpQuad!.setIsInverted(true)
-//            mpQuad!.setBounds(m_Bounds[2])
-//            
-//            mpQuad!.update()
-//            mpQuad!.draw()
-//            glBindTexture(GL_TEXTURE_2D.ui, 0)
-//        }
-//        glDisable(GL_TEXTURE_2D.ui)
-//    }
-    
     public func draw(x: GLfloat, _ y: GLfloat) {
         glBlendFunc(GL_ONE.ui, GL_ONE_MINUS_SRC_ALPHA.ui)
         glEnable(GL_BLEND.ui)
@@ -847,7 +766,7 @@ extension HUD.Meter.Image {
             GLM.load(true, mv1 * translate);
             
             glColor3f(1.0, 1.0, 1.0)
-                
+            
             glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
             do {
                 glMatrixMode(GL_TEXTURE.ui)

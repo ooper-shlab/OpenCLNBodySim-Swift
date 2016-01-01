@@ -74,7 +74,6 @@
 		D791A66F1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A66E1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift */; };
 		D791A6711C340AD3009A06F4 /* simd+.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A6701C340AD3009A06F4 /* simd+.swift */; };
 		D791A6731C341998009A06F4 /* NBodySimulationDataURDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A6721C341998009A06F4 /* NBodySimulationDataURDP.swift */; };
-		D7C2AFE61C35431B003716F2 /* CFCPUHostInfo.mm in Sources */ = {isa = PBXBuildFile; fileRef = 36A1765D1AC25E1500AAC0AA /* CFCPUHostInfo.mm */; };
 		D7EF24D71C31041B00E0A5E2 /* CFCPULoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF24D61C31041B00E0A5E2 /* CFCPULoad.swift */; };
 		D7EF24D91C312DF900E0A5E2 /* CFDataFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF24D81C312DF900E0A5E2 /* CFDataFile.swift */; };
 		D7EF24DB1C31505000E0A5E2 /* Numeric+scannable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF24DA1C31505000E0A5E2 /* Numeric+scannable.swift */; };
@@ -96,46 +95,6 @@
 		2E48DA511395F1750035FEC4 /* OpenCL_NBody_Simulation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenCL_NBody_Simulation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E48DA551395F1750035FEC4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		2EE04F421395F1FF0071487D /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		3603EFD51A709831006F94EA /* NBodyButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodyButton.h; sourceTree = "<group>"; };
-		3603EFD61A709831006F94EA /* NBodyButton.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodyButton.mm; sourceTree = "<group>"; };
-		3603EFD81A709831006F94EA /* NBodyButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodyButtons.h; sourceTree = "<group>"; };
-		3603EFD91A709831006F94EA /* NBodyButtons.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodyButtons.mm; sourceTree = "<group>"; };
-		3606FB471895E8550054D457 /* NBodyEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodyEngine.h; sourceTree = "<group>"; };
-		3606FB481895E8550054D457 /* NBodyEngine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodyEngine.mm; sourceTree = "<group>"; };
-		36089270188B08A200763FF0 /* NBodySimulationMediator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationMediator.mm; sourceTree = "<group>"; };
-		36089271188B08A200763FF0 /* NBodySimulationMediator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationMediator.h; sourceTree = "<group>"; };
-		360A4C9B1C0B7FAC00DD8C9D /* CMNumerics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMNumerics.h; sourceTree = "<group>"; };
-		360A4C9C1C0B7FAC00DD8C9D /* CMNumerics.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CMNumerics.mm; sourceTree = "<group>"; };
-		360A4C9E1C0B7FAC00DD8C9D /* CMRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMRandom.h; sourceTree = "<group>"; };
-		360A4C9F1C0B7FAC00DD8C9D /* CMRandom.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CMRandom.mm; sourceTree = "<group>"; };
-		3626CDE01AAFB913005D5CDA /* NSFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFile.h; sourceTree = "<group>"; };
-		3626CDE11AAFB913005D5CDA /* NSFile.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSFile.mm; sourceTree = "<group>"; };
-		3632E3CB19B28CA500EAA3E8 /* GLMTransforms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLMTransforms.h; sourceTree = "<group>"; };
-		3632E3CC19B28CA500EAA3E8 /* GLMTransforms.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLMTransforms.mm; sourceTree = "<group>"; };
-		3632E3CF19B28D1800EAA3E8 /* GLMSizes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLMSizes.h; sourceTree = "<group>"; };
-		3632E3D019B28D1800EAA3E8 /* GLMSizes.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLMSizes.mm; sourceTree = "<group>"; };
-		363E0DD4188A1D45006E55BC /* NBodySimulationBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationBase.h; sourceTree = "<group>"; };
-		363E0DD5188A1D45006E55BC /* NBodySimulationBase.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationBase.mm; sourceTree = "<group>"; };
-		363E0DD7188A1D45006E55BC /* NBodySimulationCPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationCPU.h; sourceTree = "<group>"; };
-		363E0DD8188A1D45006E55BC /* NBodySimulationCPU.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationCPU.mm; sourceTree = "<group>"; };
-		363E0DDA188A1D45006E55BC /* NBodySimulationGPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationGPU.h; sourceTree = "<group>"; };
-		363E0DDB188A1D45006E55BC /* NBodySimulationGPU.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationGPU.mm; sourceTree = "<group>"; };
-		363E0DE4188A2301006E55BC /* NBodySimulationFacade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationFacade.h; sourceTree = "<group>"; };
-		363E0DE5188A2301006E55BC /* NBodySimulationFacade.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationFacade.mm; sourceTree = "<group>"; };
-		364F873A189C36290017749E /* NBodySimulationDataMediator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationDataMediator.h; sourceTree = "<group>"; };
-		364F873B189C36290017749E /* NBodySimulationDataMediator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationDataMediator.mm; sourceTree = "<group>"; };
-		364F873D189C36290017749E /* NBodySimulationDataPacked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationDataPacked.h; sourceTree = "<group>"; };
-		364F873E189C36290017749E /* NBodySimulationDataPacked.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationDataPacked.mm; sourceTree = "<group>"; };
-		364F8740189C36290017749E /* NBodySimulationDataSplit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationDataSplit.h; sourceTree = "<group>"; };
-		364F8741189C36290017749E /* NBodySimulationDataSplit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationDataSplit.mm; sourceTree = "<group>"; };
-		36565F5A1C08EA8400B3CA3F /* CFQueue.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CFQueue.mm; sourceTree = "<group>"; };
-		36565F5B1C08EA8400B3CA3F /* CFQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFQueue.h; sourceTree = "<group>"; };
-		3658707D1891D38B0024BDC1 /* HUDButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUDButton.h; sourceTree = "<group>"; };
-		3658707E1891D38B0024BDC1 /* HUDButton.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HUDButton.mm; sourceTree = "<group>"; };
-		365870811891D38B0024BDC1 /* HUDMeterImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUDMeterImage.h; sourceTree = "<group>"; };
-		365870821891D38B0024BDC1 /* HUDMeterImage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HUDMeterImage.mm; sourceTree = "<group>"; };
-		365870841891D38B0024BDC1 /* HUDMeterTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HUDMeterTimer.h; sourceTree = "<group>"; };
-		365870851891D38B0024BDC1 /* HUDMeterTimer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HUDMeterTimer.mm; sourceTree = "<group>"; };
 		366394DC1863A29800BEF119 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
 		366394EA1863A46900BEF119 /* GalaxyIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = GalaxyIcon.icns; path = ../GalaxyIcon.icns; sourceTree = "<group>"; };
 		366394EE1863A4EA00BEF119 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star.png; sourceTree = "<group>"; };
@@ -151,66 +110,9 @@
 		3663954F1863A64900BEF119 /* star.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = star.vsh; sourceTree = "<group>"; };
 		3663958D1863A72C00BEF119 /* nbody_cpu.ocl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nbody_cpu.ocl; sourceTree = "<group>"; };
 		3663958E1863A72C00BEF119 /* nbody_gpu.ocl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nbody_gpu.ocl; sourceTree = "<group>"; };
-		36663B2C1885F08400B02F82 /* CFText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFText.h; sourceTree = "<group>"; };
-		36663B2D1885F08400B02F82 /* CFText.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CFText.mm; sourceTree = "<group>"; };
-		36663B371885F08400B02F82 /* NBodyConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodyConstants.h; sourceTree = "<group>"; };
-		36663B6F1885F08400B02F82 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		36663B701885F08400B02F82 /* OpenCL_NBody_Simulation-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OpenCL_NBody_Simulation-Info.plist"; sourceTree = "<group>"; };
-		36663B7A1885F08400B02F82 /* OpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLView.h; sourceTree = "<group>"; };
-		36663B7B1885F08400B02F82 /* OpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLView.mm; sourceTree = "<group>"; };
-		36663B9B1885F0EE00B02F82 /* CFFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFFile.h; sourceTree = "<group>"; };
-		36663B9C1885F0EE00B02F82 /* CFFile.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CFFile.mm; sourceTree = "<group>"; };
-		36663BBD1885F19D00B02F82 /* GLUProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLUProgram.h; sourceTree = "<group>"; };
-		36663BBE1885F19D00B02F82 /* GLUProgram.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLUProgram.mm; sourceTree = "<group>"; };
-		366EED9118889EEE00842BBE /* GLUQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLUQuery.h; sourceTree = "<group>"; };
-		366EED9218889EEE00842BBE /* GLUQuery.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLUQuery.mm; sourceTree = "<group>"; };
-		36795A191A6D95B6002D314D /* NBodyPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodyPreferences.h; sourceTree = "<group>"; };
-		36795A1A1A6D95B6002D314D /* NBodyPreferences.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodyPreferences.mm; sourceTree = "<group>"; };
-		367C1ECB189983DE0083A3EE /* GLUText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLUText.h; sourceTree = "<group>"; };
-		367C1ECC189983DE0083A3EE /* GLUText.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLUText.mm; sourceTree = "<group>"; };
-		367C1ECF1899842D0083A3EE /* CTFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTFrame.h; sourceTree = "<group>"; };
-		367C1ED01899842D0083A3EE /* CTFrame.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CTFrame.mm; sourceTree = "<group>"; };
-		368241221ABA4202002965EE /* NBodySimulationDataURDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationDataURDB.h; sourceTree = "<group>"; };
-		368241231ABA4202002965EE /* NBodySimulationDataURDB.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationDataURDB.mm; sourceTree = "<group>"; };
-		368241251ABA4202002965EE /* NBodySimulationDataURDP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationDataURDP.h; sourceTree = "<group>"; };
-		368241261ABA4202002965EE /* NBodySimulationDataURDP.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationDataURDP.mm; sourceTree = "<group>"; };
-		368241281ABA4202002965EE /* NBodySimulationDataURDS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationDataURDS.h; sourceTree = "<group>"; };
-		368241291ABA4202002965EE /* NBodySimulationDataURDS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationDataURDS.mm; sourceTree = "<group>"; };
-		3690894A18875999006107ED /* GLUQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLUQuad.h; sourceTree = "<group>"; };
-		3690894B18875999006107ED /* GLUQuad.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLUQuad.mm; sourceTree = "<group>"; };
-		36A1765C1AC25E1500AAC0AA /* CFCPUHostInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFCPUHostInfo.h; sourceTree = "<group>"; };
-		36A1765D1AC25E1500AAC0AA /* CFCPUHostInfo.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CFCPUHostInfo.mm; sourceTree = "<group>"; };
-		36A1765F1AC25E1500AAC0AA /* CFCPULoad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFCPULoad.h; sourceTree = "<group>"; };
-		36A176601AC25E1500AAC0AA /* CFCPULoad.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CFCPULoad.mm; sourceTree = "<group>"; };
-		36A176641AC275C700AAC0AA /* CFProcessorInfoArray.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CFProcessorInfoArray.mm; sourceTree = "<group>"; };
-		36A176651AC275C700AAC0AA /* CFProcessorInfoArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFProcessorInfoArray.h; sourceTree = "<group>"; };
-		36AE03371887306D000CB8CE /* CFQueryHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFQueryHardware.h; sourceTree = "<group>"; };
-		36AE03381887306D000CB8CE /* CFQueryHardware.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CFQueryHardware.mm; sourceTree = "<group>"; };
-		36B499831AB7AEA8006D7141 /* CFDataFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFDataFile.h; sourceTree = "<group>"; };
-		36B499841AB7AEA8006D7141 /* CFDataFile.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CFDataFile.mm; sourceTree = "<group>"; };
-		36B6CA231AB9034C00107F9E /* NBodySimulationDataCopier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationDataCopier.h; sourceTree = "<group>"; };
-		36B6CA241AB9034C00107F9E /* NBodySimulationDataCopier.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationDataCopier.mm; sourceTree = "<group>"; };
-		36B6CA271AB92C6D00107F9E /* NBodySimulationDataGalaxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationDataGalaxy.h; sourceTree = "<group>"; };
-		36B6CA281AB92C6D00107F9E /* NBodySimulationDataGalaxy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationDataGalaxy.mm; sourceTree = "<group>"; };
 		36BE3F4213D6067E00D9C225 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		36C45BF61AA0F38F00E4F3E0 /* NBodySimulationProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationProperties.h; sourceTree = "<group>"; };
-		36C45BF71AA0F38F00E4F3E0 /* NBodySimulationProperties.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationProperties.mm; sourceTree = "<group>"; };
 		36C4D3A21AA6A4EE000946C7 /* NBodySimulationProperties.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NBodySimulationProperties.plist; sourceTree = "<group>"; };
-		36D19370189440CD0008D3B9 /* NBodySimulationVisualizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodySimulationVisualizer.h; sourceTree = "<group>"; };
-		36D19371189440CD0008D3B9 /* NBodySimulationVisualizer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodySimulationVisualizer.mm; sourceTree = "<group>"; };
-		36D4C41B1A72E2F1001F600D /* NBodyMeter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodyMeter.h; sourceTree = "<group>"; };
-		36D4C41C1A72E2F1001F600D /* NBodyMeter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodyMeter.mm; sourceTree = "<group>"; };
-		36D4C41E1A72E2F1001F600D /* NBodyMeters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBodyMeters.h; sourceTree = "<group>"; };
-		36D4C41F1A72E2F1001F600D /* NBodyMeters.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NBodyMeters.mm; sourceTree = "<group>"; };
-		36DE180B18AFE5E400B9FF18 /* GLUTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLUTexture.h; sourceTree = "<group>"; };
-		36DE180C18AFE5E400B9FF18 /* GLUTexture.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLUTexture.mm; sourceTree = "<group>"; };
-		36DE180E18AFE5E400B9FF18 /* GLUGaussian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLUGaussian.h; sourceTree = "<group>"; };
-		36DE180F18AFE5E400B9FF18 /* GLUGaussian.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLUGaussian.mm; sourceTree = "<group>"; };
-		36DE181318B0028000B9FF18 /* GLContainers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLContainers.h; sourceTree = "<group>"; };
-		36E2B43E188768D1004ACD1D /* GLMConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLMConstants.h; sourceTree = "<group>"; };
-		36E2B43F188768D1004ACD1D /* GLMConstants.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLMConstants.mm; sourceTree = "<group>"; };
-		36E41B0618AEA6A4000AA534 /* CGBitmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGBitmap.h; sourceTree = "<group>"; };
-		36E41B0718AEA6A4000AA534 /* CGBitmap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CGBitmap.mm; sourceTree = "<group>"; };
 		D70385531C30DF3B0085EAB4 /* CGBitmap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGBitmap.swift; sourceTree = "<group>"; };
 		D70385551C30DF6E0085EAB4 /* CFFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFFile.swift; sourceTree = "<group>"; };
 		D70385561C30DF6E0085EAB4 /* NSFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSFile.swift; sourceTree = "<group>"; };
@@ -336,8 +238,6 @@
 		3603EFD41A709831006F94EA /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				3603EFD51A709831006F94EA /* NBodyButton.h */,
-				3603EFD61A709831006F94EA /* NBodyButton.mm */,
 				D7EF24E21C32526A00E0A5E2 /* NBodyButton.swift */,
 			);
 			path = Core;
@@ -346,8 +246,6 @@
 		3603EFD71A709831006F94EA /* Mediator */ = {
 			isa = PBXGroup;
 			children = (
-				3603EFD81A709831006F94EA /* NBodyButtons.h */,
-				3603EFD91A709831006F94EA /* NBodyButtons.mm */,
 				D7EF24E41C3257BD00E0A5E2 /* NBodyButtons.swift */,
 			);
 			path = Mediator;
@@ -356,8 +254,6 @@
 		3606FB461895E8550054D457 /* Engine */ = {
 			isa = PBXGroup;
 			children = (
-				3606FB471895E8550054D457 /* NBodyEngine.h */,
-				3606FB481895E8550054D457 /* NBodyEngine.mm */,
 				D703856F1C30E0AE0085EAB4 /* NBodyEngine.swift */,
 			);
 			path = Engine;
@@ -367,8 +263,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385831C30E1D20085EAB4 /* NBodySimulationMediator.swift */,
-				36089271188B08A200763FF0 /* NBodySimulationMediator.h */,
-				36089270188B08A200763FF0 /* NBodySimulationMediator.mm */,
 			);
 			name = Mediator;
 			path = Sources/Model/NBody/Simulation/Mediator;
@@ -387,8 +281,6 @@
 		360A4C9A1C0B7FAC00DD8C9D /* Numerics */ = {
 			isa = PBXGroup;
 			children = (
-				360A4C9B1C0B7FAC00DD8C9D /* CMNumerics.h */,
-				360A4C9C1C0B7FAC00DD8C9D /* CMNumerics.mm */,
 				D7EF24FD1C32C4D400E0A5E2 /* CMNumerics.swift */,
 			);
 			path = Numerics;
@@ -397,8 +289,6 @@
 		360A4C9D1C0B7FAC00DD8C9D /* Randomizer */ = {
 			isa = PBXGroup;
 			children = (
-				360A4C9E1C0B7FAC00DD8C9D /* CMRandom.h */,
-				360A4C9F1C0B7FAC00DD8C9D /* CMRandom.mm */,
 				D7EF25011C32C5D100E0A5E2 /* CMRandom.swift */,
 			);
 			path = Randomizer;
@@ -408,8 +298,6 @@
 			isa = PBXGroup;
 			children = (
 				D703858F1C30E2220085EAB4 /* GLMTransforms.swift */,
-				3632E3CB19B28CA500EAA3E8 /* GLMTransforms.h */,
-				3632E3CC19B28CA500EAA3E8 /* GLMTransforms.mm */,
 			);
 			path = Transforms;
 			sourceTree = "<group>";
@@ -418,8 +306,6 @@
 			isa = PBXGroup;
 			children = (
 				D703858D1C30E2190085EAB4 /* GLMSizes.swift */,
-				3632E3CF19B28D1800EAA3E8 /* GLMSizes.h */,
-				3632E3D019B28D1800EAA3E8 /* GLMSizes.mm */,
 			);
 			path = Sizes;
 			sourceTree = "<group>";
@@ -440,8 +326,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385731C30E12B0085EAB4 /* NBodySimulationBase.swift */,
-				363E0DD4188A1D45006E55BC /* NBodySimulationBase.h */,
-				363E0DD5188A1D45006E55BC /* NBodySimulationBase.mm */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -450,8 +334,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385751C30E1340085EAB4 /* NBodySimulationCPU.swift */,
-				363E0DD7188A1D45006E55BC /* NBodySimulationCPU.h */,
-				363E0DD8188A1D45006E55BC /* NBodySimulationCPU.mm */,
 			);
 			path = CPU;
 			sourceTree = "<group>";
@@ -460,8 +342,6 @@
 			isa = PBXGroup;
 			children = (
 				D703857F1C30E1AC0085EAB4 /* NBodySimulationGPU.swift */,
-				363E0DDA188A1D45006E55BC /* NBodySimulationGPU.h */,
-				363E0DDB188A1D45006E55BC /* NBodySimulationGPU.mm */,
 			);
 			path = GPU;
 			sourceTree = "<group>";
@@ -470,8 +350,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385811C30E1C70085EAB4 /* NBodySimulationFacade.swift */,
-				363E0DE4188A2301006E55BC /* NBodySimulationFacade.h */,
-				363E0DE5188A2301006E55BC /* NBodySimulationFacade.mm */,
 			);
 			name = Facade;
 			path = Sources/Model/NBody/Simulation/Facade;
@@ -494,8 +372,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385771C30E1580085EAB4 /* NBodySimulationDataMediator.swift */,
-				364F873A189C36290017749E /* NBodySimulationDataMediator.h */,
-				364F873B189C36290017749E /* NBodySimulationDataMediator.mm */,
 			);
 			path = Mediator;
 			sourceTree = "<group>";
@@ -504,8 +380,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385791C30E1610085EAB4 /* NBodySimulationDataPacked.swift */,
-				364F873D189C36290017749E /* NBodySimulationDataPacked.h */,
-				364F873E189C36290017749E /* NBodySimulationDataPacked.mm */,
 			);
 			path = Packed;
 			sourceTree = "<group>";
@@ -514,8 +388,6 @@
 			isa = PBXGroup;
 			children = (
 				D703857D1C30E1930085EAB4 /* NBodySimulationDataSplit.swift */,
-				364F8740189C36290017749E /* NBodySimulationDataSplit.h */,
-				364F8741189C36290017749E /* NBodySimulationDataSplit.mm */,
 			);
 			path = Split;
 			sourceTree = "<group>";
@@ -533,8 +405,6 @@
 		36565F591C08EA6C00B3CA3F /* Queue */ = {
 			isa = PBXGroup;
 			children = (
-				36565F5B1C08EA8400B3CA3F /* CFQueue.h */,
-				36565F5A1C08EA8400B3CA3F /* CFQueue.mm */,
 				D7EF24FB1C32C0D200E0A5E2 /* CFQueue.swift */,
 			);
 			path = Queue;
@@ -543,8 +413,6 @@
 		3658707C1891D38B0024BDC1 /* Button */ = {
 			isa = PBXGroup;
 			children = (
-				3658707D1891D38B0024BDC1 /* HUDButton.h */,
-				3658707E1891D38B0024BDC1 /* HUDButton.mm */,
 				D70385651C30E0080085EAB4 /* HUDButton.swift */,
 			);
 			path = Button;
@@ -562,8 +430,6 @@
 		365870801891D38B0024BDC1 /* Image */ = {
 			isa = PBXGroup;
 			children = (
-				365870811891D38B0024BDC1 /* HUDMeterImage.h */,
-				365870821891D38B0024BDC1 /* HUDMeterImage.mm */,
 				D70385671C30E01A0085EAB4 /* HUDMeterImage.swift */,
 			);
 			path = Image;
@@ -572,8 +438,6 @@
 		365870831891D38B0024BDC1 /* Timer */ = {
 			isa = PBXGroup;
 			children = (
-				365870841891D38B0024BDC1 /* HUDMeterTimer.h */,
-				365870851891D38B0024BDC1 /* HUDMeterTimer.mm */,
 				D70385691C30E0260085EAB4 /* HUDMeterTimer.swift */,
 			);
 			path = Timer;
@@ -696,8 +560,6 @@
 			isa = PBXGroup;
 			children = (
 				D703855F1C30DFBA0085EAB4 /* CFText.swift */,
-				36663B2C1885F08400B02F82 /* CFText.h */,
-				36663B2D1885F08400B02F82 /* CFText.mm */,
 			);
 			path = Text;
 			sourceTree = "<group>";
@@ -729,7 +591,6 @@
 			isa = PBXGroup;
 			children = (
 				D703856D1C30E04E0085EAB4 /* NBodyConstants.swift */,
-				36663B371885F08400B02F82 /* NBodyConstants.h */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -749,7 +610,6 @@
 			isa = PBXGroup;
 			children = (
 				D703859F1C30E2F30085EAB4 /* AppDelegate.swift */,
-				36663B6F1885F08400B02F82 /* main.m */,
 				36663B701885F08400B02F82 /* OpenCL_NBody_Simulation-Info.plist */,
 			);
 			path = Other;
@@ -759,8 +619,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385A11C30E2FE0085EAB4 /* OpenGLView.swift */,
-				36663B7A1885F08400B02F82 /* OpenGLView.h */,
-				36663B7B1885F08400B02F82 /* OpenGLView.mm */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -768,14 +626,8 @@
 		36663B9A1885F0EE00B02F82 /* Files */ = {
 			isa = PBXGroup;
 			children = (
-				36663B9B1885F0EE00B02F82 /* CFFile.h */,
-				36663B9C1885F0EE00B02F82 /* CFFile.mm */,
 				D70385551C30DF6E0085EAB4 /* CFFile.swift */,
-				36B499831AB7AEA8006D7141 /* CFDataFile.h */,
-				36B499841AB7AEA8006D7141 /* CFDataFile.mm */,
 				D7EF24D81C312DF900E0A5E2 /* CFDataFile.swift */,
-				3626CDE01AAFB913005D5CDA /* NSFile.h */,
-				3626CDE11AAFB913005D5CDA /* NSFile.mm */,
 				D70385561C30DF6E0085EAB4 /* NSFile.swift */,
 			);
 			path = Files;
@@ -808,8 +660,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385931C30E2380085EAB4 /* GLUProgram.swift */,
-				36663BBD1885F19D00B02F82 /* GLUProgram.h */,
-				36663BBE1885F19D00B02F82 /* GLUProgram.mm */,
 			);
 			path = Program;
 			sourceTree = "<group>";
@@ -827,8 +677,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385971C30E24B0085EAB4 /* GLUQuery.swift */,
-				366EED9118889EEE00842BBE /* GLUQuery.h */,
-				366EED9218889EEE00842BBE /* GLUQuery.mm */,
 			);
 			path = Query;
 			sourceTree = "<group>";
@@ -837,8 +685,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385711C30E0F60085EAB4 /* NBodyPreferences.swift */,
-				36795A191A6D95B6002D314D /* NBodyPreferences.h */,
-				36795A1A1A6D95B6002D314D /* NBodyPreferences.mm */,
 			);
 			path = Preferences;
 			sourceTree = "<group>";
@@ -847,8 +693,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385991C30E2550085EAB4 /* GLUText.swift */,
-				367C1ECB189983DE0083A3EE /* GLUText.h */,
-				367C1ECC189983DE0083A3EE /* GLUText.mm */,
 			);
 			path = Text;
 			sourceTree = "<group>";
@@ -856,8 +700,6 @@
 		367C1ECE1899842D0083A3EE /* Frame */ = {
 			isa = PBXGroup;
 			children = (
-				367C1ECF1899842D0083A3EE /* CTFrame.h */,
-				367C1ED01899842D0083A3EE /* CTFrame.mm */,
 				D703855B1C30DF920085EAB4 /* CTFrame.swift */,
 			);
 			path = Frame;
@@ -866,8 +708,6 @@
 		368241211ABA4202002965EE /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				368241221ABA4202002965EE /* NBodySimulationDataURDB.h */,
-				368241231ABA4202002965EE /* NBodySimulationDataURDB.mm */,
 				D791A66E1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift */,
 			);
 			path = Base;
@@ -876,8 +716,6 @@
 		368241241ABA4202002965EE /* Packed */ = {
 			isa = PBXGroup;
 			children = (
-				368241251ABA4202002965EE /* NBodySimulationDataURDP.h */,
-				368241261ABA4202002965EE /* NBodySimulationDataURDP.mm */,
 				D791A6721C341998009A06F4 /* NBodySimulationDataURDP.swift */,
 			);
 			path = Packed;
@@ -886,8 +724,6 @@
 		368241271ABA4202002965EE /* Split */ = {
 			isa = PBXGroup;
 			children = (
-				368241281ABA4202002965EE /* NBodySimulationDataURDS.h */,
-				368241291ABA4202002965EE /* NBodySimulationDataURDS.mm */,
 				D791A66C1C33B582009A06F4 /* NBodySimulationDataURDS.swift */,
 			);
 			path = Split;
@@ -897,8 +733,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385951C30E2410085EAB4 /* GLUQuad.swift */,
-				3690894A18875999006107ED /* GLUQuad.h */,
-				3690894B18875999006107ED /* GLUQuad.mm */,
 			);
 			path = Quad;
 			sourceTree = "<group>";
@@ -906,8 +740,6 @@
 		36A1765B1AC25E1500AAC0AA /* HostInfo */ = {
 			isa = PBXGroup;
 			children = (
-				36A1765C1AC25E1500AAC0AA /* CFCPUHostInfo.h */,
-				36A1765D1AC25E1500AAC0AA /* CFCPUHostInfo.mm */,
 				D70385B41C30FA030085EAB4 /* CFCPUHostInfo.swift */,
 			);
 			path = HostInfo;
@@ -916,8 +748,6 @@
 		36A1765E1AC25E1500AAC0AA /* Load */ = {
 			isa = PBXGroup;
 			children = (
-				36A1765F1AC25E1500AAC0AA /* CFCPULoad.h */,
-				36A176601AC25E1500AAC0AA /* CFCPULoad.mm */,
 				D7EF24D61C31041B00E0A5E2 /* CFCPULoad.swift */,
 			);
 			path = Load;
@@ -926,8 +756,6 @@
 		36A176631AC275C700AAC0AA /* InfoArray */ = {
 			isa = PBXGroup;
 			children = (
-				36A176651AC275C700AAC0AA /* CFProcessorInfoArray.h */,
-				36A176641AC275C700AAC0AA /* CFProcessorInfoArray.mm */,
 				D70385B01C30EDA90085EAB4 /* CFProcessorInfoArray.swift */,
 			);
 			path = InfoArray;
@@ -936,8 +764,6 @@
 		36AE03361887306D000CB8CE /* Hardware */ = {
 			isa = PBXGroup;
 			children = (
-				36AE03371887306D000CB8CE /* CFQueryHardware.h */,
-				36AE03381887306D000CB8CE /* CFQueryHardware.mm */,
 				D703855D1C30DFA00085EAB4 /* CFQueryHardware.swift */,
 			);
 			path = Hardware;
@@ -946,8 +772,6 @@
 		36B6CA221AB9034C00107F9E /* Copier */ = {
 			isa = PBXGroup;
 			children = (
-				36B6CA231AB9034C00107F9E /* NBodySimulationDataCopier.h */,
-				36B6CA241AB9034C00107F9E /* NBodySimulationDataCopier.mm */,
 				D7EF25051C32E04400E0A5E2 /* NBodySimulationDataCopier.swift */,
 			);
 			path = Copier;
@@ -956,8 +780,6 @@
 		36B6CA261AB92C6D00107F9E /* Galaxy */ = {
 			isa = PBXGroup;
 			children = (
-				36B6CA271AB92C6D00107F9E /* NBodySimulationDataGalaxy.h */,
-				36B6CA281AB92C6D00107F9E /* NBodySimulationDataGalaxy.mm */,
 				D791A66A1C33AF40009A06F4 /* NBodySimulationDataGalaxy.swift */,
 			);
 			path = Galaxy;
@@ -980,8 +802,6 @@
 			isa = PBXGroup;
 			children = (
 				36C4D3A21AA6A4EE000946C7 /* NBodySimulationProperties.plist */,
-				36C45BF61AA0F38F00E4F3E0 /* NBodySimulationProperties.h */,
-				36C45BF71AA0F38F00E4F3E0 /* NBodySimulationProperties.mm */,
 				D7EF24DC1C31C52000E0A5E2 /* NBodySimulationProperties.swift */,
 			);
 			path = Properties;
@@ -1002,8 +822,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385851C30E1DD0085EAB4 /* NBodySimulationVisualizer.swift */,
-				36D19370189440CD0008D3B9 /* NBodySimulationVisualizer.h */,
-				36D19371189440CD0008D3B9 /* NBodySimulationVisualizer.mm */,
 			);
 			name = Visualizer;
 			path = ../Visualizer;
@@ -1012,8 +830,6 @@
 		36D4C41A1A72E2F1001F600D /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				36D4C41B1A72E2F1001F600D /* NBodyMeter.h */,
-				36D4C41C1A72E2F1001F600D /* NBodyMeter.mm */,
 				D7EF24DE1C31CB3F00E0A5E2 /* NBodyMeter.swift */,
 			);
 			path = Core;
@@ -1022,8 +838,6 @@
 		36D4C41D1A72E2F1001F600D /* Mediator */ = {
 			isa = PBXGroup;
 			children = (
-				36D4C41E1A72E2F1001F600D /* NBodyMeters.h */,
-				36D4C41F1A72E2F1001F600D /* NBodyMeters.mm */,
 				D7EF24E01C324D2100E0A5E2 /* NBodyMeters.swift */,
 			);
 			path = Mediator;
@@ -1033,8 +847,6 @@
 			isa = PBXGroup;
 			children = (
 				D703859B1C30E26B0085EAB4 /* GLUTexture.swift */,
-				36DE180B18AFE5E400B9FF18 /* GLUTexture.h */,
-				36DE180C18AFE5E400B9FF18 /* GLUTexture.mm */,
 			);
 			path = 2D;
 			sourceTree = "<group>";
@@ -1043,8 +855,6 @@
 			isa = PBXGroup;
 			children = (
 				D703859D1C30E2730085EAB4 /* GLUGaussian.swift */,
-				36DE180E18AFE5E400B9FF18 /* GLUGaussian.h */,
-				36DE180F18AFE5E400B9FF18 /* GLUGaussian.mm */,
 			);
 			path = Gaussian;
 			sourceTree = "<group>";
@@ -1053,7 +863,6 @@
 			isa = PBXGroup;
 			children = (
 				D70385871C30E1FA0085EAB4 /* GLContainers.swift */,
-				36DE181318B0028000B9FF18 /* GLContainers.h */,
 			);
 			path = Containers;
 			sourceTree = "<group>";
@@ -1073,8 +882,6 @@
 			isa = PBXGroup;
 			children = (
 				D703858B1C30E2100085EAB4 /* GLMConstants.swift */,
-				36E2B43E188768D1004ACD1D /* GLMConstants.h */,
-				36E2B43F188768D1004ACD1D /* GLMConstants.mm */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -1082,8 +889,6 @@
 		36E41B0518AEA6A4000AA534 /* Bitmap */ = {
 			isa = PBXGroup;
 			children = (
-				36E41B0618AEA6A4000AA534 /* CGBitmap.h */,
-				36E41B0718AEA6A4000AA534 /* CGBitmap.mm */,
 				D70385531C30DF3B0085EAB4 /* CGBitmap.swift */,
 			);
 			path = Bitmap;
@@ -1198,7 +1003,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D70385881C30E1FA0085EAB4 /* GLContainers.swift in Sources */,
-				D7C2AFE61C35431B003716F2 /* CFCPUHostInfo.mm in Sources */,
 				D703856C1C30E0450085EAB4 /* NBody.swift in Sources */,
 				D791A66F1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift in Sources */,
 				D791A6561C336791009A06F4 /* PointerAssignment.swift in Sources */,

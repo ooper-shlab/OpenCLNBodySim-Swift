@@ -63,10 +63,10 @@ extension NBody.Simulation.Data {
             mnCount = nCount
             
             m_Mass.mpHost = UnsafeMutablePointer.alloc(nCount)
-         
+            
             for i in 0..<3 {
                 m_Position[i].mpHost = UnsafeMutablePointer.alloc(nCount)
-            
+                
                 m_Velocity[i].mpHost = UnsafeMutablePointer.alloc(nCount)
             }
         }

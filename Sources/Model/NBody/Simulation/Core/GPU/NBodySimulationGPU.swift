@@ -197,7 +197,7 @@ extension NBody.Simulation {
             err = source.withCString {pSource in
                 var err: GLint = 0
                 var ptrSource = pSource
-            
+                
                 self.mpProgram = clCreateProgramWithSource(mpContext,
                     1,
                     &ptrSource,

@@ -90,9 +90,9 @@ extension Int {
     public var ui: UInt32 {
         return UInt32(self)
     }
-//    public var l: Int {
-//        return Int(self)
-//    }
+    //    public var l: Int {
+    //        return Int(self)
+    //    }
     public var ul: UInt {
         return UInt(self)
     }
@@ -136,9 +136,9 @@ extension UInt {
     public var l: Int {
         return Int(self)
     }
-//    public var ul: UInt {
-//        return UInt(self)
-//    }
+    //    public var ul: UInt {
+    //        return UInt(self)
+    //    }
     public var ll: Int64 {
         return Int64(self)
     }
@@ -170,9 +170,9 @@ extension Int32 {
     public var us: UInt16 {
         return UInt16(self)
     }
-//    public var i: Int32 {
-//        return Int32(self)
-//    }
+    //    public var i: Int32 {
+    //        return Int32(self)
+    //    }
     public var ui: UInt32 {
         return UInt32(self)
     }
@@ -216,9 +216,9 @@ extension UInt32 {
     public var i: Int32 {
         return Int32(self)
     }
-//    public var ui: UInt32 {
-//        return UInt32(self)
-//    }
+    //    public var ui: UInt32 {
+    //        return UInt32(self)
+    //    }
     public var l: Int {
         return Int(self)
     }
@@ -271,9 +271,9 @@ extension UInt64 {
     public var ll: Int64 {
         return Int64(self)
     }
-//    public var ull: UInt64 {
-//        return UInt64(self)
-//    }
+    //    public var ull: UInt64 {
+    //        return UInt64(self)
+    //    }
 }
 
 //GLfloat, cl_float
@@ -306,9 +306,9 @@ extension CGFloat {
 
 //Int8
 extension CChar: UnicodeScalarLiteralConvertible {
-//    public init(_ v: UnicodeScalar) {
-//        self = CChar(v.value)
-//    }
+    //    public init(_ v: UnicodeScalar) {
+    //        self = CChar(v.value)
+    //    }
     public init(unicodeScalarLiteral value: UnicodeScalar) {
         self = CChar(value.value)
     }
@@ -316,9 +316,9 @@ extension CChar: UnicodeScalarLiteralConvertible {
 
 //UInt16
 extension unichar: UnicodeScalarLiteralConvertible {
-//    public init(_ v: UnicodeScalar) {
-//        self = unichar(v.value)
-//    }
+    //    public init(_ v: UnicodeScalar) {
+    //        self = unichar(v.value)
+    //    }
     public init(unicodeScalarLiteral value: UnicodeScalar) {
         self = unichar(value.value)
     }

@@ -118,7 +118,7 @@ extension CF {
                 
                 return Int(result)
             }
-
+            
             //MARK: -
             //MARK: Public - Hardware
             
@@ -140,7 +140,7 @@ extension CF {
                 CF.Query.Hardware.getMemSize(&mnSize)
                 CF.Query.Hardware.getModel(&m_Model)
             }
-
+            
             //CF::Query::Hardware::~Hardware()
             //{
             //    mnCores = 0;
@@ -160,7 +160,7 @@ extension CF {
                 mnScale = hw.mnScale
                 m_Model = hw.m_Model
             }
-
+            
             //CF::Query::Hardware& CF::Query::Hardware::operator=(const CF::Query::Hardware& hw)
             //{
             // 	if(this != &hw)

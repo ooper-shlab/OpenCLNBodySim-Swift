@@ -39,15 +39,15 @@ extension GLU {
                 switch target {
                 case GL_VERTEX_SHADER.ui:
                     pExt = "vsh"
-//                    shader = "vertex"
+                    //                    shader = "vertex"
                     
                 case GL_GEOMETRY_SHADER_EXT.ui:
                     pExt = "gsh"
-//                    shader = "geometry"
+                    //                    shader = "geometry"
                     
                 case GL_FRAGMENT_SHADER.ui:
                     pExt = "fsh"
-//                    shader = "fragment"
+                    //                    shader = "fragment"
                     
                 default:
                     break
@@ -80,11 +80,11 @@ extension GLU {
                 if nInfoLogLength != 0 {
                     var pInfoLog = [GLchar](count: Int(nInfoLogLength), repeatedValue: 0)
                     
-//                    var actualInfoLogLength: GLsizei = GLsizei(nInfoLogLength)
+                    //                    var actualInfoLogLength: GLsizei = GLsizei(nInfoLogLength)
                     glGetShaderInfoLog(nShader,
-//                        actualInfoLogLength,
+                        //                        actualInfoLogLength,
                         nInfoLogLength,
-//                        &actualInfoLogLength,
+                        //                        &actualInfoLogLength,
                         &nInfoLogLength,
                         &pInfoLog)
                     print(">> INFO: OpenGL Shader - Compile log:")
@@ -256,15 +256,15 @@ extension GLU {
             outType nOutType: GLenum,
             outVert nOutVert: GLsizei)
         {
-                if pName != nil {
-                    let targets: GLtargets = [GL_VERTEX_SHADER.ui, GL_FRAGMENT_SHADER.ui, GL_GEOMETRY_SHADER_EXT.ui]
-                    
-                    mnInType = nInType
-                    mnOutType = nOutType
-                    mnOutVert = nOutVert
-                    m_Sources = Shader.sourcesCreate(targets, pName!)
-                    mnProgram = GLU.Program.create(m_Sources, mnInType, mnOutType, mnOutVert)
-                }
+            if pName != nil {
+                let targets: GLtargets = [GL_VERTEX_SHADER.ui, GL_FRAGMENT_SHADER.ui, GL_GEOMETRY_SHADER_EXT.ui]
+                
+                mnInType = nInType
+                mnOutType = nOutType
+                mnOutVert = nOutVert
+                m_Sources = Shader.sourcesCreate(targets, pName!)
+                mnProgram = GLU.Program.create(m_Sources, mnInType, mnOutType, mnOutVert)
+            }
         }
         
         public convenience init(program rProgram: GLU.Program) {

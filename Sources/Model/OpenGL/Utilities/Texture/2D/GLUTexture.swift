@@ -50,7 +50,7 @@ extension GLU.Texture {
         -> GLuint
     {
         var texture: GLuint = 0
-            
+        
         glEnable(target)
         do {
             glGenTextures(1, &texture)
@@ -81,7 +81,7 @@ extension GLU.Texture {
             }
         }
         glDisable(target)
-            
+        
         return texture
     }
     

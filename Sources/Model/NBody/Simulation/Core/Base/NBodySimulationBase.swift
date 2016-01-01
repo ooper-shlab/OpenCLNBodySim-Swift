@@ -105,55 +105,55 @@ extension NBody.Simulation {
         
         init(_ properties: NBody.Simulation.Properties) {
             m_Properties = properties
-                if properties.mnParticles != 0 {
-                    m_Options = kOptions
-                    
-                    //m_Properties = properties
-                    
-                    mnCardinality = properties.mnParticles * properties.mnParticles
-                    mnMaxIndex    = properties.mnParticles
-                    mnLength      = 4 * properties.mnParticles
-                    mnSamples     = strideof(GLfloat)
-                    mnSize        = mnLength * mnSamples
-                    
-                    //mbAcquired  = false
-                    mbIsUpdated = true
-                    mbKeepAlive = true
-                    mbStop      = false
-                    mbReload    = false
-                    mbPaused    = false
-                    
-                    mpData = nil
-                    //m_Thread = nil
-                    
-                    m_DeviceName = ""
-                    
-                    mnMinIndex    = 0
-                    mnDeviceCount = 0
-                    mnDevices     = 0
-                    
-                    mnTime    = 0.0
-                    mnUpdates = 0.0
-                    
-                    let hw = CF.Query.Hardware.instance
-                    
-                    // This number is used to measure relative performance.
-                    // The baseline is that of multi-core CPU performance
-                    // and all performance numbers are measured relative
-                    // to this number. And as such this is not the traditional
-                    // giga (or tera) flops performance numbers.
-                    mnDelta = GLdouble(mnCardinality) * hw.scale
-                    
-                    pthread_mutexattr_init(&m_ClockAttrib)
-                    pthread_mutexattr_settype(&m_ClockAttrib, PTHREAD_MUTEX_RECURSIVE)
-                    
-                    pthread_mutex_init(&m_ClockLock, &m_ClockAttrib)
-                    
-                    pthread_mutexattr_init(&m_RunAttrib)
-                    pthread_mutexattr_settype(&m_RunAttrib, PTHREAD_MUTEX_RECURSIVE)
-                    
-                    pthread_mutex_init(&m_RunLock, &m_RunAttrib)
-                }
+            if properties.mnParticles != 0 {
+                m_Options = kOptions
+                
+                //m_Properties = properties
+                
+                mnCardinality = properties.mnParticles * properties.mnParticles
+                mnMaxIndex    = properties.mnParticles
+                mnLength      = 4 * properties.mnParticles
+                mnSamples     = strideof(GLfloat)
+                mnSize        = mnLength * mnSamples
+                
+                //mbAcquired  = false
+                mbIsUpdated = true
+                mbKeepAlive = true
+                mbStop      = false
+                mbReload    = false
+                mbPaused    = false
+                
+                mpData = nil
+                //m_Thread = nil
+                
+                m_DeviceName = ""
+                
+                mnMinIndex    = 0
+                mnDeviceCount = 0
+                mnDevices     = 0
+                
+                mnTime    = 0.0
+                mnUpdates = 0.0
+                
+                let hw = CF.Query.Hardware.instance
+                
+                // This number is used to measure relative performance.
+                // The baseline is that of multi-core CPU performance
+                // and all performance numbers are measured relative
+                // to this number. And as such this is not the traditional
+                // giga (or tera) flops performance numbers.
+                mnDelta = GLdouble(mnCardinality) * hw.scale
+                
+                pthread_mutexattr_init(&m_ClockAttrib)
+                pthread_mutexattr_settype(&m_ClockAttrib, PTHREAD_MUTEX_RECURSIVE)
+                
+                pthread_mutex_init(&m_ClockLock, &m_ClockAttrib)
+                
+                pthread_mutexattr_init(&m_RunAttrib)
+                pthread_mutexattr_settype(&m_RunAttrib, PTHREAD_MUTEX_RECURSIVE)
+                
+                pthread_mutex_init(&m_RunLock, &m_RunAttrib)
+            }
         }
         
         private func destruct() {
