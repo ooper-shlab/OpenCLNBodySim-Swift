@@ -2,9 +2,6 @@
 
 Translated by OOPer in cooperation with shlab.jp, on 2015/12/31.
 
-The translated code does not utilize simd functionalities, which may affect the performance.
-(Sorry for who that has reached here searching simd usage example in Swift...)
-
 Based on
 <https://developer.apple.com/library/mac/samplecode/OpenCL_NBody_Simulation/Introduction/Intro.html#//apple_ref/doc/uid/TP40016610>
 2015-12-10.
@@ -16,7 +13,7 @@ You should not contact to Apple or SHLab(jp) about any faults caused by my trans
 ===========================================================================
 BUILD REQUIREMENTS:
 
-Xcode 7, OS X SDK 10.11
+Xcode 7.2, OS X SDK 10.11
 
 ===========================================================================
 ### Runtime
