@@ -90,7 +90,7 @@ extension NBody.Simulation.Mediator {
                 = NBody.Simulation.Facade(.GPUPrimary, rProperties)
             
             if mpSimulators[.GPUPrimary] != nil {
-                mnCount++
+                mnCount += 1
             }
         }
         
@@ -99,7 +99,7 @@ extension NBody.Simulation.Mediator {
                 = NBody.Simulation.Facade(.GPUSecondary, rProperties)
             
             if mpSimulators[.GPUSecondary] != nil {
-                mnCount++
+                mnCount += 1
             }
         }
         
@@ -108,14 +108,14 @@ extension NBody.Simulation.Mediator {
                 = NBody.Simulation.Facade(.CPUSingle, rProperties)
             
             if mpSimulators[.CPUSingle] != nil {
-                mnCount++
+                mnCount += 1
             }
             
             mpSimulators[.CPUMulti]
                 = NBody.Simulation.Facade(.CPUMulti, rProperties)
             
             if mpSimulators[.CPUMulti] != nil {
-                mnCount++
+                mnCount += 1
             }
         }
         

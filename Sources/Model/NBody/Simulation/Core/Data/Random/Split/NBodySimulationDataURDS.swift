@@ -154,7 +154,7 @@ extension NBody.Simulation.Data {
                     mpVelocity[Axis.Y.rawValue][i] = velocity.y
                     mpVelocity[Axis.Z.rawValue][i] = velocity.z
                     
-                    i++
+                    i += 1
                 }
             }
         }

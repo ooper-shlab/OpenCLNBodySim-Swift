@@ -90,7 +90,7 @@ class NBodyEngine: NSObject {
     private func _nextSimulator() {
         mbIsWaiting = true
         
-        mnSimulatorIndex++
+        mnSimulatorIndex += 1
         
         if mnSimulatorIndex >= mnSimulatorCount {
             mnSimulatorIndex = 0

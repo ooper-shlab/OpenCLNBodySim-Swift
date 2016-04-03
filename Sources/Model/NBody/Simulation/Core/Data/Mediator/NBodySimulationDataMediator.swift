@@ -114,11 +114,12 @@ extension NBody.Simulation.Data {
         }
         
         public func positionInRange(range: CFRange,
-            var _ pDst: UnsafeMutablePointer<GLfloat>)
+            _ _pDst: UnsafeMutablePointer<GLfloat>)
             -> GLint
         {
             var err = CL_INVALID_VALUE
             
+            var pDst = _pDst
             if pDst != nil {
                 let nMin = (range.location > 0) ? range.location : 0;
                 let nMax = (range.length   > 0) ? range.length   : (mnParticles - nMin + 1);

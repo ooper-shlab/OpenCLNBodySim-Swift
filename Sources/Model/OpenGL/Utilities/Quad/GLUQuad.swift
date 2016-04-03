@@ -54,7 +54,7 @@ extension GLU {
         //MARK: Private - Macros
         
         private func BUFFER_OFFSET(i: Int) -> UnsafePointer<GLchar> {
-            return (UnsafePointer().advancedBy(i))
+            return (UnsafePointer(bitPattern: 0).advancedBy(i))
         }
         
         //MARK: -

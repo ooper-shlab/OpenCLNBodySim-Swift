@@ -141,7 +141,7 @@ extension HUD.Meter.Timer {
     public func update(dx: GLdouble = 1.0) {
         let dt = mnRes * GLdouble(mnStop - mnStart)
         
-        ++mnCount
+        mnCount += 1
         
         m_Vector[mnIndex] = dx / dt
         

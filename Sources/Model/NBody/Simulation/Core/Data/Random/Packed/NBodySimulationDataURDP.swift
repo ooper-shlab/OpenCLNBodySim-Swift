@@ -138,7 +138,7 @@ extension NBody.Simulation.Data {
                     let v = vscale * velocity
                     pVelocity[i] = Float4(v.x, v.y, v.z, 1.0 / mass)
                     
-                    ++i //### was missing
+                    i += 1 //### was missing
                 }
             }
         }

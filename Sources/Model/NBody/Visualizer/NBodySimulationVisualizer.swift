@@ -270,14 +270,14 @@ extension NBody.Simulation.Visualizer {
                         // pink
                         glColor3f(0.04, 0.015, 0.025)
                         
-                        for var i: GLsizei = 0; i < m_Graphic.BufferCount / 84; i += step {
+                        for i in (0 as GLsizei).stride(to: m_Graphic.BufferCount / 84, by: Int(step)) {
                             glDrawArrays(GL_POINTS.ui, i, 1)
                         }
                         
                         // blue
                         glColor3f(0.04, 0.001, 0.08)
                         
-                        for var i: GLsizei = 64; i < m_Graphic.BufferCount / 84; i += step {
+                        for i in (64 as GLsizei).stride(to: m_Graphic.BufferCount / 84, by: Int(step)) {
                             glDrawArrays(GL_POINTS.ui, i, 1)
                         }
                     }

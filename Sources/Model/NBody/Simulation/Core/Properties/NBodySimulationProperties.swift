@@ -231,7 +231,7 @@ extension NBody.Simulation {
                         setDefaults(pProperties[i])
                         setData(pDictionary, pProperties[i])
                         
-                        i++
+                        i += 1
                     }
                 }
             }

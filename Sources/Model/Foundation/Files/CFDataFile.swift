@@ -159,7 +159,7 @@ extension CF {
             }
             
             // Advance the counter for the line count
-            mnLine++
+            mnLine += 1
             
             // Create a vector of floats or double from the string
             return create(string)

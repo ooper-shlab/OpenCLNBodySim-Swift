@@ -126,7 +126,7 @@ extension HUD {
         
         let iDelta = iMax / Ticks
         
-        for var i = 0; i <= iMax; i += iDelta {
+        for i in 0.stride(to: iMax, by: iDelta) {
             let text = String(i)
             
             // hardcoded text centering for this font size
@@ -460,10 +460,11 @@ extension HUD {
         return texture
     }
     
-    private static func angleForValue(var val: GLdouble,
+    private static func angleForValue(_val: GLdouble,
         _ max: Int) -> GLdouble
     {
         
+        var val = _val
         if val < 0.0 {
             val = 0.0
         }

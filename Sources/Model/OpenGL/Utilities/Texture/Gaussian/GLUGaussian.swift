@@ -54,7 +54,7 @@ extension GLU {
                     
                     i += 2
                     
-                    j++
+                    j += 1
                 }
                 
                 w.x = -1.0

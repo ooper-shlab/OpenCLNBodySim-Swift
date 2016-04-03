@@ -207,7 +207,7 @@ class OpenGLView: NSOpenGLView {
     private func _prepareRunLoop() {
         mpTimer = NSTimer(timeInterval: 0.0,
             target: self,
-            selector: "_idle",
+            selector: #selector(OpenGLView._idle),
             userInfo: self,
             repeats: true)
         
@@ -233,7 +233,7 @@ class OpenGLView: NSOpenGLView {
             // not specifically release everything on application termination, so we explicitly
             // call our cleanup (private object destructor) routines.
             NSNotificationCenter.defaultCenter().addObserver(self,
-                selector: "_quit:",
+                selector: #selector(OpenGLView._quit(_:)),
                 name: "NSApplicationWillTerminateNotification",
                 object: NSApp)
             
