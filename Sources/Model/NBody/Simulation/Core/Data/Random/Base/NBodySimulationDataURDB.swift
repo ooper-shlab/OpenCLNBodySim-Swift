@@ -21,10 +21,10 @@ extension NBody.Simulation.Data {
     class URDB {
         
         var mnParticles: size_t = 0
-        var mnConfig: NBody.Config = .Random
+        var mnConfig: NBody.Config = .random
         var m_Scale: [GLfloat] = [0, 0]
         var m_Axis: Float3 = Float3()
-        var m_DQueue: dispatch_queue_t
+        var m_DQueue: DispatchQueue
         var mpGenerator: [CM.URD3.Generator]
         
         init(_ rProperties: NBody.Simulation.Properties) {
@@ -56,7 +56,7 @@ extension NBody.Simulation.Data {
             }
         }
         
-        func setProperties(rProperties: NBody.Simulation.Properties) {
+        func setProperties(_ rProperties: NBody.Simulation.Properties) {
             mnParticles = rProperties.mnParticles
             mnConfig = rProperties.mnConfig
             

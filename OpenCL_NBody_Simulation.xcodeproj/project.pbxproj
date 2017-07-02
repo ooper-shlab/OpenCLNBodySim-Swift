@@ -68,7 +68,6 @@
 		D70385B11C30EDA90085EAB4 /* CFProcessorInfoArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70385B01C30EDA90085EAB4 /* CFProcessorInfoArray.swift */; };
 		D70385B31C30F9C60085EAB4 /* CPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70385B21C30F9C60085EAB4 /* CPU.swift */; };
 		D70385B51C30FA030085EAB4 /* CFCPUHostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70385B41C30FA030085EAB4 /* CFCPUHostInfo.swift */; };
-		D791A6561C336791009A06F4 /* PointerAssignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A6551C336791009A06F4 /* PointerAssignment.swift */; };
 		D791A66B1C33AF40009A06F4 /* NBodySimulationDataGalaxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A66A1C33AF40009A06F4 /* NBodySimulationDataGalaxy.swift */; };
 		D791A66D1C33B582009A06F4 /* NBodySimulationDataURDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A66C1C33B582009A06F4 /* NBodySimulationDataURDS.swift */; };
 		D791A66F1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A66E1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift */; };
@@ -87,7 +86,6 @@
 		D7EF24FE1C32C4D400E0A5E2 /* CMNumerics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF24FD1C32C4D400E0A5E2 /* CMNumerics.swift */; };
 		D7EF25001C32C53600E0A5E2 /* CM.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF24FF1C32C53600E0A5E2 /* CM.swift */; };
 		D7EF25021C32C5D100E0A5E2 /* CMRandom.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF25011C32C5D100E0A5E2 /* CMRandom.swift */; };
-		D7EF25041C32C61B00E0A5E2 /* GenericArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF25031C32C61B00E0A5E2 /* GenericArithmetic.swift */; };
 		D7EF25061C32E04400E0A5E2 /* NBodySimulationDataCopier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF25051C32E04400E0A5E2 /* NBodySimulationDataCopier.swift */; };
 /* End PBXBuildFile section */
 
@@ -177,7 +175,6 @@
 		D7EF24FD1C32C4D400E0A5E2 /* CMNumerics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CMNumerics.swift; sourceTree = "<group>"; };
 		D7EF24FF1C32C53600E0A5E2 /* CM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CM.swift; sourceTree = "<group>"; };
 		D7EF25011C32C5D100E0A5E2 /* CMRandom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CMRandom.swift; sourceTree = "<group>"; };
-		D7EF25031C32C61B00E0A5E2 /* GenericArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericArithmetic.swift; sourceTree = "<group>"; };
 		D7EF25051C32E04400E0A5E2 /* NBodySimulationDataCopier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NBodySimulationDataCopier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -915,7 +912,6 @@
 		D70385A31C30E3200085EAB4 /* OOPUtils */ = {
 			isa = PBXGroup;
 			children = (
-				D7EF25031C32C61B00E0A5E2 /* GenericArithmetic.swift */,
 				D70385A41C30E3200085EAB4 /* NumTypes+Conversion.swift */,
 				D7EF24DA1C31505000E0A5E2 /* Numeric+scannable.swift */,
 				D7EF24E61C32953300E0A5E2 /* Dictionary+addEntriesFromDictionary.swift */,
@@ -953,6 +949,11 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0700;
+				TargetAttributes = {
+					2E48DA501395F1750035FEC4 = {
+						LastSwiftMigration = 0830;
+					};
+				};
 			};
 			buildConfigurationList = 2E48DA4B1395F1750035FEC4 /* Build configuration list for PBXProject "OpenCL_NBody_Simulation" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1005,7 +1006,6 @@
 				D70385881C30E1FA0085EAB4 /* GLContainers.swift in Sources */,
 				D703856C1C30E0450085EAB4 /* NBody.swift in Sources */,
 				D791A66F1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift in Sources */,
-				D791A6561C336791009A06F4 /* PointerAssignment.swift in Sources */,
 				D703858A1C30E2060085EAB4 /* GLM.swift in Sources */,
 				D7EF24E31C32526A00E0A5E2 /* NBodyButton.swift in Sources */,
 				D70385901C30E2220085EAB4 /* GLMTransforms.swift in Sources */,
@@ -1022,7 +1022,6 @@
 				D70385781C30E1580085EAB4 /* NBodySimulationDataMediator.swift in Sources */,
 				D70385821C30E1C70085EAB4 /* NBodySimulationFacade.swift in Sources */,
 				D7EF24DD1C31C52000E0A5E2 /* NBodySimulationProperties.swift in Sources */,
-				D7EF25041C32C61B00E0A5E2 /* GenericArithmetic.swift in Sources */,
 				D791A66D1C33B582009A06F4 /* NBodySimulationDataURDS.swift in Sources */,
 				D7EF25021C32C5D100E0A5E2 /* CMRandom.swift in Sources */,
 				D791A6711C340AD3009A06F4 /* simd+.swift in Sources */,
@@ -1169,6 +1168,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.apple-samplecode.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = OpenCL_NBody_Simulation;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1183,6 +1183,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.apple-samplecode.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = OpenCL_NBody_Simulation;
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

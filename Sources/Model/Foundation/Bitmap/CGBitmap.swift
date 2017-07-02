@@ -17,14 +17,14 @@ import Cocoa
 import OpenGL
 
 extension CG {
-    public class Bitmap {
+    open class Bitmap {
         deinit {destruct()}
         
-        private var mnWidth: size_t = 0
-        private var mnHeight: size_t = 0
-        private var mnRowBytes: size_t = 0
-        private var mnBMPI: CGBitmapInfo = []
-        private var mpContext: CGContext? = nil
+        fileprivate var mnWidth: size_t = 0
+        fileprivate var mnHeight: size_t = 0
+        fileprivate var mnRowBytes: size_t = 0
+        fileprivate var mnBMPI: CGBitmapInfo = []
+        fileprivate var mpContext: CGContext? = nil
     }
 }
 
@@ -33,44 +33,41 @@ extension CG {
 //MARK: Private - Utilities
 
 extension CG.Bitmap {
-    private class func createFromImage(pImage: CGImage?) -> CGContext? {
+    private class func createFromImage(_ pImage: CGImage?) -> CGContext? {
         var pContext: CGContext? = nil
         
-        if pImage != nil {
-            if let pColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB) {
-                
-                let nWidth    = CGImageGetWidth(pImage)
-                let nHeight   = CGImageGetHeight(pImage)
-                let nRowBytes = 4 * nWidth
-                let nBMPI: UInt32 = CGBitmapInfo.ByteOrder32Little.rawValue | CGImageAlphaInfo.PremultipliedFirst.rawValue
-                
-                pContext = CGBitmapContextCreate(nil,
-                    nWidth,
-                    nHeight,
-                    8,
-                    nRowBytes,
-                    pColorSpace,
-                    nBMPI)
-                
-                if pContext != nil {
-                    CGContextDrawImage(pContext, CGRectMake(0, 0, CGFloat(nWidth), CGFloat(nHeight)), pImage)
-                }
-                
-            }
+        if let pImage = pImage {
+            let pColorSpace = CGColorSpaceCreateDeviceRGB()
+            
+            let nWidth    = pImage.width
+            let nHeight   = pImage.height
+            let nRowBytes = 4 * nWidth
+            let nBMPI: UInt32 = CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+            
+            pContext = CGContext(data: nil,
+                                 width: nWidth,
+                                 height: nHeight,
+                                 bitsPerComponent: 8,
+                                 bytesPerRow: nRowBytes,
+                                 space: pColorSpace,
+                                 bitmapInfo: nBMPI)
+            
+            pContext?.draw(pImage, in: CGRect(x: 0, y: 0, width: CGFloat(nWidth), height: CGFloat(nHeight)))
+            
         }
         
         return pContext
     }
     
-    private class func createImage(pName: String?, _ pExt: String?) -> CGImage? {
+    private class func createImage(_ pName: String?, _ pExt: String?) -> CGImage? {
         var pImage: CGImage? = nil
         
         if pName != nil && pExt != nil {
-            let pBundle = NSBundle.mainBundle()
+            let pBundle = Bundle.main
             
-            if let pURL = pBundle.URLForResource(pName!, withExtension: pExt!) {
+            if let pURL = pBundle.url(forResource: pName!, withExtension: pExt!) {
                 
-                if let pSource = CGImageSourceCreateWithURL(pURL, nil) {
+                if let pSource = CGImageSourceCreateWithURL(pURL as CFURL, nil) {
                     
                     pImage = CGImageSourceCreateImageAtIndex(pSource, 0, nil)
                     
@@ -82,11 +79,11 @@ extension CG.Bitmap {
         return pImage
     }
     
-    private func createCopy(pContextSrc: CGContext?) -> CGContext? {
+    private func createCopy(_ pContextSrc: CGContext?) -> CGContext? {
         var pContextDst: CGContext? = nil
         
         if pContextSrc != nil {
-            if let pImage = CGBitmapContextCreateImage(pContextSrc) {
+            if let pImage = pContextSrc?.makeImage() {
                 
                 pContextDst = CG.Bitmap.createFromImage(pImage)
                 
@@ -106,10 +103,10 @@ extension CG.Bitmap {
         
         if let pImage = CG.Bitmap.createImage(pName, pExt) {
             
-            mnWidth    = CGImageGetWidth(pImage)
-            mnHeight   = CGImageGetHeight(pImage)
+            mnWidth    = pImage.width
+            mnHeight   = pImage.height
             mnRowBytes = 4 * mnWidth
-            mnBMPI = CGBitmapInfo.ByteOrder32Little.union(CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedFirst.rawValue))
+            mnBMPI = CGBitmapInfo.byteOrder32Little.union(CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue))
             mpContext  = CG.Bitmap.createFromImage(pImage)
             
         }
@@ -142,7 +139,7 @@ extension CG.Bitmap {
         }
     }
     
-    private func destruct() {
+    fileprivate func destruct() {
         //CGContextRelease(mpContext);
     }
     
@@ -167,14 +164,14 @@ extension CG.Bitmap {
     //    return *this;
     //} // Operator =
     
-    public func copy(pContext: CGContext?) -> Bool {
+    public func copy(_ pContext: CGContext?) -> Bool {
         var bSuccess = pContext != nil
         
         if bSuccess {
-            let nWidth    = CGBitmapContextGetWidth(pContext)
-            let nHeight   = CGBitmapContextGetHeight(pContext)
-            let nRowBytes = CGBitmapContextGetBytesPerRow(pContext)
-            let nBMPI     = CGBitmapContextGetBitmapInfo(pContext)
+            let nWidth    = pContext?.width
+            let nHeight   = pContext?.height
+            let nRowBytes = pContext?.bytesPerRow
+            let nBMPI     = pContext?.bitmapInfo
             
             bSuccess =
                 (nWidth == mnWidth)
@@ -183,9 +180,9 @@ extension CG.Bitmap {
                 &&  (nBMPI == mnBMPI)
             
             if bSuccess {
-                let pDataSrc = CGBitmapContextGetData(pContext)
+                let pDataSrc = pContext?.data
                 
-                let pDataDst = CGBitmapContextGetData(mpContext)
+                let pDataDst = mpContext?.data
                 
                 bSuccess = pDataSrc != nil && pDataDst != nil
                 
@@ -220,13 +217,13 @@ extension CG.Bitmap {
         return mpContext
     }
     
-    public var data: UnsafeMutablePointer<Void> {
-        var pData: UnsafeMutablePointer<Void> = nil
+    public var data: UnsafeMutableRawPointer {
+        var pData: UnsafeMutableRawPointer? = nil
         
         if mpContext != nil {
-            pData = CGBitmapContextGetData(mpContext)
+            pData = mpContext?.data
         }
         
-        return pData
+        return pData!
     }
 }

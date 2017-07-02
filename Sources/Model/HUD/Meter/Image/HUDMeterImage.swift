@@ -29,21 +29,21 @@ extension HUD {
         
         typealias Hash = [String: GLU.Text]
         
-        public class Image {
+        open class Image {
             deinit {destruct()}
             
-            private var m_Texture: [GLuint] = [0, 0, 0]
-            private var mnWidth: GLsizei = 0
-            private var mnHeight: GLsizei = 0
-            private var mnMax: Int = 0
-            private var mnLimit: GLdouble = 0.0
-            private var mnValue: GLdouble = 0.0
-            private var mnSmooth: GLdouble = 0.0
-            private var m_Bounds: [CGRect] = [CGRect(), CGRect(), CGRect()]
-            private var m_Legend: String = ""
-            private var m_Hash: Hash = [:]
-            private var mpLegend: GLU.Text? = nil
-            private var mpQuad: GLU.Quad? = nil
+            fileprivate var m_Texture: [GLuint] = [0, 0, 0]
+            fileprivate var mnWidth: GLsizei = 0
+            fileprivate var mnHeight: GLsizei = 0
+            fileprivate var mnMax: Int = 0
+            fileprivate var mnLimit: GLdouble = 0.0
+            fileprivate var mnValue: GLdouble = 0.0
+            fileprivate var mnSmooth: GLdouble = 0.0
+            fileprivate var m_Bounds: [CGRect] = [CGRect(), CGRect(), CGRect()]
+            fileprivate var m_Legend: String = ""
+            fileprivate var m_Hash: Hash = [:]
+            fileprivate var mpLegend: GLU.Text? = nil
+            fileprivate var mpQuad: GLU.Quad? = nil
         }
     }
 }
@@ -63,13 +63,13 @@ extension HUD {
     //MARK: -
     //MARK: Private - Utilities
     
-    private static func Integer2String(i: GLuint) -> String {
+    private static func Integer2String(_ i: GLuint) -> String {
         
         return String(i)
     }
     
-    private static func emplaceTextureWithLabel(nKey: GLuint,
-        inout _ rHash: HUD.Meter.Hash) -> GLuint
+    fileprivate static func emplaceTextureWithLabel(_ nKey: GLuint,
+        _ rHash: inout HUD.Meter.Hash) -> GLuint
     {
         var nTexture: GLuint = 0
         
@@ -90,7 +90,7 @@ extension HUD {
         return nTexture
     }
     
-    private static func drawMark(pContext: CGContext,
+    private static func drawMark(_ pContext: CGContext,
         _ rOrigin: CGPoint,
         _ rText: String,
         _ rFont: String,
@@ -103,7 +103,7 @@ extension HUD {
         
     }
     
-    private static func drawMarks(pContext: CGContext,
+    private static func drawMarks(_ pContext: CGContext,
         _ center: CGPoint,
         _ iMax: Int,
         _ needle: CGFloat,
@@ -126,7 +126,7 @@ extension HUD {
         
         let iDelta = iMax / Ticks
         
-        for i in 0.stride(to: iMax, by: iDelta) {
+        for i in stride(from: 0, to: iMax, by: iDelta) {
             let text = String(i)
             
             // hardcoded text centering for this font size
@@ -151,14 +151,14 @@ extension HUD {
             
             vOrigin = vCenter + vDelta + radial * vCoord;
             
-            origin = CGPointMake(vOrigin.x.g, vOrigin.y.g);
+            origin = CGPoint(x: vOrigin.x.g, y: vOrigin.y.g);
             
             HUD.drawMark(pContext, origin, text, font, fontSize, textAlign)
             
         }
     }
     
-    private static func drawMarks(pContext: CGContext,
+    private static func drawMarks(_ pContext: CGContext,
         _ width: GLsizei,
         _ height: GLsizei,
         _ max: Int)
@@ -186,9 +186,9 @@ extension HUD {
             end   = section != 0 ? HUD.Ticks * HUD.SubTicks : Int(redline)
             
             if section != 0 {
-                CGContextSetRGBStrokeColor(pContext, 1.0, 0.1, 0.1, 1.0)
+                pContext.setStrokeColor(red: 1.0, green: 0.1, blue: 0.1, alpha: 1.0)
             } else {
-                CGContextSetRGBStrokeColor(pContext, 0.9, 0.9, 1.0, 1.0)
+                pContext.setStrokeColor(red: 0.9, green: 0.9, blue: 1.0, alpha: 1.0)
             }
             
             // inner tick ring
@@ -207,19 +207,19 @@ extension HUD {
                     u = double2(q.x, q.y) - cos * double2(r.x, r.y)
                     v = double2(q.z, q.w) + sin * double2(r.x, r.y)
                     
-                    CGContextMoveToPoint(pContext, u.x.g, v.x.g)
-                    CGContextAddLineToPoint(pContext, u.y.g, v.y.g)
+                    pContext.move(to: CGPoint(x: u.x.g, y: v.x.g))
+                    pContext.addLine(to: CGPoint(x: u.y.g, y: v.y.g))
                 } else {
                     u = double2(q.x, q.y) - cos * double2(r.z, r.w)
                     v = double2(q.z, q.w) + sin * double2(r.z, r.w)
                     
-                    CGContextMoveToPoint(pContext, u.x.g, v.x.g)
-                    CGContextAddLineToPoint(pContext, u.y.g, v.y.g)
+                    pContext.move(to: CGPoint(x: u.x.g, y: v.x.g))
+                    pContext.addLine(to: CGPoint(x: u.y.g, y: v.y.g))
                 }
             }
             
-            CGContextSetLineWidth(pContext, 2.0)
-            CGContextStrokePath(pContext)
+            pContext.setLineWidth(2.0)
+            pContext.strokePath()
             
             // outer tick ring
             start = (start / SubTicks) + section
@@ -237,15 +237,15 @@ extension HUD {
                 u = double2(q.x, q.y) - cos * double2(r.x, r.y)
                 v = double2(q.z, q.w) + sin * double2(r.x, r.y)
                 
-                CGContextMoveToPoint(pContext, u.x.g, v.x.g)
-                CGContextAddLineToPoint(pContext, u.y.g, v.y.g)
+                pContext.move(to: CGPoint(x: u.x.g, y: v.x.g))
+                pContext.addLine(to: CGPoint(x: u.y.g, y: v.y.g))
             }
             
-            CGContextSetLineWidth(pContext, 3.0)
-            CGContextStrokePath(pContext)
+            pContext.setLineWidth(3.0)
+            pContext.strokePath()
         }
         
-        let center = CGPointMake(c.x.g, c.y.g)
+        let center = CGPoint(x: c.x.g, y: c.y.g)
         
         HUD.drawMarks(pContext,
             center,
@@ -253,48 +253,47 @@ extension HUD {
             needle.g,
             18.0,
             "Helvetica-Bold",
-            .Center)
+            .center)
     }
     
-    private static func acquireShadowWithColor(pContext: CGContext,
+    private static func acquireShadowWithColor(_ pContext: CGContext,
         _ offset: CGSize,
         _ blur: CGFloat,
         _ pColors: [CGFloat])
     {
-        let pShadowColor = CGColorCreateGenericRGB(pColors[0],
-            pColors[1],
-            pColors[2],
-            pColors[3])
+        let pShadowColor = CGColor(red: pColors[0],
+            green: pColors[1],
+            blue: pColors[2],
+            alpha: pColors[3])
         
-        CGContextSetShadowWithColor(pContext,
-            offset,
-            blur,
-            pShadowColor)
+        pContext.setShadow(offset: offset,
+            blur: blur,
+            color: pShadowColor)
         
     }
     
-    private static func shadowAcquireWithColor(pContext: CGContext) {
-        let offset = CGSizeMake(0.0, HUD.Offscreen.g)
+    private static func shadowAcquireWithColor(_ pContext: CGContext) {
+        let offset = CGSize(width: 0.0, height: HUD.Offscreen.g)
         let colors: [CGFloat] = [0.5, 0.5, 1.0, 0.7]
         
         HUD.acquireShadowWithColor(pContext, offset, 48.0, colors)
     }
     
-    private static func backgroundShadowAcquireWithColor(pContext: CGContext) {
-        let offset = CGSizeMake(0.0, 1.0)
+    private static func backgroundShadowAcquireWithColor(_ pContext: CGContext) {
+        let offset = CGSize(width: 0.0, height: 1.0)
         let colors: [CGFloat] = [0.7, 0.7, 1.0, 0.9]
         
         acquireShadowWithColor(pContext, offset, 6.0, colors)
     }
     
-    private static func needleShadowAcquireWithColor(pContext: CGContext) {
-        let offset    = CGSizeMake(0.0, 1.0)
+    private static func needleShadowAcquireWithColor(_ pContext: CGContext) {
+        let offset    = CGSize(width: 0.0, height: 1.0)
         let colors: [CGFloat] = [0.0, 0.0, 0.5, 0.7]
         
         acquireShadowWithColor(pContext, offset, 6.0, colors)
     }
     
-    private static func backgroundCreateTexture(width: GLsizei,
+    fileprivate static func backgroundCreateTexture(_ width: GLsizei,
         _ height: GLsizei,
         _ max: Int) -> GLuint
     {
@@ -305,154 +304,149 @@ extension HUD {
             glGenTextures(1, &texture)
             
             if texture != 0 {
-                if let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB) {
+                let pColorspace = CGColorSpaceCreateDeviceRGB()
+                
+                let bpp = size_t(width) * size_t(SamplesPerPixel)
+                
+                if let pContext = CGContext(data: nil,
+                                            width: width.l,
+                                            height: height.l,
+                                            bitsPerComponent: BitsPerComponent,
+                                            bytesPerRow: bpp,
+                                            space: pColorspace,
+                                            bitmapInfo: BitmapInfo)
+                {
+                    var c = double2(GLdouble(width), GLdouble(height))
                     
-                    let bpp = size_t(width) * size_t(SamplesPerPixel)
+                    c *= HUD.Center
                     
-                    if let pContext = CGBitmapContextCreate(nil,
-                        width.l,
-                        height.l,
-                        BitsPerComponent,
-                        bpp,
-                        pColorspace,
-                        BitmapInfo)
+                    let radius = 0.5 * GLdouble(width > height ? width : height)
+                    let needle = radius * 0.85
+                    
+                    // background
+                    pContext.translateBy(x: 0.0, y: height.g)
+                    pContext.scaleBy(x: 1.0, y: -1.0)
+                    pContext.clear(CGRect(x: 0, y: 0, width: width.g, height: height.g))
+                    pContext.setFillColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.7)
+                    pContext.addArc(center: CGPoint(x: c.x.g, y: c.y.g), radius: radius.g, startAngle: 0.0, endAngle: GLM.kTwoPi.g, clockwise: false)
+                    pContext.fillPath()
+                    
+                    let count: size_t = 2
+                    
+                    let locations: [CGFloat] = [0.0, 1.0]
+                    let components: [CGFloat] = [
+                        1.0, 1.0, 1.0, 0.5,  // Start color
+                        0.0, 0.0, 0.0, 0.0, // End color
+                    ]
+                    
+                    if let pGradient = CGGradient(colorSpace: pColorspace,
+                                                  colorComponents: components,
+                                                  locations: locations,
+                                                  count: count)
                     {
-                        var c = double2(GLdouble(width), GLdouble(height))
+                        let center = CGPoint(x: c.x.g, y: c.y.g)
                         
-                        c *= HUD.Center
-                        
-                        let radius = 0.5 * GLdouble(width > height ? width : height)
-                        let needle = radius * 0.85
-                        
-                        // background
-                        CGContextTranslateCTM(pContext, 0.0, height.g)
-                        CGContextScaleCTM(pContext, 1.0, -1.0)
-                        CGContextClearRect(pContext, CGRectMake(0, 0, width.g, height.g))
-                        CGContextSetRGBFillColor(pContext, 0.0, 0.0, 0.0, 0.7)
-                        CGContextAddArc(pContext, c.x.g, c.y.g, radius.g, 0.0, GLM.kTwoPi.g, false)
-                        CGContextFillPath(pContext)
-                        
-                        let count: size_t = 2
-                        
-                        let locations: [CGFloat] = [0.0, 1.0]
-                        let components: [CGFloat] = [
-                            1.0, 1.0, 1.0, 0.5,  // Start color
-                            0.0, 0.0, 0.0, 0.0, // End color
-                        ]
-                        
-                        if let pGradient = CGGradientCreateWithColorComponents(pColorspace,
-                            components,
-                            locations,
-                            count)
-                        {
-                            let center = CGPointMake(c.x.g, c.y.g)
+                        pContext.saveGState()
+                        do {
+                            pContext.addArc(center: CGPoint(x: c.x.g, y: c.y.g), radius: radius.g, startAngle: 0.0, endAngle: GLM.kTwoPi.g, clockwise: false)
+                            pContext.addArc(center: CGPoint(x: c.x.g, y: c.y.g), radius: needle.g * 1.05, startAngle: 0.0, endAngle: GLM.kTwoPi.g, clockwise: false)
+                            pContext.clip(using: .evenOdd)
                             
-                            CGContextSaveGState(pContext)
-                            do {
-                                CGContextAddArc(pContext, c.x.g, c.y.g, radius.g, 0.0, GLM.kTwoPi.g, false)
-                                CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 1.05, 0.0, GLM.kTwoPi.g, false)
-                                CGContextEOClip(pContext)
-                                
-                                CGContextDrawRadialGradient(pContext,
-                                    pGradient,
-                                    center,
-                                    radius.g * 1.01,
-                                    CGPointMake(c.x.g, c.y.g * 0.96),
-                                    radius.g * 0.98,
-                                    [])
-                                // bottom rim light
-                                CGContextDrawRadialGradient(pContext,
-                                    pGradient,
-                                    center,
-                                    radius.g * 1.01,
-                                    CGPointMake(c.x.g, c.y.g * 1.04),
-                                    radius.g * 0.98,
-                                    [])
-                                // top bevel
-                                CGContextDrawRadialGradient(pContext,
-                                    pGradient,
-                                    CGPointMake(c.x.g, c.y.g * 2.2),
-                                    radius.g * 0.2,
-                                    center,
-                                    radius.g,
-                                    [])
-                            }
-                            CGContextRestoreGState(pContext)
-                            
-                            // bottom bevel
-                            CGContextSaveGState(pContext)
-                            do {
-                                CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 1.05, 0.0, GLM.kTwoPi.g, false)
-                                CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 0.96, 0.0, GLM.kTwoPi.g, false)
-                                CGContextEOClip(pContext)
-                                
-                                CGContextDrawRadialGradient(pContext,
-                                    pGradient,
-                                    CGPointMake(c.x.g, -0.5 * c.y.g),
-                                    radius.g * 0.2,
-                                    center,
-                                    radius.g,
-                                    [])
-                            }
-                            CGContextRestoreGState(pContext)
-                            
+                            pContext.drawRadialGradient(pGradient,
+                                                        startCenter: center,
+                                                        startRadius: radius.g * 1.01,
+                                                        endCenter: CGPoint(x: c.x.g, y: c.y.g * 0.96),
+                                                        endRadius: radius.g * 0.98,
+                                                        options: [])
+                            // bottom rim light
+                            pContext.drawRadialGradient(pGradient,
+                                                        startCenter: center,
+                                                        startRadius: radius.g * 1.01,
+                                                        endCenter: CGPoint(x: c.x.g, y: c.y.g * 1.04),
+                                                        endRadius: radius.g * 0.98,
+                                                        options: [])
+                            // top bevel
+                            pContext.drawRadialGradient(pGradient,
+                                                        startCenter: CGPoint(x: c.x.g, y: c.y.g * 2.2),
+                                                        startRadius: radius.g * 0.2,
+                                                        endCenter: center,
+                                                        endRadius: radius.g,
+                                                        options: [])
                         }
+                        pContext.restoreGState()
                         
-                        // top rim light
-                        
-                        CGContextSetRGBFillColor(pContext, 0.9, 0.9, 1.0, 1.0)
-                        CGContextSetRGBStrokeColor(pContext, 0.9, 0.9, 1.0, 1.0)
-                        CGContextSetLineCap(pContext, .Round)
-                        
-                        // draw several glow passes, with the content offscreen
-                        CGContextTranslateCTM(pContext, 0.0, CGFloat(Offscreen) - 10.0)
-                        
-                        HUD.shadowAcquireWithColor(pContext)
-                        
-                        HUD.drawMarks(pContext, width, height, max)
-                        
-                        CGContextTranslateCTM(pContext, 0.0, 20.0)
-                        
-                        HUD.shadowAcquireWithColor(pContext)
-                        
-                        HUD.drawMarks(pContext, width, height, max)
-                        
-                        CGContextTranslateCTM(pContext, -10.0, -10.0)
-                        
-                        HUD.shadowAcquireWithColor(pContext)
-                        
-                        HUD.drawMarks(pContext, width, height, max)
-                        
-                        CGContextTranslateCTM(pContext, 20.0, 0.0)
-                        
-                        HUD.shadowAcquireWithColor(pContext)
-                        
-                        HUD.drawMarks(pContext, width, height, max)
-                        
-                        CGContextTranslateCTM(pContext, -10.0, CGFloat(-HUD.Offscreen))
-                        
-                        // draw real content
-                        HUD.backgroundShadowAcquireWithColor(pContext)
-                        
-                        HUD.drawMarks(pContext, width, height, max)
-                        
-                        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
-                        
-                        let pData  = CGBitmapContextGetData(pContext)
-                        
-                        glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
-                            0,
-                            GL_RGBA,
-                            width,
-                            height,
-                            0,
-                            GL_RGBA.ui,
-                            GL_UNSIGNED_BYTE.ui,
-                            pData)
+                        // bottom bevel
+                        pContext.saveGState()
+                        do {
+                            pContext.addArc(center: CGPoint(x: c.x.g, y: c.y.g), radius: needle.g * 1.05, startAngle: 0.0, endAngle: GLM.kTwoPi.g, clockwise: false)
+                            pContext.addArc(center: CGPoint(x: c.x.g, y: c.y.g), radius: needle.g * 0.96, startAngle: 0.0, endAngle: GLM.kTwoPi.g, clockwise: false)
+                            pContext.clip(using: .evenOdd)
+                            
+                            pContext.drawRadialGradient(pGradient,
+                                                        startCenter: CGPoint(x: c.x.g, y: -0.5 * c.y.g),
+                                                        startRadius: radius.g * 0.2,
+                                                        endCenter: center,
+                                                        endRadius: radius.g,
+                                                        options: [])
+                        }
+                        pContext.restoreGState()
                         
                     }
                     
+                    // top rim light
+                    
+                    pContext.setFillColor(red: 0.9, green: 0.9, blue: 1.0, alpha: 1.0)
+                    pContext.setStrokeColor(red: 0.9, green: 0.9, blue: 1.0, alpha: 1.0)
+                    pContext.setLineCap(.round)
+                    
+                    // draw several glow passes, with the content offscreen
+                    pContext.translateBy(x: 0.0, y: CGFloat(Offscreen) - 10.0)
+                    
+                    HUD.shadowAcquireWithColor(pContext)
+                    
+                    HUD.drawMarks(pContext, width, height, max)
+                    
+                    pContext.translateBy(x: 0.0, y: 20.0)
+                    
+                    HUD.shadowAcquireWithColor(pContext)
+                    
+                    HUD.drawMarks(pContext, width, height, max)
+                    
+                    pContext.translateBy(x: -10.0, y: -10.0)
+                    
+                    HUD.shadowAcquireWithColor(pContext)
+                    
+                    HUD.drawMarks(pContext, width, height, max)
+                    
+                    pContext.translateBy(x: 20.0, y: 0.0)
+                    
+                    HUD.shadowAcquireWithColor(pContext)
+                    
+                    HUD.drawMarks(pContext, width, height, max)
+                    
+                    pContext.translateBy(x: -10.0, y: CGFloat(-HUD.Offscreen))
+                    
+                    // draw real content
+                    HUD.backgroundShadowAcquireWithColor(pContext)
+                    
+                    HUD.drawMarks(pContext, width, height, max)
+                    
+                    glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
+                    
+                    let pData  = pContext.data
+                    
+                    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
+                                 0,
+                                 GL_RGBA,
+                                 width,
+                                 height,
+                                 0,
+                                 GL_RGBA.ui,
+                                 GL_UNSIGNED_BYTE.ui,
+                                 pData)
+                    
                 }
+                
             }
         }
         glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
@@ -460,7 +454,7 @@ extension HUD {
         return texture
     }
     
-    private static func angleForValue(_val: GLdouble,
+    fileprivate static func angleForValue(_ _val: GLdouble,
         _ max: Int) -> GLdouble
     {
         
@@ -478,7 +472,7 @@ extension HUD {
         return  GLM.kPiDiv6 - GLM.k4PiDiv3 * val / max_f
     }
     
-    private static func needleDraw(pContext: CGContext,
+    private static func needleDraw(_ pContext: CGContext,
         _ width: GLsizei,
         _ height: GLsizei,
         _ angle: GLdouble)
@@ -500,30 +494,24 @@ extension HUD {
         
         var p = c - needle * d
         
-        CGContextMoveToPoint(pContext, p.x.g - hd.y.g, p.y.g + hd.x.g)
-        CGContextAddLineToPoint(pContext, p.x.g + hd.y.g, p.y.g - hd.x.g)
+        pContext.move(to: CGPoint(x: p.x.g - hd.y.g, y: p.y.g + hd.x.g))
+        pContext.addLine(to: CGPoint(x: p.x.g + hd.y.g, y: p.y.g - hd.x.g))
         
         d  *= NeedleThickness.d
         hd *= NeedleThickness.d
         
         p = c + d;
         
-        CGContextAddLineToPoint(pContext, p.x.g - hd.y.g, p.y.g + hd.x.g)
+        pContext.addLine(to: CGPoint(x: p.x.g - hd.y.g, y: p.y.g + hd.x.g))
         
-        CGContextAddArc(pContext,
-            p.x.g,
-            p.y.g,
-            0.5 * NeedleThickness.g,
-            angle.g - GLM.kHalfPi.g,
-            angle.g + GLM.kHalfPi.g,
-            false)
+        pContext.addArc(center: CGPoint(x: p.x.g, y: p.y.g), radius: 0.5 * NeedleThickness.g, startAngle: angle.g - GLM.kHalfPi.g, endAngle: angle.g + GLM.kHalfPi.g, clockwise: false)
         
-        CGContextAddLineToPoint(pContext, p.x.g + hd.y.g, p.y.g - hd.x.g)
+        pContext.addLine(to: CGPoint(x: p.x.g + hd.y.g, y: p.y.g - hd.x.g))
         
-        CGContextFillPath(pContext)
+        pContext.fillPath()
     }
     
-    private static func needleCreateTexture(width: GLsizei, _ height: GLsizei) -> GLuint {
+    fileprivate static func needleCreateTexture(_ width: GLsizei, _ height: GLsizei) -> GLuint {
         var texture: GLuint = 0
         
         glEnable(GL_TEXTURE_RECTANGLE_ARB.ui)
@@ -531,126 +519,123 @@ extension HUD {
             glGenTextures(1, &texture)
             
             if texture != 0 {
-                let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB)
+                let pColorspace = CGColorSpaceCreateDeviceRGB()
                 
-                if pColorspace != nil {
-                    let bpp = width.l * HUD.SamplesPerPixel
+                let bpp = width.l * HUD.SamplesPerPixel
+                
+                if let pContext = CGContext(data: nil,
+                                            width: width.l,
+                                            height: height.l,
+                                            bitsPerComponent: HUD.BitsPerComponent,
+                                            bytesPerRow: bpp,
+                                            space: pColorspace,
+                                            bitmapInfo: HUD.BitmapInfo)
+                {
                     
-                    if let pContext = CGBitmapContextCreate(nil,
-                        width.l,
-                        height.l,
-                        HUD.BitsPerComponent,
-                        bpp,
-                        pColorspace,
-                        HUD.BitmapInfo)
-                    {
+                    let angle: GLdouble  = 0.0
+                    
+                    var c = double2(GLdouble(width), GLdouble(height))
+                    
+                    c *= Center
+                    
+                    pContext.translateBy(x: 0.0, y: height.g)
+                    pContext.scaleBy(x: 1.0, y: -1.0)
+                    pContext.clear(CGRect(x: 0.0, y: 0.0, width: width.g, height: height.g))
+                    
+                    pContext.saveGState()
+                    do {
+                        let radius = 0.5 * (width > height ? width : height).d
+                        let needle = radius * 0.85
                         
-                        let angle: GLdouble  = 0.0
+                        let count = 2
                         
-                        var c = double2(GLdouble(width), GLdouble(height))
+                        let locations: [CGFloat] = [0.0, 1.0]
+                        let components: [CGFloat] = [
+                            0.7, 0.7, 1.0, 0.7,  // Start color
+                            0.0, 0.0, 0.0, 0.0 // End color
+                        ]
                         
-                        c *= Center
+                        pContext.addArc(center: CGPoint(x: c.x.g, y: c.y.g), radius: needle.g * 1.05, startAngle: 0.0, endAngle: GLM.kTwoPi.g, clockwise: false)
+                        pContext.addArc(center: CGPoint(x: c.x.g, y: c.y.g), radius: needle.g * 0.96, startAngle: 0.0, endAngle: GLM.kTwoPi.g, clockwise: false)
                         
-                        CGContextTranslateCTM(pContext, 0.0, height.g)
-                        CGContextScaleCTM(pContext, 1.0, -1.0)
-                        CGContextClearRect(pContext, CGRectMake(0.0, 0.0, width.g, height.g))
+                        pContext.clip(using: .evenOdd)
                         
-                        CGContextSaveGState(pContext)
-                        do {
-                            let radius = 0.5 * (width > height ? width : height).d
-                            let needle = radius * 0.85
+                        if let  pGradient = CGGradient(colorSpace: pColorspace,
+                                                       colorComponents: components,
+                                                       locations: locations,
+                                                       count: count)
+                        {
+                            // draw glow reflecting on inner bevel
+                            var cos: GLdouble = 0.0
+                            var sin: GLdouble = 0.0
                             
-                            let count = 2
+                            __sincos(angle, &sin, &cos);
                             
-                            let locations: [CGFloat] = [0.0, 1.0]
-                            let components: [CGFloat] = [
-                                0.7, 0.7, 1.0, 0.7,  // Start color
-                                0.0, 0.0, 0.0, 0.0 // End color
-                            ]
+                            var d = double2(cos, sin)
                             
-                            CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 1.05, 0.0, GLM.kTwoPi.g, false)
-                            CGContextAddArc(pContext, c.x.g, c.y.g, needle.g * 0.96, 0.0, GLM.kTwoPi.g, false)
+                            d = c * (double2(1.0, 1.0) - d);
                             
-                            CGContextEOClip(pContext)
+                            pContext.drawRadialGradient(pGradient,
+                                                        startCenter: CGPoint(x: d.x.g, y: d.y.g),
+                                                        startRadius: 0.1 * radius.g,
+                                                        endCenter: CGPoint(x: c.x.g, y: c.y.g),
+                                                        endRadius: radius.g,
+                                                        options: [])
                             
-                            if let  pGradient = CGGradientCreateWithColorComponents(pColorspace,
-                                components,
-                                locations,
-                                count)
-                            {
-                                // draw glow reflecting on inner bevel
-                                var cos: GLdouble = 0.0
-                                var sin: GLdouble = 0.0
-                                
-                                __sincos(angle, &sin, &cos);
-                                
-                                var d = double2(cos, sin)
-                                
-                                d = c * (double2(1.0, 1.0) - d);
-                                
-                                CGContextDrawRadialGradient(pContext,
-                                    pGradient,
-                                    CGPointMake(d.x.g, d.y.g),
-                                    0.1 * radius.g,
-                                    CGPointMake(c.x.g, c.y.g),
-                                    radius.g,
-                                    [])
-                                
-                            }
                         }
-                        CGContextRestoreGState(pContext)
-                        
-                        CGContextSetRGBFillColor(pContext, 0.9, 0.9, 1.0, 1.0)
-                        
-                        // draw several glow passes, with the content offscreen
-                        CGContextTranslateCTM(pContext, 0.0, HUD.Offscreen.g - 10.0)
-                        
-                        shadowAcquireWithColor(pContext)
-                        
-                        needleDraw(pContext, width, height, angle)
-                        
-                        CGContextTranslateCTM(pContext, 0.0, 20.0)
-                        
-                        shadowAcquireWithColor(pContext)
-                        
-                        needleDraw(pContext, width, height, angle)
-                        
-                        CGContextTranslateCTM(pContext, -10.0, -10.0)
-                        
-                        shadowAcquireWithColor(pContext)
-                        
-                        needleDraw(pContext, width, height, angle)
-                        
-                        CGContextTranslateCTM(pContext, 20.0, 0.0)
-                        
-                        shadowAcquireWithColor(pContext)
-                        
-                        needleDraw(pContext, width, height, angle)
-                        
-                        CGContextTranslateCTM(pContext, -10.0, -HUD.Offscreen.g)
-                        
-                        // draw real content
-                        needleShadowAcquireWithColor(pContext)
-                        
-                        needleDraw(pContext, width, height, angle)
-                        
-                        glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
-                        
-                        let pData  = CGBitmapContextGetData(pContext)
-                        
-                        glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
-                            0,
-                            GL_RGBA,
-                            width,
-                            height,
-                            0,
-                            GL_RGBA.ui,
-                            GL_UNSIGNED_BYTE.ui,
-                            pData)
-                        
                     }
+                    pContext.restoreGState()
+                    
+                    pContext.setFillColor(red: 0.9, green: 0.9, blue: 1.0, alpha: 1.0)
+                    
+                    // draw several glow passes, with the content offscreen
+                    pContext.translateBy(x: 0.0, y: HUD.Offscreen.g - 10.0)
+                    
+                    shadowAcquireWithColor(pContext)
+                    
+                    needleDraw(pContext, width, height, angle)
+                    
+                    pContext.translateBy(x: 0.0, y: 20.0)
+                    
+                    shadowAcquireWithColor(pContext)
+                    
+                    needleDraw(pContext, width, height, angle)
+                    
+                    pContext.translateBy(x: -10.0, y: -10.0)
+                    
+                    shadowAcquireWithColor(pContext)
+                    
+                    needleDraw(pContext, width, height, angle)
+                    
+                    pContext.translateBy(x: 20.0, y: 0.0)
+                    
+                    shadowAcquireWithColor(pContext)
+                    
+                    needleDraw(pContext, width, height, angle)
+                    
+                    pContext.translateBy(x: -10.0, y: -HUD.Offscreen.g)
+                    
+                    // draw real content
+                    needleShadowAcquireWithColor(pContext)
+                    
+                    needleDraw(pContext, width, height, angle)
+                    
+                    glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
+                    
+                    let pData  = pContext.data
+                    
+                    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
+                                 0,
+                                 GL_RGBA,
+                                 width,
+                                 height,
+                                 0,
+                                 GL_RGBA.ui,
+                                 GL_UNSIGNED_BYTE.ui,
+                                 pData)
                     
                 }
+                
             }
         }
         glDisable(GL_TEXTURE_RECTANGLE_ARB.ui)
@@ -685,17 +670,17 @@ extension HUD.Meter.Image {
             let fx = -0.5 * fWidth
             let fy = -0.5 * fHeight
             
-            m_Bounds[0] = CGRectMake(fx, fy, fWidth, fHeight)
+            m_Bounds[0] = CGRect(x: fx, y: fy, width: fWidth, height: fHeight)
             
-            m_Bounds[1] = CGRectMake(-0.5 * HUD.LegendWidth.g,
-                -220.0,
-                HUD.LegendWidth.g,
-                HUD.LegendHeight.g);
+            m_Bounds[1] = CGRect(x: -0.5 * HUD.LegendWidth.g,
+                y: -220.0,
+                width: HUD.LegendWidth.g,
+                height: HUD.LegendHeight.g);
             
-            m_Bounds[2] = CGRectMake(-0.5 * HUD.ValueWidth.g,
-                -110.0,
-                HUD.ValueWidth.g,
-                HUD.ValueHeight.g);
+            m_Bounds[2] = CGRect(x: -0.5 * HUD.ValueWidth.g,
+                y: -110.0,
+                width: HUD.ValueWidth.g,
+                height: HUD.ValueHeight.g);
             
             mpQuad = GLU.Quad(usage: GL_DYNAMIC_DRAW.ui)
             
@@ -714,7 +699,7 @@ extension HUD.Meter.Image {
         }
     }
     
-    private func destruct() {
+    fileprivate func destruct() {
         if m_Texture[HUD.Meter.Background] != 0 {
             glDeleteTextures(1, &m_Texture[HUD.Meter.Background])
             
@@ -756,7 +741,7 @@ extension HUD.Meter.Image {
         }
     }
     
-    public func draw(x: GLfloat, _ y: GLfloat) {
+    public func draw(_ x: GLfloat, _ y: GLfloat) {
         glBlendFunc(GL_ONE.ui, GL_ONE_MINUS_SRC_ALPHA.ui)
         glEnable(GL_BLEND.ui)
         do {

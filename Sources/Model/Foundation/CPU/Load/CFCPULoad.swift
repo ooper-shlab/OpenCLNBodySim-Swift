@@ -37,7 +37,7 @@ extension CF.CPU {
             mnUserTime  = 0
         }
         
-        private func construct(rLoad: Load) {
+        private func construct(_ rLoad: Load) {
             mnTotalTime = rLoad.mnTotalTime
             mnUserTime  = rLoad.mnUserTime
         }

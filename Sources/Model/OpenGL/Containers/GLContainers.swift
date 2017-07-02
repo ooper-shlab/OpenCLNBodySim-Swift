@@ -19,19 +19,19 @@ import OpenGL
 
 public typealias GLstring = String
 extension GLstring {
-    public init(_ pString: UnsafePointer<Void>) {
-        self = String.fromCString(UnsafePointer(pString))!
+    public init(_ pString: UnsafeRawPointer) {
+        self = String(cString: pString.assumingMemoryBound(to: CChar.self))
     }
 }
 public typealias GLregex = NSRegularExpression
 extension GLregex {
-    public convenience init(_ pattern: String, options: NSRegularExpressionOptions = []) throws {
+    public convenience init(_ pattern: String, options: NSRegularExpression.Options = []) throws {
         try self.init(pattern: pattern, options: options)
     }
     
-    public func matches(string: String) -> Bool {
+    public func matches(_ string: String) -> Bool {
         let range = NSMakeRange(0, string.utf16.count)
-        return self.numberOfMatchesInString(string, options: [], range: range) > 0
+        return self.numberOfMatches(in: string, options: [], range: range) > 0
     }
 }
 

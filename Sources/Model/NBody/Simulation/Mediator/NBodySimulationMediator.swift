@@ -18,18 +18,18 @@ import OpenGL
 import OpenCL
 
 extension NBody.Simulation {
-    public class Mediator {
+    open class Mediator {
         
-        private var mbCPUs: Bool = false
-        private var mnParticles: Int = 0
-        private var mnSize: Int = 0
-        private var mnCount: Int = 0
-        private var mnGPUs: Int = 0
-        private var mpPosition: UnsafeMutablePointer<GLfloat> = nil
-        private var mnActive: Types = Types.CPUMulti
-        private var m_Properties: Properties = Properties()
-        private var mpSimulators: [NBody.Simulation.Types: Facade] = [:]
-        private var mpActive: Facade!
+        fileprivate var mbCPUs: Bool = false
+        fileprivate var mnParticles: Int = 0
+        fileprivate var mnSize: Int = 0
+        fileprivate var mnCount: Int = 0
+        fileprivate var mnGPUs: Int = 0
+        fileprivate var mpPosition: UnsafeMutablePointer<GLfloat>? = nil
+        fileprivate var mnActive: Types = Types.cpuMulti
+        fileprivate var m_Properties: Properties = Properties()
+        fileprivate var mpSimulators: [NBody.Simulation.Types: Facade] = [:]
+        fileprivate var mpActive: Facade!
     }
 }
 
@@ -37,8 +37,8 @@ private let kNBodyMaxDeviceCount = 128
 
 extension NBody {
     // Get the number of coumpute device counts
-    private static func getComputeDeviceCount(type: cl_device_type) -> Int {
-        var ids: [cl_device_id] = [cl_device_id](count: kNBodyMaxDeviceCount, repeatedValue: nil)
+    fileprivate static func getComputeDeviceCount(_ type: cl_device_type) -> Int {
+        var ids: [cl_device_id?] = Array(repeating: nil, count: kNBodyMaxDeviceCount)
         
         var count: cl_uint = 0
         
@@ -54,7 +54,7 @@ extension NBody {
 
 extension NBody.Simulation.Mediator {
     // Set the defaults for simulator compute
-    public func setCompute(rProperties: NBody.Simulation.Properties) {
+    public func setCompute(_ rProperties: NBody.Simulation.Properties) {
         mnGPUs = NBody.getComputeDeviceCount(CL_DEVICE_TYPE_GPU.ull)
         
         if !rProperties.mbIsGPUOnly {
@@ -62,12 +62,12 @@ extension NBody.Simulation.Mediator {
         }
         
         mnActive = (mbCPUs)
-            ? NBody.Simulation.Types.CPUSingle
-            : NBody.Simulation.Types.GPUPrimary
+            ? NBody.Simulation.Types.cpuSingle
+            : NBody.Simulation.Types.gpuPrimary
     }
     
     // Initialize all instance variables to their default values
-    public func setDefaults(rProperties: NBody.Simulation.Properties) {
+    public func setDefaults(_ rProperties: NBody.Simulation.Properties) {
         
         mnParticles = rProperties.mnParticles
         mnSize   = 4 * mnParticles * GLM.Size.kFloat
@@ -82,44 +82,44 @@ extension NBody.Simulation.Mediator {
     }
     
     // Acquire all simulators
-    public func acquire(rProperties: NBody.Simulation.Properties) {
+    public func acquire(_ rProperties: NBody.Simulation.Properties) {
         m_Properties = rProperties;
         
         if mnGPUs > 0 {
-            mpSimulators[.GPUPrimary]
-                = NBody.Simulation.Facade(.GPUPrimary, rProperties)
+            mpSimulators[.gpuPrimary]
+                = NBody.Simulation.Facade(.gpuPrimary, rProperties)
             
-            if mpSimulators[.GPUPrimary] != nil {
+            if mpSimulators[.gpuPrimary] != nil {
                 mnCount += 1
             }
         }
         
         if mnGPUs > 1 {
-            mpSimulators[.GPUSecondary]
-                = NBody.Simulation.Facade(.GPUSecondary, rProperties)
+            mpSimulators[.gpuSecondary]
+                = NBody.Simulation.Facade(.gpuSecondary, rProperties)
             
-            if mpSimulators[.GPUSecondary] != nil {
+            if mpSimulators[.gpuSecondary] != nil {
                 mnCount += 1
             }
         }
         
         if mbCPUs {
-            mpSimulators[.CPUSingle]
-                = NBody.Simulation.Facade(.CPUSingle, rProperties)
+            mpSimulators[.cpuSingle]
+                = NBody.Simulation.Facade(.cpuSingle, rProperties)
             
-            if mpSimulators[.CPUSingle] != nil {
+            if mpSimulators[.cpuSingle] != nil {
                 mnCount += 1
             }
             
-            mpSimulators[.CPUMulti]
-                = NBody.Simulation.Facade(.CPUMulti, rProperties)
+            mpSimulators[.cpuMulti]
+                = NBody.Simulation.Facade(.cpuMulti, rProperties)
             
-            if mpSimulators[.CPUMulti] != nil {
+            if mpSimulators[.cpuMulti] != nil {
                 mnCount += 1
             }
         }
         
-        mnActive = (mbCPUs) ? .CPUSingle : .GPUPrimary
+        mnActive = (mbCPUs) ? .cpuSingle : .gpuPrimary
         mpActive = mpSimulators[mnActive]
     }
     
@@ -156,7 +156,7 @@ extension NBody.Simulation.Mediator {
     }
     
     // Label for a type of simulator
-    public func label(nType: NBody.Simulation.Types) -> String? {
+    public func label(_ nType: NBody.Simulation.Types) -> String? {
         return mpSimulators[nType]?.label
     }
     
@@ -202,7 +202,7 @@ extension NBody.Simulation.Mediator {
     }
     
     // Select the current simulator to use
-    public func select(type: NBody.Simulation.Types) {
+    public func select(_ type: NBody.Simulation.Types) {
         if mpSimulators[type] != nil {
             mnActive = type
             mpActive = mpSimulators[mnActive]
@@ -214,34 +214,34 @@ extension NBody.Simulation.Mediator {
     }
     
     // Select the current simulator to use
-    public func select(index: Int) {
+    public func select(_ index: Int) {
         var type: NBody.Simulation.Types
         
         if mbCPUs {
             switch index {
             case 0:
-                type = .CPUSingle
+                type = .cpuSingle
                 
             case 1:
-                type = .CPUMulti
+                type = .cpuMulti
                 
             case 3:
-                type = .GPUSecondary
+                type = .gpuSecondary
                 
             case 2:
                 fallthrough
             default:
-                type = .GPUPrimary
+                type = .gpuPrimary
             }
         } else {
             switch index {
             case 1:
-                type = .GPUSecondary
+                type = .gpuSecondary
                 
             case 0:
                 fallthrough
             default:
-                type = .GPUPrimary
+                type = .gpuPrimary
             }
         }
         
@@ -250,7 +250,7 @@ extension NBody.Simulation.Mediator {
     
     // Get position data
     public var position: UnsafeMutablePointer<GLfloat> {
-        return mpPosition
+        return mpPosition!
     }
     
     // Get the current simulator
@@ -265,7 +265,7 @@ extension NBody.Simulation.Mediator {
         if pPosition != nil {
             if mpPosition != nil {
                 let length = mpActive.dataLength
-                mpPosition.dealloc(length)
+                mpPosition?.deallocate(capacity: length)
             }
             
             mpPosition = pPosition
@@ -277,25 +277,25 @@ extension NBody.Simulation.Mediator {
         if mpActive != nil {
             if mpPosition != nil {
                 let length = mpActive.dataLength
-                mpPosition.dealloc(length)
+                mpPosition?.deallocate(capacity: length)
                 
                 mpPosition = nil
                 
-                mpActive.data().dealloc(length)
+                mpActive.data()?.deallocate(capacity: length)
             }
             
             mpActive.resetProperties(m_Properties)
             
-            if    mnActive == .GPUPrimary
-                &&  mpSimulators[.GPUSecondary] != nil {
-                    mpSimulators[.GPUPrimary]!.invalidate(true)
-                    mpSimulators[.GPUSecondary]!.invalidate(false)
-            } else if    mnActive == .GPUSecondary
-                &&  mpSimulators[.GPUPrimary] != nil {
-                    mpSimulators[.GPUPrimary]!.invalidate(false)
-                    mpSimulators[.GPUSecondary]!.invalidate(true)
-            } else if mnActive == .GPUPrimary {
-                mpSimulators[.GPUPrimary]!.invalidate(true)
+            if    mnActive == .gpuPrimary
+                &&  mpSimulators[.gpuSecondary] != nil {
+                    mpSimulators[.gpuPrimary]!.invalidate(true)
+                    mpSimulators[.gpuSecondary]!.invalidate(false)
+            } else if    mnActive == .gpuSecondary
+                &&  mpSimulators[.gpuPrimary] != nil {
+                    mpSimulators[.gpuPrimary]!.invalidate(false)
+                    mpSimulators[.gpuSecondary]!.invalidate(true)
+            } else if mnActive == .gpuPrimary {
+                mpSimulators[.gpuPrimary]!.invalidate(true)
             }
             
             mpActive.unpause()

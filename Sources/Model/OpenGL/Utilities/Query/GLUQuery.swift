@@ -17,11 +17,11 @@ import Cocoa
 import OpenGL
 
 extension GLU {
-    public class Query {
+    open class Query {
         
-        private var m_Flag: [Bool] = [false, false, false, false]
-        private var m_Regex: [GLregex!] = [nil, nil, nil, nil]
-        private var m_String: [GLstring] = ["", "", "", ""]
+        fileprivate var m_Flag: [Bool] = [false, false, false, false]
+        fileprivate var m_Regex: [GLregex?] = [nil, nil, nil, nil]
+        fileprivate var m_String: [GLstring] = ["", "", "", ""]
     }
 }
 
@@ -29,15 +29,15 @@ extension GLU {
 //MARK: Private - Enumerated Types
 
 extension GLU {
-    private static let QueryRenderer = 0
-    private static let QueryVendor = 1
-    private static let QueryVersion = 2
-    private static let QueryInfo = 3
+    fileprivate static let QueryRenderer = 0
+    fileprivate static let QueryVendor = 1
+    fileprivate static let QueryVersion = 2
+    fileprivate static let QueryInfo = 3
     
-    private static let QueryIsAMD = 0
-    private static let QueryIsATI = 1
-    private static let QueryIsNVidia = 2
-    private static let QueryIsIntel = 3
+    fileprivate static let QueryIsAMD = 0
+    fileprivate static let QueryIsATI = 1
+    fileprivate static let QueryIsNVidia = 2
+    fileprivate static let QueryIsIntel = 3
     
 }
 
@@ -45,14 +45,14 @@ extension GLU {
 //MARK: Private - Utilities
 
 extension GLU.Query {
-    private func createString(name: GLenum) -> String {
+    private func createString(_ name: GLenum) -> String {
         let pString = glGetString(name)
         
-        return GLstring(pString)
+        return GLstring(cString: pString!)
     }
     
-    private func match(i: Int, _ j: Int) -> Bool {
-        return m_Regex[j].matches(m_String[i])
+    private func match(_ i: Int, _ j: Int) -> Bool {
+        return m_Regex[j]!.matches(m_String[i])
     }
     
     //MARK: -
@@ -122,11 +122,11 @@ extension GLU.Query {
         return m_Flag[GLU.QueryIsIntel]
     }
     
-    public func match(rKey: String) -> Bool {
+    public func match(_ rKey: String) -> Bool {
         var bSuccess = !rKey.isEmpty
         
         if bSuccess {
-            let found = m_String[GLU.QueryRenderer].rangeOfString(rKey)
+            let found = m_String[GLU.QueryRenderer].range(of: rKey)
             
             bSuccess = found != nil
         }
@@ -134,12 +134,12 @@ extension GLU.Query {
         return bSuccess
     }
     
-    public func match(rKeys: GLstrings) -> Bool {
+    public func match(_ rKeys: GLstrings) -> Bool {
         var bSuccess = !rKeys.isEmpty
         
         if bSuccess {
             
-            let expr = rKeys.joinWithSeparator("|")
+            let expr = rKeys.joined(separator: "|")
             
             let regex = try! GLregex(expr)
             

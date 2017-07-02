@@ -29,67 +29,67 @@ extension CF.CPU {
         private var mnSize: natural_t = 0
         private var mnFlavor: processor_flavor_t = 0
         private var mnError: kern_return_t = 0
-        private var mpInfo: processor_info_array_t = nil
+        private var mpInfo: processor_info_array_t? = nil
         private var mnInfo: mach_msg_type_number_t = 0
         
-        private let kSizeInteger = sizeof(natural_t)
+        private let kSizeInteger = MemoryLayout<natural_t>.size
         
-        static func getState(i: Int,
+        static func getState(_ i: Int,
             _ nCount: natural_t,
             _ type: Int,
-            _ pInfo: processor_info_array_t) -> natural_t
+            _ pInfo: processor_info_array_t?) -> natural_t
         {
             var nState: natural_t = 0
             
             if pInfo != nil {
-                nState = (i < nCount.l) ? pInfo[CPU_STATE_MAX.l * i + type].ui : 0
+                nState = (i < nCount.l) ? (pInfo?[CPU_STATE_MAX.l * i + type].ui)! : 0
             }
             
             return nState
         }
         
-        static func getUserState(i: Int,
+        static func getUserState(_ i: Int,
             _ nCount: natural_t,
             _ pInfo: processor_info_array_t) -> natural_t
         {
             return getState(i, nCount, CPU_STATE_USER.l, pInfo)
         }
         
-        static func getSystemState(i: Int,
+        static func getSystemState(_ i: Int,
             _ nCount: natural_t,
             _ pInfo: processor_info_array_t) -> natural_t
         {
             return getState(i, nCount, CPU_STATE_SYSTEM.l, pInfo)
         }
         
-        static func getIdleState(i: Int,
+        static func getIdleState(_ i: Int,
             _ nCount: natural_t,
             _ pInfo: processor_info_array_t) -> natural_t
         {
             return getState(i, nCount, CPU_STATE_IDLE.l, pInfo)
         }
         
-        static func getNiceState(i: Int,
+        static func getNiceState(_ i: Int,
             _ nCount: natural_t,
             _ pInfo: processor_info_array_t) -> natural_t
         {
             return getState(i, nCount, CPU_STATE_NICE.l, pInfo)
         }
         
-        static func getSum(i: Int,
+        static func getSum(_ i: Int,
             _ nCount: natural_t,
-            _ pInfo: processor_info_array_t) -> size_t
+            _ pInfo: processor_info_array_t?) -> size_t
         {
             var nSum: size_t = 0
             
             if i < nCount.l && pInfo != nil {
                 let nOffset = CPU_STATE_MAX.l * i
-                let nUser   = pInfo[nOffset + CPU_STATE_USER.l]
-                let nSytem  = pInfo[nOffset + CPU_STATE_SYSTEM.l]
-                let nIde    = pInfo[nOffset + CPU_STATE_IDLE.l]
-                let nNice   = pInfo[nOffset + CPU_STATE_NICE.l]
+                let nUser   = pInfo?[nOffset + CPU_STATE_USER.l]
+                let nSytem  = pInfo?[nOffset + CPU_STATE_SYSTEM.l]
+                let nIde    = pInfo?[nOffset + CPU_STATE_IDLE.l]
+                let nNice   = pInfo?[nOffset + CPU_STATE_NICE.l]
                 
-                nSum = nSytem.l + nIde.l + nNice.l + nUser.l
+                nSum = (nSytem?.l)! + (nIde?.l)! + (nNice?.l)! + (nUser?.l)!
             }
             
             return nSum
@@ -104,16 +104,16 @@ extension CF.CPU {
             mnSize   = kSizeInteger.ui * mnInfo
         }
         
-        private func construct(rHostInfo: HostInfo) {
+        private func construct(_ rHostInfo: HostInfo) {
             mnCount  = rHostInfo.mnCount
             mnInfo   = rHostInfo.mnInfo
             mnSize   = kSizeInteger.ui * rHostInfo.mnInfo
             mnFlavor = PROCESSOR_CPU_LOAD_INFO
-            mpInfo   = CF.ProcessorInfoArrayCreateCopy(mnSize, rHostInfo.mpInfo, &mnError)
+            mpInfo   = CF.ProcessorInfoArrayCreateCopy(mnSize, rHostInfo.mpInfo!, &mnError)
         }
         
         private func destruct() {
-            CF.ProcessorInfoArrayDelete(mnSize, mpInfo)
+            CF.ProcessorInfoArrayDelete(mnSize, mpInfo!)
             
             mnCount  = 0
             mnInfo   = 0
@@ -179,23 +179,23 @@ extension CF.CPU {
             return mnSize
         }
         
-        func user(i: Int) -> natural_t {
-            return CF.CPU.HostInfo.getUserState(i, mnCount, mpInfo)
+        func user(_ i: Int) -> natural_t {
+            return CF.CPU.HostInfo.getUserState(i, mnCount, mpInfo!)
         }
         
-        func system(i: Int) -> natural_t {
-            return CF.CPU.HostInfo.getSystemState(i, mnCount, mpInfo)
+        func system(_ i: Int) -> natural_t {
+            return CF.CPU.HostInfo.getSystemState(i, mnCount, mpInfo!)
         }
         
-        func idle(i: Int) -> natural_t {
-            return CF.CPU.HostInfo.getIdleState(i, mnCount, mpInfo)
+        func idle(_ i: Int) -> natural_t {
+            return CF.CPU.HostInfo.getIdleState(i, mnCount, mpInfo!)
         }
         
-        func nice(i: Int) -> natural_t {
-            return CF.CPU.HostInfo.getNiceState(i, mnCount, mpInfo)
+        func nice(_ i: Int) -> natural_t {
+            return CF.CPU.HostInfo.getNiceState(i, mnCount, mpInfo!)
         }
         
-        func total(i: Int) -> size_t {
+        func total(_ i: Int) -> size_t {
             return CF.CPU.HostInfo.getSum(i, mnCount, mpInfo)
         }
     }

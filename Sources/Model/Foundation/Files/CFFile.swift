@@ -19,8 +19,8 @@ import Foundation
 //MARK: -
 //MARK: Private - Type Definitions
 
-typealias CFSearchPathDirectory = NSSearchPathDirectory
-typealias CFSearchPathDomainMask = NSSearchPathDomainMask
+typealias CFSearchPathDirectory = FileManager.SearchPathDirectory
+typealias CFSearchPathDomainMask = FileManager.SearchPathDomainMask
 
 extension CF {
     class File {
@@ -45,7 +45,7 @@ extension CF {
         }
         
         // Constructor for reading a file using a URL
-        init(URL pURL: CFURLRef) {
+        init(url pURL: CFURL) {
             construct(pURL)
         }
         
@@ -58,17 +58,17 @@ extension CF {
         private var mpURL: CFURL?
         private var mpData: CFData?
         private var mpPList: CFPropertyList?
-        private var mnFormat: CFPropertyListFormat = CFPropertyListFormat.XMLFormat_v1_0
-        private var mnOptions: CFOptionFlags = CFPropertyListMutabilityOptions.MutableContainers.rawValue
+        private var mnFormat: CFPropertyListFormat = CFPropertyListFormat.xmlFormat_v1_0
+        private var mnOptions: CFOptionFlags = CFPropertyListMutabilityOptions.mutableContainers.rawValue
         private var mpError: String?
         private var mnDirectory: CFSearchPathDirectory = CFSearchPathDirectory(rawValue: 0)!
-        private var mnDomain: CFSearchPathDomainMask = CFSearchPathDomainMask.AllDomainsMask
+        private var mnDomain: CFSearchPathDomainMask = CFSearchPathDomainMask.allDomainsMask
         
         
         //MARK: -
         //MARK: Private - Utilities - Files
         
-        private static func getFileSize(pURL: CFURL, _ pFileSize: UnsafeMutablePointer<CFIndex>) -> Bool {
+        private static func getFileSize(_ pURL: CFURL, _ pFileSize: UnsafeMutablePointer<CFIndex>) -> Bool {
             var pError: Unmanaged<CFError>? = nil
             var pSize: CFNumber? = nil
             
@@ -78,17 +78,17 @@ extension CF {
                 &pError)
             
             if bSuccess {
-                bSuccess = CFNumberGetValue(pSize, CFNumberType.SInt64Type, pFileSize)
+                bSuccess = CFNumberGetValue(pSize, CFNumberType.sInt64Type, pFileSize)
                 
                 if !bSuccess {
-                    pFileSize.memory = 0
+                    pFileSize.pointee = 0
                 }
             }
             
-            return bSuccess.boolValue
+            return bSuccess
         }
         
-        private static func acquire(nSize: CFIndex,
+        private static func acquire(_ nSize: CFIndex,
             _ pBuffer: UnsafeMutablePointer<UInt8>,
             _ pURL: CFURL) -> CFIndex
         {
@@ -106,14 +106,14 @@ extension CF {
             return nLength
         }
         
-        private static func createBuffer(inout nLength: CFIndex,
+        private static func createBuffer(_ nLength: inout CFIndex,
             _ pURL: CFURL) -> [UInt8]
         {
             var nSize: CFIndex = 0
             var pBuffer: [UInt8] = []
             
             if getFileSize(pURL, &nSize) {
-                pBuffer = Array(count: nSize, repeatedValue: 0)
+                pBuffer = Array(repeating: 0, count: nSize)
                 
                 let nReadSz = acquire(nSize, &pBuffer, pURL)
                 
@@ -123,7 +123,7 @@ extension CF {
             return pBuffer
         }
         
-        private static func create(pURL: CFURL?) -> CFData? {
+        private static func create(_ pURL: CFURL?) -> CFData? {
             var pData: CFData? = nil
             
             if pURL != nil {
@@ -142,17 +142,17 @@ extension CF {
         //MARK: -
         //MARK: Private - Utilities - URLs
         
-        private static func createURL(pPathname: String?) -> CFURL? {
+        private static func createURL(_ pPathname: String?) -> CFURL? {
             var pURL: CFURL? = nil
             
             if pPathname != nil {
-                pURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, pPathname, CFURLPathStyle.CFURLPOSIXPathStyle, false)
+                pURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, pPathname as CFString?, CFURLPathStyle.cfurlposixPathStyle, false)
             }
             
             return pURL
         }
         
-        private static func createURL(pName: String?,
+        private static func createURL(_ pName: String?,
             _ pExt: String?) -> CFURL?
         {
             var pURL: CFURL? = nil
@@ -160,14 +160,14 @@ extension CF {
             if pName != nil {
                 if let pBundle = CFBundleGetMainBundle() {
                     
-                    pURL = CFBundleCopyResourceURL(pBundle, pName, pExt, nil)
+                    pURL = CFBundleCopyResourceURL(pBundle, pName as CFString?, pExt as CFString?, nil)
                 }
             }
             
             return pURL
         }
         
-        private static func createURL(domain: CFSearchPathDomainMask,
+        private static func createURL(_ domain: CFSearchPathDomainMask,
             _ directory: CFSearchPathDirectory,
             _ pDirName: String?,
             _ pFileName: String?,
@@ -181,7 +181,7 @@ extension CF {
                 let pDirPath = pLibPaths[0]
                 let pComponents = [pDirPath, pDirName!, pFileName!]
                 
-                let pPathname = pComponents.joinWithSeparator("/")
+                let pPathname = pComponents.joined(separator: "/")
                 
                 if pFileExt != nil {
                     
@@ -201,7 +201,7 @@ extension CF {
         //MARK: -
         //MARK: Private - Utilities - Writing
         
-        private static func write(pURL: CFURL?,
+        private static func write(_ pURL: CFURL?,
             _ pData: CFData?) -> Bool
         {
             var bSuccess = (pURL != nil) && (pData != nil)
@@ -215,7 +215,7 @@ extension CF {
                 if bSuccess {
                     if let pStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, pURL) {
                         
-                        bSuccess = CFWriteStreamOpen(pStream).boolValue
+                        bSuccess = CFWriteStreamOpen(pStream)
                         
                         if bSuccess {
                             let nSize = CFWriteStreamWrite(pStream, pBuffer, nLength)
@@ -235,26 +235,26 @@ extension CF {
         //MARK: -
         //MARK: Private - Utilities - Strings
         
-        private static func stringHasPropertyListExt(pPathname: String) -> Bool {
+        private static func stringHasPropertyListExt(_ pPathname: String) -> Bool {
             var foundRange: CFRange = CFRange()
             let searchRange   = CFRangeMake(0, pPathname.utf16.count)
             let searchStr = "plist"
-            let searchOptions = CFStringCompareFlags.CompareCaseInsensitive
+            let searchOptions = CFStringCompareFlags.compareCaseInsensitive
             
-            return CFStringFindWithOptions(pPathname, searchStr, searchRange, searchOptions, &foundRange).boolValue
+            return CFStringFindWithOptions(pPathname as CFString, searchStr as CFString, searchRange, searchOptions, &foundRange)
         }
         
-        private static func stringIsPropertyListExt(pExt: String) -> Bool {
+        private static func stringIsPropertyListExt(_ pExt: String) -> Bool {
             let searchRange   = CFRangeMake(0, pExt.utf16.count)
             let searchStr = "plist"
-            let searchOptions = CFStringCompareFlags.CompareCaseInsensitive
+            let searchOptions = CFStringCompareFlags.compareCaseInsensitive
             
-            let result = CFStringCompareWithOptions(pExt, searchStr, searchRange, searchOptions)
+            let result = CFStringCompareWithOptions(pExt as CFString, searchStr as CFString, searchRange, searchOptions)
             
-            return result == CFComparisonResult.CompareEqualTo
+            return result == CFComparisonResult.compareEqualTo
         }
         
-        private static func stringHasPropertyListExt(pName: String, _ pExt: String?) -> Bool {
+        private static func stringHasPropertyListExt(_ pName: String, _ pExt: String?) -> Bool {
             return (pExt != nil) ? stringIsPropertyListExt(pExt!) : stringHasPropertyListExt(pName)
         }
         
@@ -263,10 +263,10 @@ extension CF {
         
         // Initialize all instance variables
         private func construct() {
-            mnFormat    = CFPropertyListFormat.XMLFormat_v1_0
-            mnOptions   = CFPropertyListMutabilityOptions.MutableContainers.rawValue
+            mnFormat    = CFPropertyListFormat.xmlFormat_v1_0
+            mnOptions   = CFPropertyListMutabilityOptions.mutableContainers.rawValue
             mnDirectory = CFSearchPathDirectory(rawValue: 0)!
-            mnDomain    = .AllDomainsMask
+            mnDomain    = .allDomainsMask
             mnLength    = 0
             mpPList     = nil
             mpError     = nil
@@ -275,7 +275,7 @@ extension CF {
         }
         
         // Create and initialize all ivars
-        func acquire(isPList: Bool)  {
+        func acquire(_ isPList: Bool)  {
             mpData  = CF.File.create(mpURL)
             
             if mpData != nil {
@@ -301,7 +301,7 @@ extension CF {
         }
         
         // Create a deep-copy
-        func clone(rFile: File) {
+        func clone(_ rFile: File) {
             mnOptions = rFile.mnOptions
             mnFormat  = rFile.mnFormat
             
@@ -370,7 +370,7 @@ extension CF {
         }
         
         // Write the file to a location using url
-        func write(pURL: CFURL?) -> Bool {
+        func write(_ pURL: CFURL?) -> Bool {
             var bSuccess = false
             
             mpURL = pURL
@@ -384,7 +384,7 @@ extension CF {
         //MARK: Public - Constructors
         
         // Constructor for reading a file with an absolute pathname
-        private func construct(pPathname: String) {
+        private func construct(_ pPathname: String) {
             construct()
             
             mpURL = CF.File.createURL(pPathname)
@@ -397,7 +397,7 @@ extension CF {
         }
         
         // Constructor for reading a file in an application's bundle
-        private func construct(pFileName: String,
+        private func construct(_ pFileName: String,
             _ pFileExt: String)
         {
             construct()
@@ -412,7 +412,7 @@ extension CF {
         }
         
         // Constructor for reading a file in a domain
-        private func construct(domain: CFSearchPathDomainMask,
+        private func construct(_ domain: CFSearchPathDomainMask,
             _ directory: CFSearchPathDirectory,
             _ pDirName: String,
             _ pFileName: String,
@@ -433,7 +433,7 @@ extension CF {
         }
         
         // Constructor for reading a file using a URL
-        private func construct(pURL: CFURL?) {
+        private func construct(_ pURL: CFURL?) {
             construct()
             
             if pURL != nil {
@@ -453,7 +453,7 @@ extension CF {
         //MARK: Public - Copy Constructor
         
         // Copy constructor for deep-copy
-        private func construct(rFile: File) {
+        private func construct(_ rFile: File) {
             clone(rFile)
         }
         
@@ -486,13 +486,13 @@ extension CF {
         //MARK: Public - Accessors
         
         // Accessor to return a c-string representation of the read file
-        var cstring: UnsafePointer<CChar> {
-            return (mpData != nil) ? UnsafePointer(CFDataGetBytePtr(mpData)) : nil
+        var cstring: UnsafePointer<CChar>? {
+            return ((mpData != nil) ? UnsafeRawPointer(CFDataGetBytePtr(mpData))?.assumingMemoryBound(to: CChar.self) : nil)!
         }
         
         // Accessor, if the read file was a data file
-        var bytes: UnsafePointer<UInt8> {
-            return (mpData != nil) ? CFDataGetBytePtr(mpData) : nil
+        var bytes: UnsafePointer<UInt8>? {
+            return ((mpData != nil) ? CFDataGetBytePtr(mpData) : nil)!
         }
         
         // Length of the data or the string
@@ -547,8 +547,8 @@ extension CF {
         var string: String? {
             var result: String? = nil
             
-            if mpData != nil {
-                result = String(data: mpData!, encoding: NSUTF8StringEncoding)
+            if let data = mpData as Data? {
+                result = String(data: data, encoding: String.Encoding.utf8)
             }
             
             return result
@@ -576,7 +576,7 @@ extension CF {
         
         // Query for if the file was a property list
         var isPList: Bool {
-            return (mpPList != nil) ? CFPropertyListIsValid(mpPList, mnFormat).boolValue : false
+            return (mpPList != nil) ? CFPropertyListIsValid(mpPList, mnFormat) : false
         }
         
         //MARK: -
@@ -588,7 +588,7 @@ extension CF {
         }
         
         // Write the file to a location using an absolute pathname
-        func write(pPathname: String) -> Bool {
+        func write(_ pPathname: String) -> Bool {
             guard let pURL = CF.File.createURL(pPathname) else {return false}
             
             return write(pURL)
@@ -596,7 +596,7 @@ extension CF {
         }
         
         // Write the file to the application's bundle
-        func write(pName: String, _ pExt: String) -> Bool {
+        func write(_ pName: String, _ pExt: String) -> Bool {
             guard let pURL = CF.File.createURL(pName, pExt) else {return false}
             
             return write(pURL)

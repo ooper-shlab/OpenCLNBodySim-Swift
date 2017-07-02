@@ -38,11 +38,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import Foundation
 
 protocol StringScannable {
-    static func scan(scanner: NSScanner) -> Self?
+    static func scan(_ scanner: Scanner) -> Self?
 }
 
 extension Float: StringScannable {
-    static func scan(scanner: NSScanner) -> Float? {
+    static func scan(_ scanner: Scanner) -> Float? {
         var result: Float = 0
         let success = scanner.scanFloat(&result)
         if success {
@@ -54,7 +54,7 @@ extension Float: StringScannable {
 }
 
 extension Double: StringScannable {
-    static func scan(scanner: NSScanner) -> Double? {
+    static func scan(_ scanner: Scanner) -> Double? {
         var result: Double = 0
         let success = scanner.scanDouble(&result)
         if success {
@@ -66,9 +66,9 @@ extension Double: StringScannable {
 }
 
 extension Int32: StringScannable {
-    static func scan(scanner: NSScanner) -> Int32? {
+    static func scan(_ scanner: Scanner) -> Int32? {
         var result: Int32 = 0
-        let success = scanner.scanInt(&result)
+        let success = scanner.scanInt32(&result)
         if success {
             return result
         } else {
@@ -77,9 +77,9 @@ extension Int32: StringScannable {
     }
 }
 extension Int: StringScannable {
-    static func scan(scanner: NSScanner) -> Int? {
+    static func scan(_ scanner: Scanner) -> Int? {
         var result: Int = 0
-        let success = scanner.scanInteger(&result)
+        let success = scanner.scanInt(&result)
         if success {
             return result
         } else {
@@ -88,9 +88,9 @@ extension Int: StringScannable {
     }
 }
 extension Int64: StringScannable {
-    static func scan(scanner: NSScanner) -> Int64? {
+    static func scan(_ scanner: Scanner) -> Int64? {
         var result: Int64 = 0
-        let success = scanner.scanLongLong(&result)
+        let success = scanner.scanInt64(&result)
         if success {
             return result
         } else {

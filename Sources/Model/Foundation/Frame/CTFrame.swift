@@ -17,7 +17,7 @@ import Cocoa
 import OpenGL
 
 extension CT {
-    public class Frame {
+    open class Frame {
         
         private var mpFrame: CTFrame!
         private var m_Range: CFRange = CFRangeMake(0, 0)
@@ -25,12 +25,12 @@ extension CT {
         
         //MARK: -
         //MARK: Private - Constants
-        private final let kCTFrameDefaultMaxSz = CGSizeMake(CGFloat.max, CGFloat.max)
+        private final let kCTFrameDefaultMaxSz = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         
         //MARK: -
         //MARK: Private - Utilities - Constructor - Framesetter
         
-        private func create(rText: String,
+        private func create(_ rText: String,
             _ rFont: String,
             _ nFontSize: CGFloat,
             _ nTextAlign: CTTextAlignment) -> CTFramesetter? {
@@ -50,48 +50,47 @@ extension CT {
         //MARK: -
         //MARK: Private - Utilities - Constructors - Frames
         
-        private func create(pFrameSetter: CTFramesetter) -> CTFrame? {
+        private func create(_ pFrameSetter: CTFramesetter) -> CTFrame? {
             var pFrame: CTFrame? = nil
             
-            if let pPath: CGMutablePath = CGPathCreateMutable() {
-                
-                CGPathAddRect(pPath, nil, m_Bounds)
-                
-                pFrame = CTFramesetterCreateFrame(pFrameSetter,
-                    m_Range,
-                    pPath,
-                    nil)
-                
-            }
+            let pPath: CGMutablePath = CGMutablePath()
+            
+            pPath.addRect(m_Bounds)
+            
+            pFrame = CTFramesetterCreateFrame(pFrameSetter,
+                                              m_Range,
+                                              pPath,
+                                              nil)
+            
             
             return pFrame
         }
         
-        private func create(rOrigin: CGPoint,
+        private func create(_ rOrigin: CGPoint,
             _ rSize: CGSize,
             _ pFrameSetter: CTFramesetter) -> CTFrame?
         {
-            m_Bounds = CGRectMake(rOrigin.x,
-                rOrigin.y,
-                rSize.width,
-                rSize.height)
+            m_Bounds = CGRect(x: rOrigin.x,
+                y: rOrigin.y,
+                width: rSize.width,
+                height: rSize.height)
             
             return create(pFrameSetter)
         }
         
-        private func create(nWidth: GLsizei,
+        private func create(_ nWidth: GLsizei,
             _ nHeight: GLsizei,
             _ pFrameSetter: CTFramesetter) -> CTFrame?
         {
-            m_Bounds = CGRectMake(0.0,
-                0.0,
-                CGFloat(nWidth),
-                CGFloat(nHeight))
+            m_Bounds = CGRect(x: 0.0,
+                y: 0.0,
+                width: CGFloat(nWidth),
+                height: CGFloat(nHeight))
             
             return create(pFrameSetter)
         }
         
-        private func create(rText: String,
+        private func create(_ rText: String,
             _ rFont: String,
             _ nFontSize: CGFloat,
             _ rOrigin: CGPoint,
@@ -117,7 +116,7 @@ extension CT {
             return pFrame
         }
         
-        private func create(rText: String,
+        private func create(_ rText: String,
             _ rFont: String,
             _ nFontSize: CGFloat,
             _ nWidth: GLsizei,
@@ -144,7 +143,7 @@ extension CT {
         private func defaults() {
             mpFrame = nil
             m_Range = CFRangeMake(0, 0)
-            m_Bounds = CGRectMake(0.0, 0.0, 0.0, 0.0)
+            m_Bounds = CGRect(x: 0.0, y: 0.0, width: 0.0, height: 0.0)
         }
         
         //MARK: -
@@ -214,7 +213,7 @@ extension CT {
         //MARK: -
         //MARK: Public - Utlities
         
-        public func draw(pContext: CGContext?) {
+        open func draw(_ pContext: CGContext?) {
             if pContext != nil {
                 CTFrameDraw(mpFrame, pContext!)
             }
@@ -223,11 +222,11 @@ extension CT {
         //MARK: -
         //MARK: Public - Accessors
         
-        public var bounds: CGRect {
+        open var bounds: CGRect {
             return m_Bounds
         }
         
-        public var range: CFRange {
+        open var range: CFRange {
             return m_Range
         }
     }

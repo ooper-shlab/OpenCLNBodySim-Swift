@@ -23,7 +23,7 @@ import OpenGL.GL
 //MARK: Private - Namespace
 
 extension NBody.Simulation {
-    public class Properties {
+    open class Properties {
         init(_ demoType: Int = 1) {construct(demoType)}
         init(_ pDictionary: [String: AnyObject]) {construct(pDictionary)}
         init(_ pPreferences: NBodyPreferences) {construct(pPreferences)}
@@ -36,7 +36,7 @@ extension NBody.Simulation {
         var mnDemos: Int = 0
         var mnDemoType: Int = 0
         var mnParticles: Int = 0
-        var mnConfig: NBody.Config = .Random
+        var mnConfig: NBody.Config = .random
         var mnTimeStep: Float = 0.0
         var mnClusterScale: Float = 0.0
         var mnVelocityScale: Float = 0.0
@@ -55,45 +55,45 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Private - Utilities
         
-        static func setValue(pNumber: AnyObject?, inout _ value: Int) {
+        static func setValue(_ pNumber: Any?, _ value: inout Int) {
             if let integerValue = pNumber as? Int {
                 value = integerValue
             }
         }
         
-        static func setValue(pNumber: AnyObject?, inout _ value: NBody.Config) {
-            if let
-                integerValue = pNumber as? Int,
-                configValue = NBody.Config(rawValue: integerValue)
+        static func setValue(_ pNumber: Any?, _ value: inout NBody.Config) {
+            if
+                let integerValue = pNumber as? Int,
+                let configValue = NBody.Config(rawValue: integerValue)
             {
                 value = configValue
             }
         }
         
-        static func setValue(pNumber: AnyObject?, inout _ value: UInt32) {
-            if let pNumber = pNumber as? NSNumber {
-                value = pNumber.unsignedIntValue
+        static func setValue(_ pNumber: Any?, _ value: inout UInt32) {
+            if let uint32Value = pNumber as? UInt32 {
+                value = uint32Value
             }
         }
         
-        static func setValue(pNumber: AnyObject?, inout _ value: CGFloat) {
+        static func setValue(_ pNumber: Any?, _ value: inout CGFloat) {
             if let cgFloatValue = pNumber as? CGFloat {
                 value = cgFloatValue
             }
         }
-        static func setValue(pNumber: AnyObject?, inout _ value: Double) {
+        static func setValue(_ pNumber: Any?, _ value: inout Double) {
             if let doubleValue = pNumber as? Double {
                 value = doubleValue
             }
         }
         
-        static func setValue(pNumber: AnyObject?, inout _ value: Float) {
+        static func setValue(_ pNumber: Any?, _ value: inout Float) {
             if let floatValue = pNumber as? Float {
                 value = floatValue
             }
         }
         
-        static func setValue(pNumber: AnyObject?, inout _ value: Bool) {
+        static func setValue(_ pNumber: Any?, _ value: inout Bool) {
             if let boolValue = pNumber as? Bool {
                 value = boolValue   //###
             }
@@ -101,7 +101,7 @@ extension NBody.Simulation {
         
         // Note: We're using NSNumber here as the equivalent CFNumberRef does not
         //       have representations of unsigned numbers.
-        static func setData(pDictionary: [String: AnyObject], _ properties: Properties) {
+        static func setData(_ pDictionary: [String: Any], _ properties: Properties) {
             setValue(pDictionary[kNBodyPrefIsGPUOnly],     &properties.mbIsGPUOnly)
             setValue(pDictionary[kNBodyPrefDemos],         &properties.mnDemos)
             setValue(pDictionary[kNBodyPrefDemoType],      &properties.mnDemoType)
@@ -118,12 +118,12 @@ extension NBody.Simulation {
             setValue(pDictionary[kNBodyPrefRotateY],       &properties.mnRotateY)
         }
         
-        static func setDefaults(nDemoType: Int, _ properties: Properties) {
+        static func setDefaults(_ nDemoType: Int, _ properties: Properties) {
             properties.mbIsGPUOnly     = false
             properties.mnDemos         = 7
             properties.mnDemoType      = nDemoType
             properties.mnParticles        = NBody.Particles.kCount
-            properties.mnConfig        = NBody.Config.Shell
+            properties.mnConfig        = NBody.Config.shell
             properties.mnTimeStep      = NBody.Scale.kTime.f * 0.016
             properties.mnClusterScale  = 1.54
             properties.mnVelocityScale = 8.0
@@ -135,11 +135,11 @@ extension NBody.Simulation {
             properties.mnRotateY       = 0.0
         }
         
-        static func setDefaults(properties: Properties) {
+        static func setDefaults(_ properties: Properties) {
             setDefaults(DefaultDemoType, properties)
         }
         
-        static func copyData(propertiesSrc: Properties,
+        static func copyData(_ propertiesSrc: Properties,
             to propertiesDst: Properties)
         {
             propertiesDst.mbIsGPUOnly     = propertiesSrc.mbIsGPUOnly
@@ -157,7 +157,7 @@ extension NBody.Simulation {
             propertiesDst.mnRotateY       = propertiesSrc.mnRotateY
         }
         
-        static func setData(demoType: Int,
+        static func setData(_ demoType: Int,
             _ properties: Properties) -> Int
         {
             var nDemos = 0
@@ -188,7 +188,7 @@ extension NBody.Simulation {
             return nDemos
         }
         
-        static func create(nCount: Int) -> [Properties] {
+        static func create(_ nCount: Int) -> [Properties] {
             var pProperties: [Properties] = []
             
             let file = CF.File("NBodySimulationProperties", "plist")
@@ -211,23 +211,23 @@ extension NBody.Simulation {
             return pProperties
         }
         
-        static func create(pFilename: String) -> [Properties] {
+        static func create(_ pFilename: String) -> [Properties] {
             var pProperties: [Properties] = []
             
             let file = CF.File(pFilename, "plist")
             
-            if let pArray = file.plist {
+            if let pArray = file.plist as? [[String: Any]] {
                 
                 let iMax = pArray.count
                 
-                pProperties = (0..<iMax).map{i in
+                pProperties = (0..<iMax).map{_ in
                     Properties()
                 }
                 
                 if !pProperties.isEmpty {
                     var i = 0
                     
-                    for pDictionary in pArray as! [[String: AnyObject]] {
+                    for pDictionary in pArray {
                         setDefaults(pProperties[i])
                         setData(pDictionary, pProperties[i])
                         
@@ -275,7 +275,7 @@ extension NBody.Simulation {
         //                                       forKeys:pKeys];
         //} // NBodySimulationPropertiesCreateDictionary
         
-        static func updatePreferences(properties: Properties,
+        static func updatePreferences(_ properties: Properties,
             _ pPreferences: NBodyPreferences)
         {
             pPreferences.GPUOnly     = properties.mbIsGPUOnly
@@ -296,18 +296,18 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Interfaces
         
-        private func construct(type: Int) {
+        private func construct(_ type: Int) {
             NBody.Simulation.Properties.setDefaults(type, self)
             
             mnDemos = NBody.Simulation.Properties.setData(mnDemoType, self)
         }
         
-        private func construct(pDictionary: [String: AnyObject]) {
+        private func construct(_ pDictionary: [String: AnyObject]) {
             NBody.Simulation.Properties.setDefaults(self)
             NBody.Simulation.Properties.setData(pDictionary, self)
         }
         
-        private func construct(pPreferences: NBodyPreferences) {
+        private func construct(_ pPreferences: NBodyPreferences) {
             NBody.Simulation.Properties.setDefaults(self)
             NBody.Simulation.Properties.setData(pPreferences.preferences, self)
         }
@@ -317,7 +317,7 @@ extension NBody.Simulation {
             mnDemos         = 0
             mnDemoType      = 0
             mnParticles        = 0
-            mnConfig        = .Random
+            mnConfig        = .random
             mnTimeStep      = 0.0
             mnClusterScale  = 0.0
             mnVelocityScale = 0.0
@@ -329,7 +329,7 @@ extension NBody.Simulation {
             mnRotateY       = 0.0
         }
         
-        private func construct(rProperties: Properties) {
+        private func construct(_ rProperties: Properties) {
             NBody.Simulation.Properties.copyData(rProperties, to: self)
         }
         
@@ -365,7 +365,7 @@ extension NBody.Simulation {
         //    return NBodySimulationPropertiesCreateDictionary(*this);
         //} // dictionary
         
-        func update(pPreferences: NBodyPreferences) {
+        func update(_ pPreferences: NBodyPreferences) {
             NBody.Simulation.Properties.updatePreferences(self, pPreferences)
         }
         
@@ -385,14 +385,15 @@ extension NBody.Simulation {
     }
 }
 
-infix operator <<- {associativity right precedence 90}
-func <<- (inout lhs: NBody.Simulation.Properties, pPreferences: NBodyPreferences?) {
+//infix operator <<- {associativity right precedence 90}
+infix operator <<- :AssignmentPrecedence
+func <<- (lhs: inout NBody.Simulation.Properties, pPreferences: NBodyPreferences?) {
     if let pPreferences = pPreferences {
         lhs = NBody.Simulation.Properties()
         NBody.Simulation.Properties.setData(pPreferences.preferences, lhs)
     }
 }
-func <<- (inout lhs: NBody.Simulation.Properties?, pPreferences: NBodyPreferences?) {
+func <<- (lhs: inout NBody.Simulation.Properties?, pPreferences: NBodyPreferences?) {
     if let pPreferences = pPreferences {
         lhs = NBody.Simulation.Properties()
         NBody.Simulation.Properties.setData(pPreferences.preferences, lhs!)

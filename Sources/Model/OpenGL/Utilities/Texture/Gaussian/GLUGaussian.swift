@@ -18,7 +18,7 @@ import OpenGL
 import simd
 
 extension GLU {
-    public class Gaussian {
+    open class Gaussian {
         
         deinit {destruct()}
         
@@ -26,9 +26,9 @@ extension GLU {
         private var mnTexRes: GLuint = 0
         private var mnTarget: GLenum = 0
         
-        private static func initImage(nTexRes: Int,
-            _ queue_x: dispatch_queue_t,
-            _ queue_y: dispatch_queue_t,
+        private static func initImage(_ nTexRes: Int,
+//            _ queue_x: DispatchQueue,
+//            _ queue_y: DispatchQueue,
             _ pImage: UnsafeMutablePointer<GLubyte>)
         {
             let nDelta = 2.0 / Float(nTexRes)
@@ -38,10 +38,10 @@ extension GLU {
             
             var w = Float2(-1.0)
             
-            dispatch_apply(nTexRes, queue_y) {y in
+            DispatchQueue.concurrentPerform(iterations: nTexRes) {y in
                 w.y += nDelta
                 
-                dispatch_apply(nTexRes, queue_x) {x in
+                DispatchQueue.concurrentPerform(iterations: nTexRes) {x in
                     w.x += nDelta
                     
                     let d = length(w)
@@ -61,16 +61,16 @@ extension GLU {
             }
         }
         
-        private class func createImage(nTexRes: Int) -> [GLubyte] {
-            var pImage: [GLubyte] = Array(count: nTexRes * nTexRes, repeatedValue: 0)
+        private class func createImage(_ nTexRes: Int) -> [GLubyte] {
+            var pImage: [GLubyte] = Array(repeating: 0, count: nTexRes * nTexRes)
             
-            let queue = CF.Queue()
+//            let queue = CF.Queue()
+//            
+//            let queue_y = queue.createQueue("com.apple.glu.gaussian.ycoord")
+//            
+//            let queue_x = queue.createQueue("com.apple.glu.gaussian.xcoord")
             
-            let queue_y = queue.createQueue("com.apple.glu.gaussian.ycoord")
-            
-            let queue_x = queue.createQueue("com.apple.glu.gaussian.xcoord")
-            
-            initImage(nTexRes, queue_x, queue_y, &pImage)
+            initImage(nTexRes, /*queue_x, queue_y,*/ &pImage)
             
             return pImage
         }
@@ -78,7 +78,7 @@ extension GLU {
         //MARK: -
         //MARK: Private - Utilities - Constructors
         
-        private class func createTexture(nTexRes: Int) -> GLuint {
+        private class func createTexture(_ nTexRes: Int) -> GLuint {
             var texture: GLuint = 0
             
             let pImage = createImage(nTexRes)
@@ -122,6 +122,7 @@ extension GLU {
             if mnTexture != 0 {
                 glDeleteTextures(1, &mnTexture)
                 
+                mnTexture = 0
             }
         }
         
@@ -131,19 +132,19 @@ extension GLU {
             mnTexture = GLU.Gaussian.createTexture(mnTexRes.l)
         }
         
-        public func enable() {
+        open func enable() {
             glBindTexture(mnTarget, mnTexture)
         }
         
-        public func disable() {
+        open func disable() {
             glBindTexture(mnTarget, 0)
         }
         
-        public var texture: GLuint {
+        open var texture: GLuint {
             return mnTexture
         }
         
-        public var target: GLenum {
+        open var target: GLenum {
             return mnTarget
         }
     }

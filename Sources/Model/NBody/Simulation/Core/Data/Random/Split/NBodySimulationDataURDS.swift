@@ -26,9 +26,9 @@ extension NBody.Simulation.Data {
         private var mnCount: GLfloat = 0.0
         private var mnBCScale: GLfloat = 0.0
         
-        private var mpMass: UnsafeMutablePointer<GLfloat> = nil
-        private var mpPosition: [UnsafeMutablePointer<GLfloat>] = Array(count: 3, repeatedValue: nil)
-        private var mpVelocity: [UnsafeMutablePointer<GLfloat>] = Array(count: 3, repeatedValue: nil)
+        private var mpMass: UnsafeMutablePointer<GLfloat>? = nil
+        private var mpPosition: [UnsafeMutablePointer<GLfloat>] = []
+        private var mpVelocity: [UnsafeMutablePointer<GLfloat>] = []
         
         //MARK: -
         //MARK: Private - Utilities
@@ -37,19 +37,19 @@ extension NBody.Simulation.Data {
             let pscale = m_Scale[0] * max(1.0, mnBCScale)
             let vscale = pscale * m_Scale[1]
             
-            dispatch_apply(mnParticles, m_DQueue) {i in
+            DispatchQueue.concurrentPerform(iterations: mnParticles) {i in
                 let position = pscale * self.mpGenerator[NBody.RandIntervalLenIs.Two].rand()
                 let velocity = vscale * position
                 
-                self.mpPosition[Axis.X.rawValue][i] = position.x
-                self.mpPosition[Axis.Y.rawValue][i] = position.y
-                self.mpPosition[Axis.Z.rawValue][i] = position.z
+                self.mpPosition[Axis.x.rawValue][i] = position.x
+                self.mpPosition[Axis.y.rawValue][i] = position.y
+                self.mpPosition[Axis.z.rawValue][i] = position.z
                 
-                self.mpVelocity[Axis.X.rawValue][i] = velocity.x
-                self.mpVelocity[Axis.Y.rawValue][i] = velocity.y
-                self.mpVelocity[Axis.Z.rawValue][i] = velocity.z
+                self.mpVelocity[Axis.x.rawValue][i] = velocity.x
+                self.mpVelocity[Axis.y.rawValue][i] = velocity.y
+                self.mpVelocity[Axis.z.rawValue][i] = velocity.z
                 
-                self.mpMass[i] = 1.0
+                self.mpMass?[i] = 1.0
             }
         }
         
@@ -57,19 +57,19 @@ extension NBody.Simulation.Data {
             let pscale = m_Scale[0] * max(1.0, mnBCScale)
             let vscale = m_Scale[1] * pscale
             
-            dispatch_apply(mnParticles, m_DQueue) {i in
+            DispatchQueue.concurrentPerform(iterations: mnParticles) {i in
                 let position = pscale * self.mpGenerator[NBody.RandIntervalLenIs.Two].nrand()
                 let velocity = vscale * self.mpGenerator[NBody.RandIntervalLenIs.Two].nrand()
                 
-                self.mpPosition[Axis.X.rawValue][i] = position.x
-                self.mpPosition[Axis.Y.rawValue][i] = position.y
-                self.mpPosition[Axis.Z.rawValue][i] = position.z
+                self.mpPosition[Axis.x.rawValue][i] = position.x
+                self.mpPosition[Axis.y.rawValue][i] = position.y
+                self.mpPosition[Axis.z.rawValue][i] = position.z
                 
-                self.mpMass[i] = 1.0 // mass
+                self.mpMass?[i] = 1.0 // mass
                 
-                self.mpVelocity[Axis.X.rawValue][i] = velocity.x
-                self.mpVelocity[Axis.Y.rawValue][i] = velocity.y
-                self.mpVelocity[Axis.Z.rawValue][i] = velocity.z
+                self.mpVelocity[Axis.x.rawValue][i] = velocity.x
+                self.mpVelocity[Axis.y.rawValue][i] = velocity.y
+                self.mpVelocity[Axis.z.rawValue][i] = velocity.z
             }
         }
         
@@ -80,16 +80,16 @@ extension NBody.Simulation.Data {
             let outer  = 4.0 * pscale
             let length = outer - inner
             
-            dispatch_apply(mnParticles, m_DQueue) {i in
+            DispatchQueue.concurrentPerform(iterations: mnParticles) {i in
                 let nrpos    = self.mpGenerator[NBody.RandIntervalLenIs.Two].nrand()
                 let rpos     = self.mpGenerator[NBody.RandIntervalLenIs.One].rand()
                 let position = nrpos * (inner + (length * rpos))
                 
-                self.mpPosition[Axis.X.rawValue][i] = position.x
-                self.mpPosition[Axis.Y.rawValue][i] = position.y
-                self.mpPosition[Axis.Z.rawValue][i] = position.z
+                self.mpPosition[Axis.x.rawValue][i] = position.x
+                self.mpPosition[Axis.y.rawValue][i] = position.y
+                self.mpPosition[Axis.z.rawValue][i] = position.z
                 
-                self.mpMass[i] = 1.0
+                self.mpMass?[i] = 1.0
                 
                 var axis = self.m_Axis
                 
@@ -102,16 +102,16 @@ extension NBody.Simulation.Data {
                 }
                 
                 var velocity = Float3(
-                    self.mpPosition[Axis.X.rawValue][i],
-                    self.mpPosition[Axis.Y.rawValue][i],
-                    self.mpPosition[Axis.Z.rawValue][i]
+                    self.mpPosition[Axis.x.rawValue][i],
+                    self.mpPosition[Axis.y.rawValue][i],
+                    self.mpPosition[Axis.z.rawValue][i]
                 )
                 
                 velocity = vscale * cross(velocity, axis)
                 
-                self.mpVelocity[Axis.X.rawValue][i] = velocity.x
-                self.mpVelocity[Axis.Y.rawValue][i] = velocity.y
-                self.mpVelocity[Axis.Z.rawValue][i] = velocity.z
+                self.mpVelocity[Axis.x.rawValue][i] = velocity.x
+                self.mpVelocity[Axis.y.rawValue][i] = velocity.y
+                self.mpVelocity[Axis.z.rawValue][i] = velocity.z
             }
         }
         
@@ -138,21 +138,21 @@ extension NBody.Simulation.Data {
                     
                     let vec = galaxy.floats()
                     
-                    mpMass[i] = mscale * vec[0]
+                    mpMass?[i] = mscale * vec[0]
                     
                     position  = Float3(vec[1], vec[2], vec[3])
                     position *= pscale
                     
-                    mpPosition[Axis.X.rawValue][i] = position.x
-                    mpPosition[Axis.Y.rawValue][i] = position.y
-                    mpPosition[Axis.Z.rawValue][i] = position.z
+                    mpPosition[Axis.x.rawValue][i] = position.x
+                    mpPosition[Axis.y.rawValue][i] = position.y
+                    mpPosition[Axis.z.rawValue][i] = position.z
                     
                     velocity  = Float3(vec[4], vec[5], vec[6])
                     velocity *= vscale
                     
-                    mpVelocity[Axis.X.rawValue][i] = velocity.x
-                    mpVelocity[Axis.Y.rawValue][i] = velocity.y
-                    mpVelocity[Axis.Z.rawValue][i] = velocity.z
+                    mpVelocity[Axis.x.rawValue][i] = velocity.x
+                    mpVelocity[Axis.y.rawValue][i] = velocity.y
+                    mpVelocity[Axis.z.rawValue][i] = velocity.z
                     
                     i += 1
                 }
@@ -168,29 +168,30 @@ extension NBody.Simulation.Data {
             mnBCScale = mnCount / 1024.0
         }
         
-        func setTo(pSplit: Split) -> Bool {
+        @discardableResult
+        func setTo(_ pSplit: Split) -> Bool {
             
             mpMass = pSplit.mass()
             
-            mpPosition[Axis.X.rawValue] = pSplit.position(.X)
-            mpPosition[Axis.Y.rawValue] = pSplit.position(.Y)
-            mpPosition[Axis.Z.rawValue] = pSplit.position(.Z)
+            mpPosition = [pSplit.position(.x),
+             pSplit.position(.y),
+             pSplit.position(.z)]
             
-            mpVelocity[Axis.X.rawValue] = pSplit.velocity(.X)
-            mpVelocity[Axis.Y.rawValue] = pSplit.velocity(.Y)
-            mpVelocity[Axis.Z.rawValue] = pSplit.velocity(.Z)
+            mpVelocity = [pSplit.velocity(.x),
+             pSplit.velocity(.y),
+             pSplit.velocity(.z)]
             
             switch mnConfig {
-            case .Shell:
+            case .shell:
                 configShell()
                 
-            case .MWM31:
+            case .mwm31:
                 configMWM31()
                 
-            case .Expand:
+            case .expand:
                 configExpand()
                 
-            case .Random:
+            case .random:
                 configRandom()
             }
             

@@ -44,7 +44,7 @@ class OpenGLView: NSOpenGLView {
     
     private var mpOptions: [String: AnyObject] = [:]
     private var mpContext: NSOpenGLContext?
-    private var mpTimer: NSTimer?
+    private var mpTimer: Timer?
     
     private var mpEngine: NBodyEngine?
     private var mpPrefs: NBodyPreferences?
@@ -85,7 +85,7 @@ class OpenGLView: NSOpenGLView {
         // If self isn't removed as an observer, the Notification Center
         // will continue sending notification objects to the deallocated
         // object.
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     // Tear-down objects
@@ -101,7 +101,7 @@ class OpenGLView: NSOpenGLView {
     //MARK: Private - Utilities - Misc.
     
     // When application is terminating cleanup the objects
-    @objc private func _quit(notification: NSNotification) {
+    @objc private func _quit(_ notification: Notification) {
         self._cleanup()
     }
     
@@ -111,17 +111,17 @@ class OpenGLView: NSOpenGLView {
     
     private func _toggleFullscreen() {
         if mpPrefs?.fullscreen ?? false {
-            self.enterFullScreenMode(NSScreen.mainScreen()!, withOptions: mpOptions)
+            self.enterFullScreenMode(NSScreen.main()!, withOptions: mpOptions)
         }
     }
     
-    private func _alert(pMessage: String?) {
+    private func _alert(_ pMessage: String?) {
         if pMessage != nil {
             let pAlert = NSAlert()
             
-            pAlert.addButtonWithTitle("OK")
+            pAlert.addButton(withTitle: "OK")
             pAlert.messageText = pMessage!
-            pAlert.alertStyle = .CriticalAlertStyle
+            pAlert.alertStyle = .critical
             
             let response = pAlert.runModal()
             
@@ -194,7 +194,7 @@ class OpenGLView: NSOpenGLView {
             
             exit(-1)
         } else {
-            let frame = NSScreen.mainScreen()!.frame
+            let frame = NSScreen.main()!.frame
             
             mpEngine = NBodyEngine(preferences: mpPrefs)
             
@@ -205,14 +205,14 @@ class OpenGLView: NSOpenGLView {
     }
     
     private func _prepareRunLoop() {
-        mpTimer = NSTimer(timeInterval: 0.0,
+        mpTimer = Timer(timeInterval: 0.0,
             target: self,
             selector: #selector(OpenGLView._idle),
             userInfo: self,
             repeats: true)
         
-        NSRunLoop.currentRunLoop().addTimer(mpTimer!,
-            forMode: NSRunLoopCommonModes)
+        RunLoop.current.add(mpTimer!,
+            forMode: RunLoopMode.commonModes)
     }
     
     //MARK: -
@@ -227,14 +227,14 @@ class OpenGLView: NSOpenGLView {
             mpContext = self.openGLContext
             bIsValid = mpContext != nil
             
-            mpOptions = [NSFullScreenModeSetting: true]
+            mpOptions = [NSFullScreenModeSetting: true as AnyObject]
             
             // It's important to clean up our rendering objects before we terminate -- Cocoa will
             // not specifically release everything on application termination, so we explicitly
             // call our cleanup (private object destructor) routines.
-            NSNotificationCenter.defaultCenter().addObserver(self,
+            NotificationCenter.default.addObserver(self,
                 selector: #selector(OpenGLView._quit(_:)),
-                name: "NSApplicationWillTerminateNotification",
+                name: NSNotification.Name(rawValue: "NSApplicationWillTerminateNotification"),
                 object: NSApp)
             
         } else{
@@ -275,7 +275,7 @@ class OpenGLView: NSOpenGLView {
     //MARK: -
     //MARK: Public - Delegates
     
-    override var opaque: Bool {
+    override var isOpaque: Bool {
         return true
     }
     
@@ -320,15 +320,15 @@ class OpenGLView: NSOpenGLView {
         self._resize()
     }
     
-    override func drawRect(dirtyRect: NSRect) {
+    override func draw(_ dirtyRect: NSRect) {
         mpEngine?.draw()
     }
     
     //MARK: -
     //MARK: Public - Fullscreen
     
-    @IBAction func toggleHelp(sender: AnyObject) {
-        if mpHUD?.visible ?? false {
+    @IBAction func toggleHelp(_ sender: AnyObject) {
+        if mpHUD?.isVisible ?? false {
             mpHUD!.orderOut(sender)
         } else {
             mpHUD?.makeKeyAndOrderFront(sender)
@@ -336,14 +336,14 @@ class OpenGLView: NSOpenGLView {
     }
     
     @IBAction func toggleFullscreen(_: AnyObject) {
-        if self.inFullScreenMode {
-            self.exitFullScreenModeWithOptions(mpOptions)
+        if self.isInFullScreenMode {
+            self.exitFullScreenMode(options: mpOptions)
             
             self.window?.makeFirstResponder(self)
             
             mpPrefs?.fullscreen = false
         } else {
-            self.enterFullScreenMode(NSScreen.mainScreen()!, withOptions: mpOptions)
+            self.enterFullScreenMode(NSScreen.main()!, withOptions: mpOptions)
             
             mpPrefs?.fullscreen = true
         }
@@ -352,8 +352,8 @@ class OpenGLView: NSOpenGLView {
     //MARK: -
     //MARK: Public - Keys
     
-    override func keyDown(event: NSEvent) {
-        if let pChars = event.characters where !pChars.isEmpty {
+    override func keyDown(with event: NSEvent) {
+        if let pChars = event.characters, !pChars.isEmpty {
             let key = pChars.utf16[pChars.utf16.startIndex]
             
             if key == 27 {
@@ -364,7 +364,7 @@ class OpenGLView: NSOpenGLView {
         }
     }
     
-    override func mouseDown(event: NSEvent) {
+    override func mouseDown(with event: NSEvent) {
         let loc = event.locationInWindow
         let bounds = self.bounds
         let point = NSMakePoint(loc.x, bounds.size.height - loc.y)
@@ -372,7 +372,7 @@ class OpenGLView: NSOpenGLView {
         mpEngine?.click(NBody.Mouse.Button.kDown, point: point)
     }
     
-    override func mouseUp(event: NSEvent) {
+    override func mouseUp(with event: NSEvent) {
         let loc = event.locationInWindow
         let bounds = self.bounds
         let point = NSMakePoint(loc.x, bounds.size.height - loc.y)
@@ -380,7 +380,7 @@ class OpenGLView: NSOpenGLView {
         mpEngine?.click(NBody.Mouse.Button.kUp, point: point)
     }
     
-    override func mouseDragged(event: NSEvent) {
+    override func mouseDragged(with event: NSEvent) {
         var loc = event.locationInWindow
         
         loc.y = 1080.0 - loc.y
@@ -388,7 +388,7 @@ class OpenGLView: NSOpenGLView {
         mpEngine?.move(loc)
     }
     
-    override func scrollWheel(event: NSEvent) {
+    override func scrollWheel(with event: NSEvent) {
         let dy = event.deltaY
         
         mpEngine?.scroll(dy.f)

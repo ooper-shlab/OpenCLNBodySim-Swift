@@ -19,25 +19,31 @@ import OpenGL
 import OpenCL
 
 extension NBody.Simulation {
-    private static var queue: dispatch_queue_t = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
+    private static var queue: DispatchQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
     
-    public class Base {
+    open class Base {
         
         deinit {destruct()}
         
-        public func initialize(options: String) {}
+        open func initialize(_ options: String) {}
         
-        public func reset() -> GLint {return 0}
-        public func step() {}
-        public func terminate() {}
+        @discardableResult
+        open func reset() -> GLint {return 0}
+        open func step() {}
+        open func terminate() {}
         
-        public func positionInRange(_: UnsafeMutablePointer<GLfloat>) -> GLint {return 0}
+        @discardableResult
+        open func positionInRange(_: UnsafeMutablePointer<GLfloat>) -> GLint {return 0}
         
-        public func position(_: UnsafeMutablePointer<GLfloat>) -> GLint {return 0}
-        public func velocity(_: UnsafeMutablePointer<GLfloat>) -> GLint {return 0}
+        @discardableResult
+        open func position(_: UnsafeMutablePointer<GLfloat>) -> GLint {return 0}
+        @discardableResult
+        open func velocity(_: UnsafeMutablePointer<GLfloat>) -> GLint {return 0}
         
-        public func setPosition(_: UnsafePointer<GLfloat>) -> GLint {return 0}
-        public func setVelocity(_: UnsafePointer<GLfloat>) -> GLint {return 0}
+        @discardableResult
+        open func setPosition(_: UnsafePointer<GLfloat>) -> GLint {return 0}
+        @discardableResult
+        open func setVelocity(_: UnsafePointer<GLfloat>) -> GLint {return 0}
         
         //var mbAcquired: Bool = false
         var mbIsUpdated: Bool = false
@@ -62,7 +68,7 @@ extension NBody.Simulation {
         
         private var m_Options: String = ""
         
-        private var mpData: UnsafeMutablePointer<GLfloat> = nil
+        private var mpData: UnsafeMutablePointer<GLfloat>? = nil
         
         //private var m_Thread: pthread_t = pthread_t()
         private var m_RunLock: pthread_mutex_t = pthread_mutex_t()
@@ -83,8 +89,8 @@ extension NBody.Simulation {
         
         //MARK: -
         //MARK: GCD adaption
-        private var m_TerminationSemaphore: dispatch_semaphore_t = dispatch_semaphore_create(0)
-        internal var m_AcquisitionSemaphore: dispatch_semaphore_t = dispatch_semaphore_create(0)
+        private var m_TerminationSemaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
+        internal var m_AcquisitionSemaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
         
         //MARK: -
         //MARK: Private - Constants
@@ -96,11 +102,11 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Utilities
         
-        class func simulate(pBase: Base) {
+        class func simulate(_ pBase: Base) {
             
             pBase.run()
             
-            dispatch_semaphore_signal(pBase.m_TerminationSemaphore)
+            pBase.m_TerminationSemaphore.signal()
         }
         
         init(_ properties: NBody.Simulation.Properties) {
@@ -113,7 +119,7 @@ extension NBody.Simulation {
                 mnCardinality = properties.mnParticles * properties.mnParticles
                 mnMaxIndex    = properties.mnParticles
                 mnLength      = 4 * properties.mnParticles
-                mnSamples     = strideof(GLfloat)
+                mnSamples     = MemoryLayout<GLfloat>.stride
                 mnSize        = mnLength * mnSamples
                 
                 //mbAcquired  = false
@@ -164,31 +170,31 @@ extension NBody.Simulation {
             pthread_mutex_destroy(&m_RunLock)
             
             if mpData != nil {
-                mpData.dealloc(mnLength)
+                mpData?.deallocate(capacity: mnLength)
                 
             }
         }
         
         internal func signalAcquisition() {
-            dispatch_semaphore_signal(m_AcquisitionSemaphore)
+            m_AcquisitionSemaphore.signal()
         }
-        public func waitAcquisition() {
-            dispatch_semaphore_wait(m_AcquisitionSemaphore, DISPATCH_TIME_FOREVER)
+        open func waitAcquisition() {
+            _ = m_AcquisitionSemaphore.wait(timeout: DispatchTime.distantFuture)
         }
         
-        public var isPaused: Bool {
+        open var isPaused: Bool {
             return mbPaused
         }
         
-        public var isStopped: Bool {
+        open var isStopped: Bool {
             return mbStop
         }
         
-        public func start(paused: Bool = true) {
+        open func start(_ paused: Bool = true) {
             pause()
             
             let queue = NBody.Simulation.queue
-            dispatch_async(queue) {
+            queue.async {
                 NBody.Simulation.Base.simulate(self)
             }
             
@@ -197,19 +203,19 @@ extension NBody.Simulation {
             }
         }
         
-        public func stop() {
+        open func stop() {
             pause()
             do {
                 mbStop = true
             }
             unpause()
             
-            dispatch_semaphore_wait(m_TerminationSemaphore, DISPATCH_TIME_FOREVER)
+            _ = m_TerminationSemaphore.wait(timeout: DispatchTime.distantFuture)
             
             //mbAcquired = false
         }
         
-        public func pause() {
+        open func pause() {
             if !mbPaused {
                 if mbKeepAlive {
                     pthread_mutex_lock(&m_RunLock)
@@ -219,7 +225,7 @@ extension NBody.Simulation {
             }
         }
         
-        public func unpause() {
+        open func unpause() {
             if mbPaused {
                 mbPaused = false
                 
@@ -227,11 +233,11 @@ extension NBody.Simulation {
             }
         }
         
-        public func exit() {
+        open func exit() {
             mbKeepAlive = false
         }
         
-        public func resetProperties(Properties: NBody.Simulation.Properties) {
+        open func resetProperties(_ Properties: NBody.Simulation.Properties) {
             pause()
             do {
                 mnMinIndex     = 0
@@ -251,45 +257,45 @@ extension NBody.Simulation {
             unpause()
         }
         
-        public func setProperties(Properties: NBody.Simulation.Properties) {
+        open func setProperties(_ Properties: NBody.Simulation.Properties) {
             m_Properties = Properties
             
             mbReload = true
         }
         
-        public func setRange(min: Int, _ max: Int) {
+        open func setRange(_ min: Int, _ max: Int) {
             mnMinIndex = min
             mnMaxIndex = max
         }
         
-        public func invalidate(v: Bool) {
+        open func invalidate(_ v: Bool) {
             mbIsUpdated = v
         }
         
-        public func setData(pData: UnsafePointer<GLfloat>) {
-            if pData != nil {
-                let pDataDst = UnsafeMutablePointer<GLfloat>.alloc(mnLength)
+        open func setData(_ pData: UnsafePointer<GLfloat>?) {
+            if let pData = pData {
+                let pDataDst = UnsafeMutablePointer<GLfloat>.allocate(capacity: mnLength)
                 
                 do {
-                    pDataDst.assignFrom(UnsafeMutablePointer(pData), count: mnLength)
+                    pDataDst.assign(from: pData, count: mnLength)
                     
                     let pDataSrc = mpData
                     
                     mpData = pDataDst
                     
-                    pDataSrc.dealloc(mnLength)
+                    pDataSrc?.deallocate(capacity: mnLength)
                     
                 }
             }
         }
         
-        public func data() -> UnsafeMutablePointer<GLfloat> {
+        open func data() -> UnsafeMutablePointer<GLfloat>? {
             let pDataSrc = mpData
             mpData = nil
             
             return pDataSrc
         }
-        public var dataLength: Int {
+        open var dataLength: Int {
             return mnLength
         }
         
@@ -353,35 +359,35 @@ extension NBody.Simulation {
             pthread_mutex_unlock(&m_ClockLock)
         }
         
-        public var performance: GLdouble {
+        open var performance: GLdouble {
             return mnTime
         }
         
-        public var updates: GLdouble {
+        open var updates: GLdouble {
             return mnUpdates
         }
         
-        public var year: GLdouble {
+        open var year: GLdouble {
             return mnYear
         }
         
-        public var size: Int {
+        open var size: Int {
             return mnSize
         }
         
-        public var name: String {
+        open var name: String {
             return m_DeviceName
         }
         
-        public var minimum: Int {
+        open var minimum: Int {
             return mnMinIndex
         }
         
-        public var maximum: Int {
+        open var maximum: Int {
             return mnMaxIndex
         }
         
-        public var devices: Int {
+        open var devices: Int {
             return mnDevices.l
         }
     }

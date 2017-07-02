@@ -24,7 +24,7 @@ import OpenGL
 import OpenGL.GL
 
 extension GLU {
-    public class Text {
+    open class Text {
         
         deinit {
             self.destruct()
@@ -40,48 +40,46 @@ extension GLU {
         private final let kGLUTextBPC: GLuint = 8
         private final let kGLUTextSPP: GLuint = 4
         
-        private final let kGLUTextBitmapInfo: CGBitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedLast.rawValue)
+        private final let kGLUTextBitmapInfo: CGBitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
         
         //MARK: -
         //MARK: Private - Utilities - Constructors - Contexts
         
-        private func create(nWidth: GLsizei,
+        private func create(_ nWidth: GLsizei,
             _ nHeight: GLsizei) -> CGContext?
         {
             var pContext: CGContext? = nil
             
             if nWidth * nHeight != 0 {
-                let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB)
+                let pColorspace = CGColorSpaceCreateDeviceRGB()
                 
-                if pColorspace != nil {
-                    let bpp = nWidth.l * kGLUTextSPP.l
-                    
-                    pContext = CGBitmapContextCreate(nil,
-                        nWidth.l,
-                        nHeight.l,
-                        kGLUTextBPC.l,
-                        bpp,
-                        pColorspace,
-                        kGLUTextBitmapInfo.rawValue)
-                    
-                    if pContext != nil {
-                        CGContextSetShouldAntialias(pContext, true)
-                    }
-                    
+                let bpp = nWidth.l * kGLUTextSPP.l
+                
+                pContext = CGContext(data: nil,
+                                     width: nWidth.l,
+                                     height: nHeight.l,
+                                     bitsPerComponent: kGLUTextBPC.l,
+                                     bytesPerRow: bpp,
+                                     space: pColorspace,
+                                     bitmapInfo: kGLUTextBitmapInfo.rawValue)
+                
+                if pContext != nil {
+                    pContext?.setShouldAntialias(true)
                 }
+                
             }
             
             return pContext
         }
         
-        private func create(rSize: CGSize) -> CGContext? {
+        private func create(_ rSize: CGSize) -> CGContext? {
             return create(GLsizei(rSize.width), GLsizei(rSize.height))
         }
         
         //MARK: -
         //MARK: Private - Utilities - Constructors - Texturers
         
-        private func create(pContext: CGContext) -> GLuint {
+        private func create(_ pContext: CGContext) -> GLuint {
             var texture: GLuint = 0
             
             glGenTextures(1, &texture)
@@ -94,9 +92,9 @@ extension GLU {
                 glTexParameteri(GL_TEXTURE_2D.ui, GL_TEXTURE_WRAP_S.ui, GL_CLAMP_TO_EDGE)
                 glTexParameteri(GL_TEXTURE_2D.ui, GL_TEXTURE_WRAP_T.ui, GL_CLAMP_TO_EDGE)
                 
-                let width = GLsizei(CGBitmapContextGetWidth(pContext))
-                let height = GLsizei(CGBitmapContextGetHeight(pContext))
-                let pData  = CGBitmapContextGetData(pContext)
+                let width = GLsizei(pContext.width)
+                let height = GLsizei(pContext.height)
+                let pData  = pContext.data
                 
                 glTexImage2D(GL_TEXTURE_2D.ui,
                     0,
@@ -112,7 +110,7 @@ extension GLU {
             return texture
         }
         
-        private func create(rText: String,
+        private func create(_ rText: String,
             _ rFont: String,
             _ nFontSize: CGFloat,
             _ rOrigin: CGPoint,
@@ -139,7 +137,7 @@ extension GLU {
             return nTexture
         }
         
-        private func create(rText: String,
+        private func create(_ rText: String,
             _ rFont: String,
             _ nFontSize: CGFloat,
             _ nWidth: GLsizei,
@@ -176,7 +174,7 @@ extension GLU {
             _ rFont: String,
             _ nFontSize: CGFloat,
             _ rOrigin: CGPoint,
-            _ nTextAlign: CTTextAlignment = .Center)
+            _ nTextAlign: CTTextAlignment = .center)
         {
             mnTexture = create(rText, rFont, nFontSize, rOrigin, nTextAlign)
         }
@@ -187,7 +185,7 @@ extension GLU {
             _ nFontSize: CGFloat,
             _ nWidth: GLsizei,
             _ nHeight: GLsizei,
-            _ nTextAlign: CTTextAlignment = .Center)
+            _ nTextAlign: CTTextAlignment = .center)
         {
             mnTexture = create(rText, rFont, nFontSize, nWidth, nHeight, nTextAlign)
         }
@@ -198,7 +196,7 @@ extension GLU {
             _ nFontSize: CGFloat,
             _ bIsItalic: Bool,
             _ rOrigin: CGPoint,
-            _ nTextAlign: CTTextAlignment = .Center)
+            _ nTextAlign: CTTextAlignment = .center)
         {
             let font = bIsItalic ? "Helvetica-BoldOblique" : "Helvetica-Bold"
             
@@ -212,7 +210,7 @@ extension GLU {
             _ bIsItalic: Bool,
             _ nWidth: GLsizei,
             _ nHeight: GLsizei,
-            _ nTextAlign: CTTextAlignment = .Center)
+            _ nTextAlign: CTTextAlignment = .center)
         {
             let font = bIsItalic ? "Helvetica-BoldOblique" : "Helvetica-Bold"
             
@@ -233,15 +231,15 @@ extension GLU {
         //MARK: -
         //MARK: Public - Accessors
         
-        public var texture: GLuint {
+        open var texture: GLuint {
             return mnTexture
         }
         
-        public var bounds: CGRect {
+        open var bounds: CGRect {
             return m_Bounds
         }
         
-        public var range: CFRange {
+        open var range: CFRange {
             return m_Range
         }
     }

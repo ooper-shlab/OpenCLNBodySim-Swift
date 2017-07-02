@@ -17,18 +17,18 @@ import Cocoa
 import OpenGL
 
 extension GLU {
-    public class Texture {
+    open class Texture {
         
         deinit {
             self.destruct()
         }
         
-        private var mbMipmaps: Bool = false
-        private var mnTexture: GLuint = 0
-        private var mnTarget: GLenum = 0
-        private var mnWidth: GLsizei = 0
-        private var mnHeight: GLsizei = 0
-        private var mpBitmap: CG.Bitmap? = nil
+        fileprivate var mbMipmaps: Bool = false
+        fileprivate var mnTexture: GLuint = 0
+        fileprivate var mnTarget: GLenum = 0
+        fileprivate var mnWidth: GLsizei = 0
+        fileprivate var mnHeight: GLsizei = 0
+        fileprivate var mpBitmap: CG.Bitmap? = nil
     }
 }
 
@@ -42,11 +42,11 @@ import OpenGL.GL
 //MARK: Private - Utilities - Constructors
 
 extension GLU.Texture {
-    private class func create(target: GLenum,
+    private class func create(_ target: GLenum,
         _ width: GLsizei,
         _ height: GLsizei,
         _ mipmap: Bool,
-        _ pData: UnsafeMutablePointer<Void>)
+        _ pData: UnsafeMutableRawPointer)
         -> GLuint
     {
         var texture: GLuint = 0
@@ -104,7 +104,7 @@ extension GLU.Texture {
             self.mnTexture = GLU.Texture.create(mnTarget, mnWidth, mnHeight, mbMipmaps, pData)
     }
     
-    private func destruct() {
+    fileprivate func destruct() {
         if mnTexture != 0 {
             glDeleteTextures(1, &mnTexture)
             

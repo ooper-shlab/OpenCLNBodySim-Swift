@@ -26,23 +26,23 @@ extension HUD {
         //MARK: Private - Enumerated Types
         
         enum Tracking {
-            case Nothing
-            case Pressed
-            case Unpressed
+            case nothing
+            case pressed
+            case unpressed
         }
         
-        public class Image {
+        open class Image {
             
             deinit {destruct()}
             
-            private var mbIsItalic: Bool = false
-            private var m_Texture: [GLuint] = [0, 0]
-            private var mnSize: GLdouble = 0
-            private var mnWidth: GLsizei = 0
-            private var mnHeight: GLsizei = 0
-            private var m_Label: Label = ""
-            private var mpQuad: GLU.Quad!
-            private var mpText: GLU.Text!
+            fileprivate var mbIsItalic: Bool = false
+            fileprivate var m_Texture: [GLuint] = [0, 0]
+            fileprivate var mnSize: GLdouble = 0
+            fileprivate var mnWidth: GLsizei = 0
+            fileprivate var mnHeight: GLsizei = 0
+            fileprivate var m_Label: Label = ""
+            fileprivate var mpQuad: GLU.Quad!
+            fileprivate var mpText: GLU.Text!
             
         }
     }
@@ -52,47 +52,46 @@ extension HUD {
 //MARK: Private - Utilities
 
 extension HUD {
-    private static func addRoundedRectToPath(context: CGContext,
+    fileprivate static func addRoundedRectToPath(_ context: CGContext,
         _ rect: CGRect,
         _ ovalWidth: GLdouble,
         _ ovalHeight: GLdouble)
     {
         
         if ovalWidth == 0.0 || ovalHeight == 0.0 {
-            CGContextAddRect(context, rect)
+            context.addRect(rect)
             
             return
         }
         
-        CGContextSaveGState(context)
+        context.saveGState()
         do {
-            CGContextTranslateCTM(context,
-                CGRectGetMinX(rect),
-                CGRectGetMinY(rect))
+            context.translateBy(x: rect.minX,
+                y: rect.minY)
             
-            CGContextScaleCTM(context, CGFloat(ovalWidth), CGFloat(ovalHeight))
+            context.scaleBy(x: CGFloat(ovalWidth), y: CGFloat(ovalHeight))
             
-            let width  = CGRectGetWidth(rect)  / CGFloat(ovalWidth)
-            let height = CGRectGetHeight(rect) / CGFloat(ovalHeight)
+            let width  = rect.width  / CGFloat(ovalWidth)
+            let height = rect.height / CGFloat(ovalHeight)
             
             let hWidth  = 0.5 * width;
             let hHeight = 0.5 * height;
             
-            CGContextMoveToPoint(context, width, hHeight)
+            context.move(to: CGPoint(x: width, y: hHeight))
             
-            CGContextAddArcToPoint(context, width, height, hWidth,  height, 1.0)
-            CGContextAddArcToPoint(context, 0.0, height,   0.0, hHeight, 1.0)
-            CGContextAddArcToPoint(context, 0.0,   0.0, hWidth,    0.0, 1.0)
-            CGContextAddArcToPoint(context, width,   0.0,  width, hHeight, 1.0)
+            context.addArc(tangent1End: CGPoint(x: width, y: height), tangent2End: CGPoint(x: hWidth,  y: height), radius: 1.0)
+            context.addArc(tangent1End: CGPoint(x: 0.0, y: height), tangent2End: CGPoint(x: 0.0,  y: hHeight), radius: 1.0)
+            context.addArc(tangent1End: CGPoint(x: 0.0, y: 0.0), tangent2End: CGPoint(x: hWidth,  y: 0.0), radius: 1.0)
+            context.addArc(tangent1End: CGPoint(x: width, y: 0.0), tangent2End: CGPoint(x: width,  y: hHeight), radius: 1.0)
             
-            CGContextClosePath(context)
+            context.closePath()
         }
-        CGContextRestoreGState(context)
+        context.restoreGState()
     }
 }
 
 extension HUD.Button {
-    private static func createTexture(rSize: CGSize) -> GLuint {
+    fileprivate static func createTexture(_ rSize: CGSize) -> GLuint {
         var texture: GLuint = 0
         
         glGenTextures(1, &texture)
@@ -100,93 +99,90 @@ extension HUD.Button {
         if texture != 0 {
             glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, texture)
             
-            if let pColorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB) {
+            let pColorspace = CGColorSpaceCreateDeviceRGB()
+            
+            let width  = GLsizei(rSize.width)
+            let height = GLsizei(rSize.height)
+            
+            let bpp     = size_t(width) * size_t(HUD.SamplesPerPixel)
+            
+            if let pContext = CGContext(data: nil,
+                                        width: width.l,
+                                        height: height.l,
+                                        bitsPerComponent: HUD.BitsPerComponent,
+                                        bytesPerRow: bpp,
+                                        space: pColorspace,
+                                        bitmapInfo: HUD.BitmapInfo)
+            {
                 
-                let width  = GLsizei(rSize.width)
-                let height = GLsizei(rSize.height)
+                let cx = GLdouble(HUD.CenterX) * GLdouble(rSize.width)
+                let cy = GLdouble(HUD.CenterY) * GLdouble(rSize.height)
+                let sx = 0.05 * GLdouble(rSize.width)
+                let sy = 0.5  * GLdouble(rSize.height) - 32.0
                 
-                let bpp     = size_t(width) * size_t(HUD.SamplesPerPixel)
+                let bound = CGRect(x: CGFloat(sx), y: CGFloat(sy), width: 0.9 * rSize.width, height: 64.0)
                 
-                if let pContext = CGBitmapContextCreate(nil,
-                    width.l,
-                    height.l,
-                    HUD.BitsPerComponent,
-                    bpp,
-                    pColorspace,
-                    HUD.BitmapInfo)
-                {
+                // background
+                pContext.translateBy(x: 0.0, y: CGFloat(height))
+                pContext.scaleBy(x: 1.0, y: -1.0)
+                pContext.clear(CGRect(x: 0, y: 0.0, width: CGFloat(width), height: CGFloat(height)))
+                pContext.setFillColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.8)
+                
+                HUD.addRoundedRectToPath(pContext, bound, 32.0, 32.0)
+                
+                pContext.fillPath()
+                
+                // top bevel
+                pContext.saveGState()
+                do {
+                    let count: size_t = 2
                     
-                    let cx = GLdouble(HUD.CenterX) * GLdouble(rSize.width)
-                    let cy = GLdouble(HUD.CenterY) * GLdouble(rSize.height)
-                    let sx = 0.05 * GLdouble(rSize.width)
-                    let sy = 0.5  * GLdouble(rSize.height) - 32.0
+                    let locations: [CGFloat] = [0.0, 1.0]
                     
-                    let bound = CGRectMake(CGFloat(sx), CGFloat(sy), 0.9 * rSize.width, 64.0)
-                    
-                    // background
-                    CGContextTranslateCTM(pContext, 0.0, CGFloat(height))
-                    CGContextScaleCTM(pContext, 1.0, -1.0)
-                    CGContextClearRect(pContext, CGRectMake(0, 0.0, CGFloat(width), CGFloat(height)))
-                    CGContextSetRGBFillColor(pContext, 0.0, 0.0, 0.0, 0.8)
+                    let components: [CGFloat] = [
+                        1.0, 1.0, 1.0, 0.5,
+                        0.0, 0.0, 0.0, 0.0,
+                        ]
                     
                     HUD.addRoundedRectToPath(pContext, bound, 32.0, 32.0)
                     
-                    CGContextFillPath(pContext)
+                    pContext.clip(using: .evenOdd)
                     
-                    // top bevel
-                    CGContextSaveGState(pContext)
-                    do {
-                        let count: size_t = 2
+                    if let pGradient = CGGradient(colorSpace: pColorspace,
+                                                  colorComponents: components,
+                                                  locations: locations,
+                                                  count: count)
+                    {
                         
-                        let locations: [CGFloat] = [0.0, 1.0]
                         
-                        let components: [CGFloat] = [
-                            1.0, 1.0, 1.0, 0.5,
-                            0.0, 0.0, 0.0, 0.0,
-                        ]
+                        pContext.drawLinearGradient(pGradient,
+                                                    start: CGPoint(x: CGFloat(cx), y: CGFloat(cy) + 32.0),
+                                                    end: CGPoint(x: CGFloat(cx), y: CGFloat(cy)),
+                                                    options: [])
                         
-                        HUD.addRoundedRectToPath(pContext, bound, 32.0, 32.0)
+                        pContext.drawLinearGradient(pGradient,
+                                                    start: CGPoint(x: CGFloat(cx), y: CGFloat(cy) - 32.0),
+                                                    end: CGPoint(x: CGFloat(cx), y: CGFloat(cy) - 16.0),
+                                                    options: [])
                         
-                        CGContextEOClip(pContext)
-                        
-                        if let pGradient = CGGradientCreateWithColorComponents(pColorspace,
-                            components,
-                            locations,
-                            count)
-                        {
-                            
-                            
-                            CGContextDrawLinearGradient(pContext,
-                                pGradient,
-                                CGPointMake(CGFloat(cx), CGFloat(cy) + 32.0),
-                                CGPointMake(CGFloat(cx), CGFloat(cy)),
-                                [])
-                            
-                            CGContextDrawLinearGradient(pContext,
-                                pGradient,
-                                CGPointMake(CGFloat(cx), CGFloat(cy) - 32.0),
-                                CGPointMake(CGFloat(cx), CGFloat(cy) - 16.0),
-                                [])
-                            
-                        }
                     }
-                    CGContextRestoreGState(pContext)
-                    
-                    let pData = CGBitmapContextGetData(pContext)
-                    
-                    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
-                        0,
-                        GL_RGBA,
-                        width,
-                        height,
-                        0,
-                        GL_RGBA.ui,
-                        GL_UNSIGNED_BYTE.ui,
-                        pData)
-                    
                 }
+                pContext.restoreGState()
+                
+                let pData = pContext.data
+                
+                glTexImage2D(GL_TEXTURE_RECTANGLE_ARB.ui,
+                             0,
+                             GL_RGBA,
+                             width,
+                             height,
+                             0,
+                             GL_RGBA.ui,
+                             GL_UNSIGNED_BYTE.ui,
+                             pData)
                 
             }
+            
             glBindTexture(GL_TEXTURE_RECTANGLE_ARB.ui, 0)
         }
         
@@ -203,7 +199,7 @@ extension HUD.Button.Image {
     {
         self.init()
         
-        if !CGRectIsEmpty(frame) {
+        if !frame.isEmpty {
             mbIsItalic   = false
             mnSize       = (size > 12.0) ? size.d : 24.0
             m_Label      = ""
@@ -222,7 +218,7 @@ extension HUD.Button.Image {
         _ label: String)
     {
         self.init()
-        if !CGRectIsEmpty(frame) {
+        if !frame.isEmpty {
             mnWidth      = GLsizei(frame.size.width  + 0.5)
             mnHeight     = GLsizei(frame.size.height + 0.5)
             mbIsItalic   = italic
@@ -239,7 +235,7 @@ extension HUD.Button.Image {
         }
     }
     
-    private func destruct() {
+    fileprivate func destruct() {
         if m_Texture[0] != 0 {
             glDeleteTextures(1, &m_Texture[0])
             
@@ -247,7 +243,7 @@ extension HUD.Button.Image {
         }
     }
     
-    public func setLabel(label: HUD.Button.Label) -> Bool {
+    public func setLabel(_ label: HUD.Button.Label) -> Bool {
         if mpText != nil {
             let pText = GLU.Text(m_Label, mnSize.g, mbIsItalic, mnWidth, mnHeight)
             
@@ -259,7 +255,7 @@ extension HUD.Button.Image {
         return m_Texture[1] != 0
     }
     
-    public func draw(selected: Bool,
+    public func draw(_ selected: Bool,
         _ position: HUD.Button.Position,
         _ bounds: HUD.Button.Bounds)
     {

@@ -51,13 +51,13 @@ class NBodyMeters: NSObject {
         }
     }
     
-    func resize(size: NSSize) {
+    func resize(_ size: NSSize) {
         for pMeter in mpMeters {
             pMeter.frame = size
         }
     }
     
-    func show(doShow: Bool) {
+    func show(_ doShow: Bool) {
         for pMeter in mpMeters {
             pMeter.visible = doShow
         }
@@ -79,9 +79,9 @@ class NBodyMeters: NSObject {
         mpMeter.draw()
     }
     
-    func draw(positions: [NSPoint]) {
+    func draw(_ positions: [NSPoint]) {
         
-        for (i, position) in positions.enumerate() {
+        for (i, position) in positions.enumerated() {
             let pMeter = mpMeters[i]
             
             pMeter.point = position

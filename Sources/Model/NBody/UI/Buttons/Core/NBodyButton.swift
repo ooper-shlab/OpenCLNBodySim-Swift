@@ -48,7 +48,7 @@ class NBodyButton: NSObject {
         bounds     = NSMakeRect(0.0, 0.0, 0.0, 0.0)
         _size       = NSMakeSize(0.0, 0.0)
         position   = NSMakePoint(0.0, 0.0)
-        origin     = CGPointMake(0.0, (_visible ? GLM.kHalfPi.g : 0.0))
+        origin     = CGPoint(x: 0.0, y: (_visible ? GLM.kHalfPi.g : 0.0))
         speed      = NBody.Defaults.kSpeed.f
         
         super.init()
@@ -80,13 +80,14 @@ class NBodyButton: NSObject {
         get {return _size}
         set {
             _size = newValue
-            bounds = CGRectMake(0.75 * _size.width - 0.5 * NBody.Button.kWidth.g,
-                NBody.Button.kSpacing.g,
-                NBody.Button.kWidth.g,
-                NBody.Button.kHeight.g)
+            bounds = CGRect(x: 0.75 * _size.width - 0.5 * NBody.Button.kWidth.g,
+                y: NBody.Button.kSpacing.g,
+                width: NBody.Button.kWidth.g,
+                height: NBody.Button.kHeight.g)
         }
     }
     
+    @discardableResult
     func acquire() -> Bool {
         if mpButton == nil {
             mpButton = HUD.Button.Image(bounds,
@@ -115,7 +116,7 @@ class NBodyButton: NSObject {
         let x = -NBody.Button.kWidth.g * sin(origin.x)
         let y = 100.0 * (sin(origin.y) - 1.0)
         
-        position = CGPointMake(x, y)
+        position = CGPoint(x: x, y: y)
         
         mpButton.draw(selected, position, bounds)
     }

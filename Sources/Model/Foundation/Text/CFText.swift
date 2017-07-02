@@ -27,8 +27,8 @@ extension CF {
 extension CF {
     
     // Size constants
-    private static let TextSizeCTTextAlignment = strideof(CTTextAlignment)
-    private static let TextSizeCGFloat = strideof(CGFloat)
+    private static let TextSizeCTTextAlignment = MemoryLayout<CTTextAlignment>.stride
+    private static let TextSizeCGFloat = MemoryLayout<CGFloat>.stride
     
     // Array counts
     private static let TextAttribsCount = 3
@@ -41,7 +41,7 @@ extension CF.Text {
     public typealias ColorComponent = (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)
     
     // Create a paragraph style with line height and alignment
-    private class func createParagraphStyle(nLineHeight: CGFloat,
+    private class func createParagraphStyle(_ nLineHeight: CGFloat,
         _ nAlignment: CTTextAlignment) -> NSParagraphStyle
     {
         let paragraphStyle = NSMutableParagraphStyle()
@@ -59,15 +59,15 @@ extension CF.Text {
     //MARK: Private - utilities - Colors
     
     // Return a color reference if valid, else get the clear color
-    private class func createColor(pComponents: ColorComponent) -> CGColor {
-        return CGColorCreateGenericRGB(pComponents.r, pComponents.g, pComponents.b, pComponents.a)
+    private class func createColor(_ pComponents: ColorComponent) -> CGColor {
+        return CGColor(red: pComponents.r, green: pComponents.g, blue: pComponents.b, alpha: pComponents.a)
     }
     
     //MARK: -
     //MARK: Private - utilities - Attributes
     
     // Create an attributes dictionary with paragraph style, font, and colors
-    private class func createAttributes(pStyle: NSParagraphStyle,
+    private class func createAttributes(_ pStyle: NSParagraphStyle,
         _ pFont: NSFont,
         _ pColor: CGColor) -> [String: AnyObject]
     {

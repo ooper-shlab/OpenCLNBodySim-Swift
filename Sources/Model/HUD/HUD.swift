@@ -15,7 +15,7 @@ public enum HUD {
     //MARK: Private - Constants
     //see. HUDMeterImage.mm, HUDButton.mm
     
-    static let BitmapInfo = CGImageAlphaInfo.PremultipliedLast.rawValue
+    static let BitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue
     
     static let Ticks           = 8
     static let SubTicks        = 4

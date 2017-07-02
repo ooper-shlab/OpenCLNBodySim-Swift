@@ -36,8 +36,8 @@ class NSFile: NSObject, NSCopying {
         
     }
     
-    init(domain: NSSearchPathDomainMask,
-        search directory: NSSearchPathDirectory,
+    init(domain: FileManager.SearchPathDomainMask,
+        search directory: FileManager.SearchPathDirectory,
         directory dirName: String,
         file fileName: String,
         ofExtension fileExt: String)
@@ -54,11 +54,11 @@ class NSFile: NSObject, NSCopying {
     
     init(file: NSFile) {
         
-        mpFile = CF.File(URL: file.url!)
+        mpFile = CF.File(url: file.url! as CFURL)
         
     }
     
-    func copyWithZone(zone: NSZone) -> AnyObject {
+    func copy(with zone: NSZone?) -> Any {
         return NSFile(file: self)
     }
     
@@ -92,20 +92,20 @@ class NSFile: NSObject, NSCopying {
     //    return [[[NSFile allocWithZone:[self zone]] initWithFile:file] autorelease];
     //} // fileWithFile
     
-    func replace(plist: AnyObject) {
-        mpFile.clone(plist: plist)
+    func replace(_ plist: Any) {
+        mpFile.clone(plist: plist as CFPropertyList)
     }
     
-    var directory: NSSearchPathDirectory {
+    var directory: FileManager.SearchPathDirectory {
         return mpFile.directory
     }
     
-    var domain: NSSearchPathDomainMask {
+    var domain: FileManager.SearchPathDomainMask {
         return mpFile.domain
     }
     
-    var format: NSPropertyListFormat {
-        return NSPropertyListFormat(rawValue: mpFile.format.rawValue.ul)!
+    var format: PropertyListSerialization.PropertyListFormat {
+        return PropertyListSerialization.PropertyListFormat(rawValue: mpFile.format.rawValue.ul)!
     }
     
     var length: Int {
@@ -120,35 +120,36 @@ class NSFile: NSObject, NSCopying {
         return mpFile.plist
     }
     
-    var url: NSURL? {
-        return mpFile.url
+    var url: URL? {
+        return mpFile.url as URL?
     }
     
     var data: NSMutableData? {
         return mpFile.data as! NSMutableData?
     }
     
-    var bytes: UnsafePointer<UInt8> {
-        return mpFile.bytes
-    }
-    
-    var cstring: UnsafePointer<CChar> {
-        return mpFile.cstring
-    }
+//    var bytes: UnsafePointer<UInt8> {
+//        return mpFile.bytes
+//    }
+//    
+//    var cstring: UnsafePointer<CChar> {
+//        return mpFile.cstring
+//    }
     
     var string: String? {
         return mpFile.string
     }
     
+    @discardableResult
     func write() -> Bool {
         return mpFile.write()
     }
     
-    func write(pathname: String) -> Bool {
+    func write(_ pathname: String) -> Bool {
         return mpFile.write(pathname)
     }
     
-    func write(fileName: String,
+    func write(_ fileName: String,
         ofExtension fileExt: String) -> Bool
     {
         return mpFile.write(fileName, fileExt)

@@ -56,15 +56,15 @@ extension CF {
         private var mnColumns: size_t = 0
         private var mnLine: size_t = 0
         private var mnTerminator: CChar = "\n"
-        private var mpBufferPos: UnsafeMutablePointer<CChar> = nil
-        private var mpBuffer: UnsafePointer<CChar> = nil
+        private var mpBufferPos: UnsafeMutablePointer<CChar>? = nil
+        private var mpBuffer: UnsafePointer<CChar>? = nil
         private var mpFile: CF.File?
         
         //MARK: -
         //MARK: Private - Utilities
         
         // Initialize with a input data file
-        private func construct(nTerminator: CChar, _ pFile: File) {
+        private func construct(_ nTerminator: CChar, _ pFile: File) {
             mpBuffer = pFile.cstring
             
             if mpBuffer != nil {
@@ -82,7 +82,7 @@ extension CF {
         }
         
         // Make a deep-copy from an input data file object
-        private func clone(rDataFile: DataFile) {
+        private func clone(_ rDataFile: DataFile) {
             if rDataFile.mpFile != nil {
                 let pFile = File(file: rDataFile.mpFile!)
                 
@@ -114,12 +114,12 @@ extension CF {
         }
         
         // Create a new float or double vector from a string
-        private func create<T: StringScannable>(rString: String) -> [T] {
+        private func create<T: StringScannable>(_ rString: String) -> [T] {
             // Always prefer std::vector to std::valarray or std::array
             var vec: [T] = []
             
             // Build an istream that holds the input string
-            let scanner = NSScanner(string: rString)
+            let scanner = Scanner(string: rString)
             
             // Iterate over the istream, using >> to grab floats, or
             // doubles, and push_back to store them in the vector
@@ -136,25 +136,25 @@ extension CF {
             
             if mpBufferPos != nil {
                 // Number of bytes to create a c-string
-                let nBytes = mpBuffer.distanceTo(mpBufferPos)
+                let nBytes = mpBuffer!.distance(to: mpBufferPos!)
                 
                 // Create c-string with a specified length (or number of bytes)
-                let data = NSData(bytes: mpBuffer, length: nBytes)
-                string = String(data: data, encoding: NSUTF8StringEncoding)!
+                let data = Data(bytes: mpBuffer!, count: nBytes)
+                string = String(data: data, encoding: .utf8)!
                 
                 // Advance the buffer to the beginning of the next line
-                mpBuffer += nBytes + 1
+                mpBuffer! += nBytes + 1
                 
                 // Advance the buffer position to the end of the next line
-                mpBufferPos = strchr(mpBufferPos + 1, Int32(mnTerminator))
+                mpBufferPos = strchr(mpBufferPos! + 1, Int32(mnTerminator))
             } else {
                 // The length of the last line of the input data file
                 let nLength = (mpBuffer != nil) ? strlen(mpBuffer).l : 0
                 
                 if nLength != 0 {
                     // Create a string with the specified length
-                    let data = NSData(bytes: mpBuffer, length: nLength)
-                    string = String(data: data, encoding: NSUTF8StringEncoding)!
+                    let data = Data(bytes: mpBuffer!, count: nLength)
+                    string = String(data: data, encoding: .utf8)!
                 }
             }
             
@@ -169,7 +169,7 @@ extension CF {
         //MARK: Public - Interfaces
         
         // Constructor for reading from a data file with an absolute pathname
-        private func construct(pPathname: String, _ nTerminator: CChar) {
+        private func construct(_ pPathname: String, _ nTerminator: CChar) {
             clear()
             
             mpFile = CF.File(pPathname)
@@ -180,7 +180,7 @@ extension CF {
         }
         
         // Constructor for reading from a data file in an application's bundle
-        private func construct(pName: String, _ pExt: String, _ nTerminator: CChar) {
+        private func construct(_ pName: String, _ pExt: String, _ nTerminator: CChar) {
             clear()
             
             mpFile = File(pName, pExt)
@@ -191,7 +191,7 @@ extension CF {
         }
         
         // Constructor for reading from a data file in a domain
-        private func construct(domain: CFSearchPathDomainMask,
+        private func construct(_ domain: CFSearchPathDomainMask,
             _ directory: CFSearchPathDirectory,
             _ pDirName: String,
             _ pFileName: String,
@@ -208,7 +208,7 @@ extension CF {
         }
         
         // Copy constructor
-        private func construct(rDataFile: DataFile) {
+        private func construct(_ rDataFile: DataFile) {
             clone(rDataFile)
         }
         
@@ -264,8 +264,8 @@ extension CF {
                 if pBufferPos != nil {
                     // Skip the data file header line
                     mnLine       = 1
-                    mpBuffer    += (mpBuffer.distanceTo(pBufferPos) + 1)
-                    mpBufferPos  = strchr(pBufferPos + 1, Int32(mnTerminator))
+                    mpBuffer!   += (mpBuffer!.distance(to: pBufferPos!) + 1)
+                    mpBufferPos  = strchr(pBufferPos! + 1, Int32(mnTerminator))
                 }
             }
         }

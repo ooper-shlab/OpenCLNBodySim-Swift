@@ -19,7 +19,7 @@ extension NBody.Simulation.Data {
     class Copier {
         
         var mnCount: size_t = 0
-        var m_Queue: dispatch_queue_t
+        var m_Queue: DispatchQueue
         
         init(_ nCount: size_t) {
             let queue = CF.Queue()
@@ -28,17 +28,18 @@ extension NBody.Simulation.Data {
             m_Queue = queue.createQueue("com.apple.nbody.simulation.data.copier.main")
         }
         
-        func copy(pSplit: NBody.Simulation.Data.Split,
+        @discardableResult
+        func copy(_ pSplit: NBody.Simulation.Data.Split,
             to pPacked: NBody.Simulation.Data.Packed) -> Bool {
                 
                 let pData = pPacked.data
                 
                 let pMass = pSplit.mass()
-                let pPositionX = pSplit.position(.X)
-                let pPositionY = pSplit.position(.Y)
-                let pPositionZ = pSplit.position(.Z)
+                let pPositionX = pSplit.position(.x)
+                let pPositionY = pSplit.position(.y)
+                let pPositionZ = pSplit.position(.z)
                 
-                dispatch_apply(mnCount, m_Queue) {i in
+                DispatchQueue.concurrentPerform(iterations: mnCount) {i in
                     let j = 4 * i
                     
                     pData[j]   = pPositionX[i]
@@ -50,17 +51,17 @@ extension NBody.Simulation.Data {
                 return true
         }
         
-        func copy(pPacked: NBody.Simulation.Data.Packed,
+        func copy(_ pPacked: NBody.Simulation.Data.Packed,
             to pSplit: NBody.Simulation.Data.Split) -> Bool {
                 
                 let pData = pPacked.data
                 
                 let pMass      = pSplit.mass()
-                let pPositionX = pSplit.position(.X)
-                let pPositionY = pSplit.position(.Y)
-                let pPositionZ = pSplit.position(.Z)
+                let pPositionX = pSplit.position(.x)
+                let pPositionY = pSplit.position(.y)
+                let pPositionZ = pSplit.position(.z)
                 
-                dispatch_apply(mnCount, m_Queue) {i in
+                DispatchQueue.concurrentPerform(iterations: mnCount) {i in
                     let j = 4 * i
                     
                     pPositionX[i] = pData[j]

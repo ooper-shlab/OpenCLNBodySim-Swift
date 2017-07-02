@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import Foundation
 
 extension Dictionary {
-    mutating func addEntriesFromDictionary(other: [Key: Value]) {
+    mutating func addEntriesFromDictionary(_ other: [Key: Value]) {
         for (key, value) in other {
             self[key] = value
         }

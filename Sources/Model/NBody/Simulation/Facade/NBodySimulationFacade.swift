@@ -18,21 +18,21 @@ import OpenGL
 
 extension NBody.Simulation {
     public enum Types: Int {
-        case CPUSingle = 0
-        case CPUMulti
-        case GPUPrimary
-        case GPUSecondary
-        public static let Max = GPUSecondary.rawValue + 1
+        case cpuSingle = 0
+        case cpuMulti
+        case gpuPrimary
+        case gpuSecondary
+        public static let Max = gpuSecondary.rawValue + 1
     }
     
-    public class Facade {
+    open class Facade {
         
         deinit {destruct()}
         
-        private var mbIsGPU: Bool = false
-        private var m_Label: String = ""
-        private var mpSimulator: Base!
-        private var mnType: Types = Types.CPUSingle
+        fileprivate var mbIsGPU: Bool = false
+        fileprivate var m_Label: String = ""
+        fileprivate var mpSimulator: Base!
+        fileprivate var mnType: Types = Types.cpuSingle
     }
 }
 
@@ -44,14 +44,14 @@ extension NBody.Simulation.Facade {
     //MARK: Private - Accessors
     
     // Acquire a label for the gpu bound simulator
-    private func setLabel(nDevIndex: Int,
+    private func setLabel(_ nDevIndex: Int,
         _ nDevices: Int,
         _ rDevice: String)
     {
         let hw = CF.Query.Hardware.instance
         
         let model = hw.model
-        let found = model.rangeOfString("MacPro")
+        let found = model.range(of: "MacPro")
         var label = nDevIndex != 0 ? "Secondary" : "Primary"
         
         let isMacPro = found != nil
@@ -67,7 +67,7 @@ extension NBody.Simulation.Facade {
     //MARK: -
     //MARK: Private - Constructors
     
-    private func create(nDevIndex: Int,
+    private func create(_ nDevIndex: Int,
         _ rProperties: NBody.Simulation.Properties) -> NBody.Simulation.Base
     {
         let pSimulator = NBody.Simulation.GPU(rProperties, nDevIndex)
@@ -85,7 +85,7 @@ extension NBody.Simulation.Facade {
         return pSimulator
     }
     
-    private func create(bIsThreaded: Bool,
+    private func create(_ bIsThreaded: Bool,
         _ rLabel: String,
         _ rProperties: NBody.Simulation.Properties) -> NBody.Simulation.Base
     {
@@ -111,16 +111,16 @@ extension NBody.Simulation.Facade {
         m_Label = ""
         
         switch mnType {
-        case .CPUSingle:
+        case .cpuSingle:
             mpSimulator = create(false, "Vector Single Core CPU", rProperties)
             
-        case .CPUMulti:
+        case .cpuMulti:
             mpSimulator = create(true, "Vector Multi Core CPU", rProperties)
             
-        case .GPUSecondary:
+        case .gpuSecondary:
             mpSimulator = create(1, rProperties)
             
-        case .GPUPrimary:
+        case .gpuPrimary:
             fallthrough
         default:
             mpSimulator = create(0, rProperties)
@@ -130,7 +130,7 @@ extension NBody.Simulation.Facade {
     //MARK: -
     //MARK: Public - Destructor
     
-    private func destruct() {
+    fileprivate func destruct() {
         if mpSimulator != nil {
             mpSimulator.exit()
             
@@ -150,15 +150,15 @@ extension NBody.Simulation.Facade {
         mpSimulator.unpause()
     }
     
-    public func resetProperties(rProperties: NBody.Simulation.Properties) {
+    public func resetProperties(_ rProperties: NBody.Simulation.Properties) {
         mpSimulator.resetProperties(rProperties)
     }
     
-    public func invalidate(doInvalidate: Bool) {
+    public func invalidate(_ doInvalidate: Bool) {
         mpSimulator.invalidate(doInvalidate)
     }
     
-    public func data() -> UnsafeMutablePointer<GLfloat> {
+    public func data() -> UnsafeMutablePointer<GLfloat>? {
         return mpSimulator.data()
     }
     public var dataLength: Int {    //### needed for dealloc
@@ -186,36 +186,36 @@ extension NBody.Simulation.Facade {
     
     // Is single core cpu simulator active?
     public var isCPUSingleCore: Bool {
-        return mnType == .CPUSingle
+        return mnType == .cpuSingle
     }
     
     // Is multi-core cpu simulator active?
     public var isCPUMultiCore: Bool {
-        return mnType == .CPUMulti
+        return mnType == .cpuMulti
     }
     
     // Is primary gpu simulator active?
     public var isGPUPrimary: Bool {
-        return mnType == .GPUPrimary
+        return mnType == .gpuPrimary
     }
     
     // Is secondary (or offline) gpu simulator active?
     public var isGPUSecondary: Bool {
-        return mnType == .GPUSecondary
+        return mnType == .gpuSecondary
     }
     
     //MARK: -
     //MARK: Public - Accessors - Getters
     
-    public func positionInRange(pDst: UnsafeMutablePointer<GLfloat>) {
+    public func positionInRange(_ pDst: UnsafeMutablePointer<GLfloat>) {
         mpSimulator.positionInRange(pDst)
     }
     
-    public func position(pDst: UnsafeMutablePointer<GLfloat>) {
+    public func position(_ pDst: UnsafeMutablePointer<GLfloat>) {
         mpSimulator.position(pDst)
     }
     
-    public func velocity(pDst: UnsafeMutablePointer<GLfloat>) {
+    public func velocity(_ pDst: UnsafeMutablePointer<GLfloat>) {
         mpSimulator.velocity(pDst)
     }
     
@@ -246,23 +246,23 @@ extension NBody.Simulation.Facade {
     //MARK: -
     //MARK: Public - Accessors - Setters
     
-    public func setRange(min: Int, _ max: Int) {
+    public func setRange(_ min: Int, _ max: Int) {
         mpSimulator.setRange(min, max)
     }
     
-    public func setProperties(rProperties: NBody.Simulation.Properties) {
+    public func setProperties(_ rProperties: NBody.Simulation.Properties) {
         mpSimulator.setProperties(rProperties)
     }
     
-    public func setData(pData: UnsafePointer<GLfloat>) {
+    public func setData(_ pData: UnsafePointer<GLfloat>) {
         mpSimulator.setData(pData)
     }
     
-    public func setPosition(pSrc: UnsafePointer<GLfloat>) {
+    public func setPosition(_ pSrc: UnsafePointer<GLfloat>) {
         mpSimulator.setPosition(pSrc)
     }
     
-    public func setVelocity(pSrc: UnsafePointer<GLfloat>) {
+    public func setVelocity(_ pSrc: UnsafePointer<GLfloat>) {
         mpSimulator.setVelocity(pSrc)
     }
 }

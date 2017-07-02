@@ -40,7 +40,7 @@ extension CF {
         //MARK: -
         //MARK: Public - Class
         
-        public class Hardware {
+        open class Hardware {
             
             private var m_Model: String = ""
             private var mnCPU: Double = 0
@@ -49,10 +49,11 @@ extension CF {
             private var mnCores: size_t = 0
             private var mnSize: size_t = 0
             
-            private class func getMemSize(inout gigabytes: size_t) -> Int {
+            @discardableResult
+            private class func getMemSize(_ gigabytes: inout size_t) -> Int {
                 
-                var size = size_t(strideof(size_t))
-                var bytes = size_t(strideof(size_t))
+                var size = size_t(MemoryLayout<size_t>.stride)
+                var bytes = size_t(MemoryLayout<size_t>.stride)
                 
                 let result = sysctlbyname("hw.memsize", &bytes, &size, nil, 0)
                 
@@ -65,8 +66,8 @@ extension CF {
                 return Int(result)
             }
             
-            private class func getCPUCount(inout count: size_t) -> Int {
-                var size = size_t(strideof(size_t))
+            private class func getCPUCount(_ count: inout size_t) -> Int {
+                var size = size_t(MemoryLayout<size_t>.stride)
                 
                 let result = sysctlbyname("hw.physicalcpu_max", &count, &size, nil, 0)
                 
@@ -77,9 +78,9 @@ extension CF {
                 return Int(result)
             }
             
-            private class func getCPUClock(inout clock: Double) -> Int {
+            private class func getCPUClock(_ clock: inout Double) -> Int {
                 var freq: size_t = 0
-                var size = size_t(strideof(size_t))
+                var size = size_t(MemoryLayout<size_t>.stride)
                 
                 let result = sysctlbyname("hw.cpufrequency_max", &freq, &size, nil, 0)
                 
@@ -92,7 +93,8 @@ extension CF {
                 return Int(result)
             }
             
-            private class func getModel(inout model: String) -> Int {
+            @discardableResult
+            private class func getModel(_ model: inout String) -> Int {
                 var nLength: size_t = 0
                 
                 let result = sysctlbyname("hw.model", nil, &nLength, nil, 0)
@@ -104,14 +106,14 @@ extension CF {
                 }
                 
                 if nLength != 0 {
-                    var pModel: [CChar] = [CChar](count: Int(nLength), repeatedValue: 0)
+                    var pModel: [CChar] = [CChar](repeating: 0, count: Int(nLength))
                     
                     let result = sysctlbyname("hw.model", &pModel, &nLength, nil, 0)
                     
                     if result < 0 {
                         NSLog("sysctlbyname() failed in acquring a hardware model name!")
                     } else {
-                        model = GLstring.fromCString(pModel)!
+                        model = GLstring(cString: pModel)
                         
                     }
                 }
@@ -176,33 +178,33 @@ extension CF {
             //    return *this;
             //} // operator=
             
-            public func setFrequency(frequency: Double) {
+            open func setFrequency(_ frequency: Double) {
                 mnFreq   = (frequency > 0.0) ? frequency : CF.Query.Frequency.kGigaHertz
                 mnScale  = mnFreq
                 mnScale *= mnFreq * mnCPU * Double(mnCores)
             }
             
-            public var cores: size_t {
+            open var cores: size_t {
                 return mnCores
             }
             
-            public var cpu: Double {
+            open var cpu: Double {
                 return mnCPU
             }
             
-            public var memory: size_t {
+            open var memory: size_t {
                 return mnSize
             }
             
-            public var scale: Double {
+            open var scale: Double {
                 return mnScale
             }
             
-            public var model: String {
+            open var model: String {
                 return m_Model
             }
             
-            public class var instance: CF.Query.Hardware {
+            open class var instance: CF.Query.Hardware {
                 struct My {
                     static let instance = CF.Query.Hardware()
                 }

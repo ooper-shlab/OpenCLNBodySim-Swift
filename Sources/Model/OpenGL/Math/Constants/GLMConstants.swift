@@ -18,7 +18,7 @@ import OpenGL
 extension GLM {
     public static let kRadians  = kPi / 180.0
     
-    public static let kPi       = M_PI
+    public static let kPi       = Double.pi
     public static let kTwoPi    = 2.0 * kPi
     public static let kHalfPi   = 0.5 * kPi
     public static let kPiDiv4   = 0.25 * kPi

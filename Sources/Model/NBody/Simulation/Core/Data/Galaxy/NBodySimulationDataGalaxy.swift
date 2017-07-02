@@ -32,7 +32,7 @@ extension NBody.Simulation.Data {
             "particles_80k"
         ]
         
-        private static func create(nParticles: size_t = 16384) -> CF.DataFile {
+        private static func create(_ nParticles: size_t = 16384) -> CF.DataFile {
             let pFileName: String
             
             switch nParticles {

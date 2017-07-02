@@ -24,7 +24,7 @@ import OpenGL.GL
 //MARK: Private - Data Structures
 
 extension GLU {
-    public class Quad {
+    open class Quad {
         deinit {destruct()}
         
         var mbResize: Bool = false                 // Flag to indicate if quad size changed
@@ -46,25 +46,25 @@ extension GLU {
         var m_Bounds: CGRect = CGRect()               // vbo bounds;
         
         var mnAspect: GLfloat = 0             // Aspect ratio
-        var mpData: UnsafeMutablePointer<GLfloat> = nil               // vbo data
+        var mpData: UnsafeMutablePointer<GLfloat>? = nil               // vbo data
         var m_Vertices: [GLfloat] = [0, 0, 0, 0, 0, 0, 0, 0]        // Quad vertices
         var m_TexCoords: [GLfloat] = [0, 0, 0, 0, 0, 0, 0, 0]       // Quad texture coordinates
         
         //MARK: -
         //MARK: Private - Macros
         
-        private func BUFFER_OFFSET(i: Int) -> UnsafePointer<GLchar> {
-            return (UnsafePointer(bitPattern: 0).advancedBy(i))
+        private func BUFFER_OFFSET(_ i: Int) -> UnsafePointer<GLchar>? {
+            return UnsafePointer(bitPattern: i)
         }
         
         //MARK: -
         //MARK: Private - Accessors
         
-        private func acquireBounds(bounds: CGRect) -> Bool {
-            let bSuccess = !CGRectIsEmpty(bounds)
+        private func acquireBounds(_ bounds: CGRect) -> Bool {
+            let bSuccess = !bounds.isEmpty
             
             if bSuccess {
-                self.mbResize = !CGRectEqualToRect(bounds, self.m_Bounds)
+                self.mbResize = !bounds.equalTo(self.m_Bounds)
                 
                 if self.mbResize {
                     self.m_Bounds.origin.x = bounds.origin.x
@@ -88,7 +88,7 @@ extension GLU {
             return bSuccess && self.mbResize
         }
         
-        private func setVertices(bounds: CGRect) -> Bool {
+        private func setVertices(_ bounds: CGRect) -> Bool {
             let bSuccess = self.acquireBounds(bounds)
             
             if bSuccess {
@@ -108,7 +108,7 @@ extension GLU {
             return bSuccess
         }
         
-        private func setTextCoords(bIsInverted: Bool) -> Bool {
+        private func setTextCoords(_ bIsInverted: Bool) -> Bool {
             let nValue: GLfloat = bIsInverted ? 0.0 : 1.0
             
             self.mbUpdate = self.m_TexCoords[7] != nValue
@@ -225,7 +225,7 @@ extension GLU {
                 
                 glBufferData(mnTarget, mnCapacity, nil, mnUsage)
                 
-                mpData = UnsafeMutablePointer(glMapBuffer(mnTarget, GL_WRITE_ONLY.ui))
+                mpData = glMapBuffer(mnTarget, GL_WRITE_ONLY.ui).assumingMemoryBound(to: GLfloat.self)
                 
                 mbMapped = mpData != nil
             }
@@ -294,17 +294,19 @@ extension GLU {
         //MARK: Public - Accessors
         
         // Is the quad finalized?
-        public var isFinalized: Bool {
+        open var isFinalized: Bool {
             return mnBID != 0
         }
         
         // Set the quad to be inverted
-        public func setIsInverted(bIsInverted: Bool) -> Bool {
+        @discardableResult
+        open func setIsInverted(_ bIsInverted: Bool) -> Bool {
             return setTextCoords(bIsInverted)
         }
         
         // Set the quad bounds
-        public func setBounds(bounds: CGRect) -> Bool {
+        @discardableResult
+        open func setBounds(_ bounds: CGRect) -> Bool {
             return setVertices(bounds)
         }
         
@@ -312,13 +314,14 @@ extension GLU {
         //MARK: Public - Updating
         
         // Finalize and acquire a vbo for the quad
-        public func finalize() -> Bool {
+        @discardableResult
+        open func finalize() -> Bool {
             return acquireBuffer();
         }
         
         // Update the quad if either the bounds changed or
         // the inverted flag was changed
-        public func update() {
+        open func update() {
             updateBuffer()
         }
         
@@ -326,25 +329,25 @@ extension GLU {
         //MARK: Public - Map/Unmap
         
         // Map to get the base address of the quad's vbo
-        public func map() -> Bool {
+        open func map() -> Bool {
             return mapBuffer()
         }
         
         // Unmap to invalidate the base address of the quad's vbo
-        public func unmap() -> Bool {
+        open func unmap() -> Bool {
             return unmapBuffer()
         }
         
         // Get the base address of the quad's vbo
-        public var buffer: UnsafeMutablePointer<GLfloat> {
-            return mpData
+        open var buffer: UnsafeMutablePointer<GLfloat> {
+            return mpData!
         }
         
         //MARK: -
         //MARK: Public - Drawing
         
         // Draw the quad
-        public func draw() {
+        open func draw() {
             drawArrays()
         }
     }

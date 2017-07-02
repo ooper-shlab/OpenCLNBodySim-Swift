@@ -23,37 +23,37 @@ extension CF {
     
     typealias vm_address_ref = UnsafeMutablePointer<vm_address_t>
     
-    static func ProcessorInfoArrayCreate(nSize: natural_t,
-        inout _ err: kern_return_t) -> processor_info_array_t
+    static func ProcessorInfoArrayCreate(_ nSize: natural_t,
+        _ err: inout kern_return_t) -> processor_info_array_t
     {
-        var pInfo: processor_info_array_t = nil
+        var pInfo: processor_info_array_t? = nil
         
         err = (nSize != 0) ? KERN_SUCCESS : KERN_INVALID_ARGUMENT
         
         if err == KERN_SUCCESS {
-            err = withUnsafeMutablePointer(&pInfo) {pInfoPtr in
+            err = withUnsafeMutableBytes(of: &pInfo) {pInfoBuf in
                 vm_allocate(mach_task_self(),
-                    vm_address_ref(pInfoPtr),
+                    pInfoBuf.baseAddress!.assumingMemoryBound(to: vm_address_t.self),
                     vm_size_t(nSize),
                     VM_FLAGS_ANYWHERE)
             }
         }
         
-        return pInfo
+        return pInfo!
     }
     
-    static func ProcessorInfoArrayCreateCopy(nSizeDst: natural_t,
+    static func ProcessorInfoArrayCreateCopy(_ nSizeDst: natural_t,
         _ pInfoSrc: processor_info_array_t,
-        inout _ err: kern_return_t) -> processor_info_array_t
+        _ err: inout kern_return_t) -> processor_info_array_t
     {
-        var pInfoDst: processor_info_array_t = nil
+        var pInfoDst: processor_info_array_t? = nil
         
         err = (nSizeDst != 0) ? KERN_SUCCESS : KERN_INVALID_ARGUMENT
         
         if err == KERN_SUCCESS {
-            err = withUnsafeMutablePointer(&pInfoDst) {pInfoDstPtr in
+            err = withUnsafeMutableBytes(of: &pInfoDst) {pInfoDstBuf in
                 vm_allocate(mach_task_self(),
-                    vm_address_ref(pInfoDstPtr),
+                    pInfoDstBuf.baseAddress!.assumingMemoryBound(to: vm_address_t.self),
                     vm_size_t(nSizeDst),
                     VM_FLAGS_ANYWHERE)
             }
@@ -61,16 +61,16 @@ extension CF {
             if err == KERN_SUCCESS {
                 
                 err = vm_copy(mach_task_self(),
-                    unsafeBitCast(pInfoSrc, vm_address_t.self),
+                    vm_address_t(bitPattern: pInfoSrc),
                     vm_size_t(nSizeDst),
-                    unsafeBitCast(pInfoDst, vm_address_t.self))
+                    unsafeBitCast(pInfoDst, to: vm_address_t.self))
             }
         }
         
-        return pInfoDst
+        return pInfoDst!
     }
     
-    static func ProcessorInfoArrayCopy(nSize: natural_t,
+    static func ProcessorInfoArrayCopy(_ nSize: natural_t,
         _ pInfoSrc: processor_info_array_t,
         _ pInfoDst: processor_info_array_t) -> kern_return_t
     {
@@ -78,21 +78,22 @@ extension CF {
         
         if err == KERN_SUCCESS {
             err = vm_copy(mach_task_self(),
-                unsafeBitCast(pInfoSrc, vm_address_t.self),
+                vm_address_t(bitPattern: pInfoSrc),
                 vm_size_t(nSize),
-                unsafeBitCast(pInfoDst, vm_address_t.self))
+                vm_address_t(bitPattern: pInfoDst))
         }
         
         return err
     }
     
-    static func ProcessorInfoArrayDelete(nSize: natural_t,
+    @discardableResult
+    static func ProcessorInfoArrayDelete(_ nSize: natural_t,
         _ pInfo: processor_info_array_t) -> kern_return_t
     {
         var err = (nSize != 0) ? KERN_SUCCESS : KERN_INVALID_ARGUMENT
         
         if err == KERN_SUCCESS {
-            err = vm_deallocate(mach_task_self(), unsafeBitCast(pInfo, vm_address_t.self), vm_size_t(nSize))
+            err = vm_deallocate(mach_task_self(), vm_address_t(bitPattern: pInfo), vm_size_t(nSize))
             
         }
         

@@ -132,12 +132,12 @@ class NBodyEngine: NSObject {
         mpMeters?.reset()
     }
     
-    private func _swapInterval(doSync: Bool) {
+    private func _swapInterval(_ doSync: Bool) {
         let pContext = CGLGetCurrentContext()
         
         var sync: GLint = doSync ? 1 : 0
         
-        CGLSetParameter(pContext,
+        CGLSetParameter(pContext!,
             kCGLCPSwapInterval,
             &sync)
     }
@@ -149,26 +149,26 @@ class NBodyEngine: NSObject {
         mpVisualizer?.draw(pPosition)
         
         // Update and render the performance meters
-        mpMeters?.index = NBody.MeterType.Frames
+        mpMeters?.index = NBody.MeterType.frames
         mpMeters?.point = NSMakePoint(208.0, 160.0)
         
         mpMeters?.update()
         mpMeters?.draw()
         
-        mpMeters?.index = NBody.MeterType.CPU
+        mpMeters?.index = NBody.MeterType.cpu
         mpMeters?.point = NSMakePoint(208.0 + 0.25 * size.width, 160.0)
         
         mpMeters?.update()
         mpMeters?.draw()
         
-        mpMeters?.index = NBody.MeterType.Updates
+        mpMeters?.index = NBody.MeterType.updates
         mpMeters?.point = NSMakePoint(0.75 * size.width - 208.0, 160.0)
         mpMeters?.value = mpMediator?.updates ?? 0.0
         
         mpMeters?.update()
         mpMeters?.draw()
         
-        mpMeters?.index = NBody.MeterType.Perf
+        mpMeters?.index = NBody.MeterType.perf
         mpMeters?.point = NSMakePoint(size.width - 208.0, 160.0)
         mpMeters?.value = mpMediator?.performance ?? 0.0
         
@@ -179,7 +179,7 @@ class NBodyEngine: NSObject {
         mpButtons?.draw()
     }
     
-    private func _setDemo(newValue: Int) {
+    private func _setDemo(_ newValue: Int) {
         _activeDemo = newValue
         
         self._reset()
@@ -187,7 +187,7 @@ class NBodyEngine: NSObject {
         preferences?.demoType = _activeDemo
     }
     
-    private func _selectDemo(command: unichar) {
+    private func _selectDemo(_ command: unichar) {
         if command != _command {
             let demo = Int(command - "0")
             
@@ -235,7 +235,7 @@ class NBodyEngine: NSObject {
         return bSuccess
     }
     
-    private func _newDock(count: Int) -> Bool {
+    private func _newDock(_ count: Int) -> Bool {
         mpButtons = NBodyButtons(count: count)
         
         for i in 0..<count {
@@ -254,8 +254,8 @@ class NBodyEngine: NSObject {
         
     }
     
-    private func _newMeterFrames(length: Int) -> Bool {
-        mpMeters?.index     = .Frames
+    private func _newMeterFrames(_ length: Int) -> Bool {
+        mpMeters?.index     = .frames
         mpMeters?.visible = preferences?.showFramerate ?? false
         mpMeters?.max       = preferences?.maxFramerate ?? kMeterDefaultMaxFPS
         mpMeters?.bound     = length
@@ -266,8 +266,8 @@ class NBodyEngine: NSObject {
         return mpMeters?.acquire() ?? false
     }
     
-    private func _newMeterUpdates(length: Int) -> Bool {
-        mpMeters?.index     = .Updates
+    private func _newMeterUpdates(_ length: Int) -> Bool {
+        mpMeters?.index     = .updates
         mpMeters?.visible = preferences?.showUpdates ?? false
         mpMeters?.max       = preferences?.maxUpdates ?? kMeterDefaultMaxUpdates
         mpMeters?.bound     = length
@@ -277,8 +277,8 @@ class NBodyEngine: NSObject {
         return mpMeters?.acquire() ?? false
     }
     
-    private func _newMeterPerf(length: Int) -> Bool {
-        mpMeters?.index     = .Perf
+    private func _newMeterPerf(_ length: Int) -> Bool {
+        mpMeters?.index     = .perf
         mpMeters?.visible = preferences?.showPerf ?? true
         mpMeters?.max       = preferences?.maxPerf ?? kMeterDefaultMaxPerf
         mpMeters?.bound     = length
@@ -288,8 +288,8 @@ class NBodyEngine: NSObject {
         return mpMeters?.acquire() ?? false
     }
     
-    private func _newMeterCPU(length: Int) -> Bool {
-        mpMeters?.index       = .CPU
+    private func _newMeterCPU(_ length: Int) -> Bool {
+        mpMeters?.index       = .cpu
         mpMeters?.visible   = preferences?.showCPU ?? true
         mpMeters?.max         = preferences?.maxCPU ?? kMeterDefaultMaxCPUUsage
         mpMeters?.bound       = length
@@ -300,7 +300,7 @@ class NBodyEngine: NSObject {
         return mpMeters?.acquire() ?? false
     }
     
-    private func _newMeters(length: Int) -> Bool {
+    private func _newMeters(_ length: Int) -> Bool {
         var bSuccess = false
         
         mpMeters = NBodyMeters(count: 4)
@@ -315,7 +315,7 @@ class NBodyEngine: NSObject {
         return bSuccess
     }
     
-    private func _newPreferences(preferences: NBodyPreferences?) -> Bool {
+    private func _newPreferences(_ preferences: NBodyPreferences?) -> Bool {
         if preferences != nil {
             self.preferences = preferences
         } else {
@@ -342,27 +342,27 @@ class NBodyEngine: NSObject {
         }
     }
     
-    private func _toggleMeter(index: NBody.MeterType) {
+    private func _toggleMeter(_ index: NBody.MeterType) {
         mpMeters?.index = index
         
         mpMeters?.toggle()
         
         switch index {
-        case .Perf:
+        case .perf:
             preferences?.showPerf = mpMeters?.visible ?? false
             
-        case .Updates:
+        case .updates:
             preferences?.showUpdates = mpMeters?.visible ?? false
             
-        case .CPU:
+        case .cpu:
             preferences?.showCPU = mpMeters?.visible ?? false
             
-        case .Frames:
+        case .frames:
             preferences?.showFramerate = mpMeters?.visible ?? false
         }
     }
     
-    private func _showMeters(doShow: Bool) {
+    private func _showMeters(_ doShow: Bool) {
         mpMeters?.show(doShow)
         
         preferences?.showPerf      = doShow
@@ -389,7 +389,7 @@ class NBodyEngine: NSObject {
         mpMeters         = nil
     }
     
-    private func _setPreferences(preferences: NBodyPreferences?) {
+    private func _setPreferences(_ preferences: NBodyPreferences?) {
         if self._newPreferences(preferences) {
             m_Properties <<- self.preferences
             
@@ -411,7 +411,7 @@ class NBodyEngine: NSObject {
         }
     }
     
-    private func _setEnginePreferences(preferences: NBodyPreferences?) {
+    private func _setEnginePreferences(_ preferences: NBodyPreferences?) {
         self._setPreferences(preferences)
         self._setDefaults()
     }
@@ -444,6 +444,7 @@ class NBodyEngine: NSObject {
     //} // engineWithPreferences
     
     
+    @discardableResult
     func acquire() -> Bool {
         self._swapInterval(true)
         
@@ -463,7 +464,7 @@ class NBodyEngine: NSObject {
         
         if !(mpMediator?.hasPosition ?? false) {
             if mbIsWaiting {
-                CGLFlushDrawable(CGLGetCurrentContext())
+                CGLFlushDrawable(CGLGetCurrentContext()!)
             }
         } else {
             mbIsWaiting = false
@@ -472,13 +473,13 @@ class NBodyEngine: NSObject {
             
             self._drawScene()
             
-            CGLFlushDrawable(CGLGetCurrentContext())
+            CGLFlushDrawable(CGLGetCurrentContext()!)
         }
         
         glFinish()
     }
     
-    func resize(frame: NSRect) {
+    func resize(_ frame: NSRect) {
         if frame.size.width >= NBody.Window.kWidth.g && frame.size.height >= NBody.Window.kHeight.g {
             let nWidowWidth  = Int(frame.size.width  + 0.5)
             let nWidowHeight = Int(frame.size.height + 0.5)
@@ -499,7 +500,7 @@ class NBodyEngine: NSObject {
         }
     }
     
-    func move(point: CGPoint) {
+    func move(_ point: CGPoint) {
         if mbIsRotating {
             m_Rotation.x += (point.x - m_MousePt.x) * 0.2
             m_Rotation.y += (point.y - m_MousePt.y) * 0.2
@@ -511,7 +512,7 @@ class NBodyEngine: NSObject {
         }
     }
     
-    func click(state: Int, point: CGPoint) {
+    func click(_ state: Int, point: CGPoint) {
         let pos  = NSMakePoint(point.x, size.height - point.y)
         let wmax = 0.75 * size.width
         let wmin = 0.5 * NBody.Button.kWidth.g
@@ -525,7 +526,7 @@ class NBodyEngine: NSObject {
         }
     }
     
-    func scroll(delta: GLfloat) {
+    func scroll(_ delta: GLfloat) {
         mpVisualizer?.setViewDistance(delta)
     }
     
@@ -557,7 +558,7 @@ class NBodyEngine: NSObject {
                 self._showMeters(true)
                 
             case "c":
-                self._toggleMeter(NBody.MeterType.CPU)
+                self._toggleMeter(NBody.MeterType.cpu)
                 
             case "d":
                 mpButtons?.toggle()
@@ -568,7 +569,7 @@ class NBodyEngine: NSObject {
                 mpVisualizer?.toggleEarthView()
                 
             case "f":
-                self._toggleMeter(.Frames)
+                self._toggleMeter(.frames)
                 
             case "g":
                 self._swapVisualizer()
@@ -580,7 +581,7 @@ class NBodyEngine: NSObject {
                 self._nextDemo()
                 
             case "p":
-                self._toggleMeter(.Perf)
+                self._toggleMeter(.perf)
                 
             case "r":
                 mpVisualizer?.toggleRotation()
@@ -592,7 +593,7 @@ class NBodyEngine: NSObject {
                 self._swapSimulators()
                 
             case "u":
-                self._toggleMeter(.Updates)
+                self._toggleMeter(.updates)
                 
             case "z":
                 self._reset()
@@ -612,7 +613,7 @@ class NBodyEngine: NSObject {
         }
     }
     
-    private func didSetViewDistance(viewDistance: GLfloat) {
+    private func didSetViewDistance(_ viewDistance: GLfloat) {
         
         preferences?.viewDistance = viewDistance
     }

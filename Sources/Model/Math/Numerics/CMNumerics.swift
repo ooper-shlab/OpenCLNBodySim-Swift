@@ -17,7 +17,7 @@ import Foundation
 
 extension CM {
     
-    private static func NUMERICS_SGN_MASK_32(i: Int32) -> Int32 {
+    private static func NUMERICS_SGN_MASK_32(_ i: Int32) -> Int32 {
         return -Int32((UInt32(i))>>31)
     }
     //#define NUMERICS_SGN_MASK_64(i) (-(int64_t)(((uint64_t)(i))>>63))
@@ -31,9 +31,9 @@ extension CM {
     //
     //-------------------------------------------------------------------------------
     
-    static func isEQ(x: Float, _ y: Float, max: Int32 = 1) -> Bool {
-        let v = unsafeBitCast(x, Int32.self)
-        let w = unsafeBitCast(y, Int32.self)
+    static func isEQ(_ x: Float, _ y: Float, max: Int32 = 1) -> Bool {
+        let v = Int32(bitPattern: x.bitPattern)
+        let w = Int32(bitPattern: y.bitPattern)
         let r = NUMERICS_SGN_MASK_32(v^w)
         
         assert((0 == r) || (-1 == r))
@@ -64,9 +64,9 @@ extension CM {
     //    return (lub|glb) >= 0;
     //} // isEQ
     
-    static func isLT(x: Float, _ y: Float) -> Bool {
-        let v = unsafeBitCast(x, Int32.self)
-        let w = unsafeBitCast(y, Int32.self)
+    static func isLT(_ x: Float, _ y: Float) -> Bool {
+        let v = Int32(bitPattern: x.bitPattern)
+        let w = Int32(bitPattern: y.bitPattern)
         let r = NUMERICS_SGN_MASK_32(v & w)
         
         return (v ^ r) < (w ^ r)
@@ -82,9 +82,9 @@ extension CM {
     //    return (v ^ r) < (w ^ r);
     //} // isLT
     
-    static func isZero(x: Float, _ eps: Float) -> Bool {
-        let v = unsafeBitCast(x, Int32.self)
-        let e = unsafeBitCast(eps, Int32.self)
+    static func isZero(_ x: Float, _ eps: Float) -> Bool {
+        let v = Int32(bitPattern: x.bitPattern)
+        let e = Int32(bitPattern: eps.bitPattern)
         
         return (v & 0x7FFFFFFF) <= e
     }
@@ -113,7 +113,7 @@ extension CM {
     //### XOR swapping is an interesting algorithm, but very suspicious if efficient in actual apps.
     //#define NUMERICS_SWAP(a, b) (((a) ^ (b)) && ((b) ^= (a) ^= (b), (a) ^= (b)))
     
-    static func swap(inout x: Int, inout _ y: Int) {
+    static func swap(_ x: inout Int, _ y: inout Int) {
         (x, y) = (y, x) //### No reason to use XOR swap...
     }
     

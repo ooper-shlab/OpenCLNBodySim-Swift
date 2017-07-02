@@ -18,21 +18,21 @@ import OpenGL
 import OpenCL
 
 extension NBody.Simulation.Data {
-    public class Packed {
+    open class Packed {
         
-        private var mnParticles: Int = 0
+        fileprivate var mnParticles: Int = 0
         //private var mnSamples: Int = 0
-        private var mnLength: Int = 0
+        fileprivate var mnLength: Int = 0
         //private var mnSize: Int = 0
-        private var mnFlags: cl_mem_flags = 0
-        private var mpPacked: Packed3D = Packed3D()
+        fileprivate var mnFlags: cl_mem_flags = 0
+        fileprivate var mpPacked: Packed3D = Packed3D()
     }
 }
 
 //MARK: -
 //MARK: Private - Constants
 
-private let kNBodySimPackedDataMemSize = size_t(strideof(cl_mem))
+private let kNBodySimPackedDataMemSize = size_t(MemoryLayout<cl_mem>.stride)
 
 //MARK: -
 //MARK: Private - Data Structures
@@ -45,26 +45,26 @@ private let kNBodySimPackedDataMemSize = size_t(strideof(cl_mem))
 //}
 
 extension NBody.Simulation.Data {
-    private class Packed3D {
-        var mpHost: UnsafeMutablePointer<GLfloat> = nil
-        var mpDevice: cl_mem = nil
+    fileprivate class Packed3D {
+        var mpHost: UnsafeMutablePointer<GLfloat>? = nil
+        var mpDevice: cl_mem? = nil
         
         private var mnLength: Int = 0
-        func alloc(length: Int) {
+        func alloc(_ length: Int) {
             if mpHost != nil {
-                mpHost.dealloc(mnLength)
+                mpHost?.deallocate(capacity: mnLength)
             }
             mnLength = length
-            mpHost = UnsafeMutablePointer.alloc(length)
+            mpHost = UnsafeMutablePointer.allocate(capacity: length)
         }
-        func createBuffer(pContext: cl_context,
+        func createBuffer(_ pContext: cl_context,
             _ mnFlags: cl_mem_flags) -> cl_int
         {
             if mpHost == nil {
                 return CL_INVALID_VALUE
             }
             var err: cl_int = 0
-            let mnSamples = strideof(GLfloat)
+            let mnSamples = MemoryLayout<GLfloat>.stride
             let mnSize    = mnLength * mnSamples
             mpDevice = clCreateBuffer(pContext,
                 mnFlags,
@@ -76,7 +76,7 @@ extension NBody.Simulation.Data {
         
         deinit {
             if mpHost != nil {
-                mpHost.dealloc(mnLength)
+                mpHost?.deallocate(capacity: mnLength)
             }
             if mpDevice != nil {
                 clReleaseMemObject(mpDevice)
@@ -104,14 +104,14 @@ extension NBody.Simulation.Data.Packed {
     //MARK: Public - Utilities
     
     public var data: UnsafeMutablePointer<GLfloat> {
-        return mpPacked.mpHost
+        return mpPacked.mpHost!
     }
     
-    public func acquire(pContext: cl_context) -> GLint {
+    public func acquire(_ pContext: cl_context?) -> GLint {
         var err = CL_INVALID_CONTEXT
         
         if pContext != nil {
-            err = mpPacked.createBuffer(pContext,
+            err = mpPacked.createBuffer(pContext!,
                 mnFlags)
             
             if err != CL_SUCCESS {
@@ -122,32 +122,30 @@ extension NBody.Simulation.Data.Packed {
         return err
     }
     
-    public func bind(nIndex: cl_uint,
-        _ pKernel: cl_kernel) -> GLint
+    public func bind(_ nIndex: cl_uint,
+        _ pKernel: cl_kernel?) -> GLint
     {
         var err = CL_INVALID_KERNEL
         
         if pKernel != nil {
-            err = withUnsafePointer(&mpPacked.mpDevice) {pValue in
-                let nSize  = kNBodySimPackedDataMemSize
-                
-                return clSetKernelArg(pKernel,
-                    nIndex,
-                    nSize,
-                    pValue)
-            }
+            let nSize  = kNBodySimPackedDataMemSize
+            
+            err = clSetKernelArg(pKernel,
+                                  nIndex,
+                                  nSize,
+                                  &mpPacked.mpDevice)
         }
         
         return err
     }
     
-    public func update(nIndex: cl_uint,
-        _ pKernel: cl_kernel) -> GLint {
+    public func update(_ nIndex: cl_uint,
+        _ pKernel: cl_kernel?) -> GLint {
             var err = CL_INVALID_KERNEL
             
             if pKernel != nil {
                 let nSize  = kNBodySimPackedDataMemSize
-                err = withUnsafePointer(&mpPacked.mpDevice) {pValue in
+                err = withUnsafePointer(to: &mpPacked.mpDevice) {pValue in
                     
                     return clSetKernelArg(pKernel, nIndex, nSize, pValue)
                     

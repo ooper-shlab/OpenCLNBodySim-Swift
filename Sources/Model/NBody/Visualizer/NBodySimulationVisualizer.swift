@@ -18,18 +18,18 @@ import OpenGL
 import simd
 
 extension NBody.Simulation {
-    public class Visualizer {
+    open class Visualizer {
         
         //MARK: -
         //MARK: Private - Enumerated Types
         
-        private typealias Flags = (
+        fileprivate typealias Flags = (
             IsAcquired: Bool,
             IsResetting: Bool,
             IsRotating: Bool,
             IsEarthView: Bool
         )
-        private typealias Properties = (
+        fileprivate typealias Properties = (
             StarSize: GLfloat,
             StarScale: GLfloat,
             TimeScale: GLfloat,
@@ -40,7 +40,7 @@ extension NBody.Simulation {
             ViewDistance: GLfloat,
             ViewZoomSpeed: GLfloat
         )
-        private typealias Graphics = (
+        fileprivate typealias Graphics = (
             BufferID: GLuint,
             BufferCount: GLsizei,
             BufferSize: GLsizeiptr,
@@ -52,31 +52,31 @@ extension NBody.Simulation {
             destruct()
         }
         
-        public var m_Center: Float3 = Float3()
-        public var m_Up: Float3 = Float3()
+        open var m_Center: Float3 = Float3()
+        open var m_Up: Float3 = Float3()
         
-        private var m_Flag: Flags = (false, false, false, false)
+        fileprivate var m_Flag: Flags = (false, false, false, false)
         
-        private var m_Eye: Float3 = Float3()
+        fileprivate var m_Eye: Float3 = Float3()
         
-        private var m_ModelView: Float4x4 = Float4x4()
-        private var m_Projection: Float4x4 = Float4x4()
+        fileprivate var m_ModelView: Float4x4 = Float4x4()
+        fileprivate var m_Projection: Float4x4 = Float4x4()
         
-        private var m_ViewRotation: CGPoint = CGPoint()
-        private var m_Rotation: CGPoint = CGPoint()
-        private var m_Frame: CGSize = CGSize()
+        fileprivate var m_ViewRotation: CGPoint = CGPoint()
+        fileprivate var m_Rotation: CGPoint = CGPoint()
+        fileprivate var m_Frame: CGSize = CGSize()
         
-        private var m_Bounds: [GLsizei] = [0, 0]
-        private var m_Property: Properties = (0, 0, 0, 0, 0, 0, 0, 0, 0)
-        private var m_Graphic: Graphics = (0, 0, 0, 0, 0)
-        private var mnActiveDemo: Int = 0
-        private var mnCount: Int = 0
+        fileprivate var m_Bounds: [GLsizei] = [0, 0]
+        fileprivate var m_Property: Properties = (0, 0, 0, 0, 0, 0, 0, 0, 0)
+        fileprivate var m_Graphic: Graphics = (0, 0, 0, 0, 0)
+        fileprivate var mnActiveDemo: Int = 0
+        fileprivate var mnCount: Int = 0
         
-        private var mpProperties: [NBody.Simulation.Properties] = []
+        fileprivate var mpProperties: [NBody.Simulation.Properties] = []
         
-        private var mpProgram: GLU.Program!
-        private var mpGausssian: GLU.Gaussian!
-        private var mpTexture: GLU.Texture!
+        fileprivate var mpProgram: GLU.Program!
+        fileprivate var mpGausssian: GLU.Gaussian!
+        fileprivate var mpTexture: GLU.Texture!
     }
 }
 
@@ -84,7 +84,7 @@ extension NBody.Simulation {
 //MARK: Private - Utilities - Properties
 
 extension NBody.Simulation.Visualizer {
-    private func advance(nDemo: Int) {
+    private func advance(_ nDemo: Int) {
         if nDemo < mnCount {
             let t = sinf(m_Property.ViewTime)
             let T = 1.0 - t
@@ -112,7 +112,7 @@ extension NBody.Simulation.Visualizer {
         GLM.load(true, m_Projection)
     }
     
-    private func lookAt(pPosition: UnsafePointer<GLfloat>) {
+    private func lookAt(_ pPosition: UnsafePointer<GLfloat>) {
         // DEPRECATED gluLookAt():
         //
         //    glLoadIdentity();
@@ -199,7 +199,7 @@ extension NBody.Simulation.Visualizer {
     //MARK: -
     //MARK: Private - Utilities - Rendering
     
-    private func render(pPosition: UnsafePointer<GLfloat>) {
+    private func render(_ pPosition: UnsafePointer<GLfloat>) {
         glViewport(0, 0, m_Bounds[0], m_Bounds[1])
         
         glBlendFunc(GL_ONE.ui, GL_ONE.ui)
@@ -270,14 +270,14 @@ extension NBody.Simulation.Visualizer {
                         // pink
                         glColor3f(0.04, 0.015, 0.025)
                         
-                        for i in (0 as GLsizei).stride(to: m_Graphic.BufferCount / 84, by: Int(step)) {
+                        for i in stride(from: (0 as GLsizei), to: m_Graphic.BufferCount / 84, by: Int(step)) {
                             glDrawArrays(GL_POINTS.ui, i, 1)
                         }
                         
                         // blue
                         glColor3f(0.04, 0.001, 0.08)
                         
-                        for i in (64 as GLsizei).stride(to: m_Graphic.BufferCount / 84, by: Int(step)) {
+                        for i in stride(from: (64 as GLsizei), to: m_Graphic.BufferCount / 84, by: Int(step)) {
                             glDrawArrays(GL_POINTS.ui, i, 1)
                         }
                     }
@@ -296,7 +296,7 @@ extension NBody.Simulation.Visualizer {
     //MARK: -
     //MARK: Private - Utilities - Assets
     
-    private func buffer(nCount: Int) -> Bool {
+    private func buffer(_ nCount: Int) -> Bool {
         m_Graphic.BufferID = 0
         m_Graphic.BufferCount = GLsizei(nCount)
         m_Graphic.BufferSize  = 4 * GLsizeiptr(m_Graphic.BufferCount) * GLM.Size.kFloat
@@ -318,7 +318,7 @@ extension NBody.Simulation.Visualizer {
         return m_Graphic.BufferID != 0
     }
     
-    private func textures(pName: String, _ pExt: String, _ texRes: Int = 32) -> Bool {
+    private func textures(_ pName: String, _ pExt: String, _ texRes: Int = 32) -> Bool {
         mpTexture = GLU.Texture(pName, pExt)
         
         mpGausssian = GLU.Gaussian(texRes)
@@ -326,7 +326,7 @@ extension NBody.Simulation.Visualizer {
         return mpTexture.texture != 0 && mpGausssian.texture != 0
     }
     
-    private func program(pName: String) -> Bool {
+    private func program(_ pName: String) -> Bool {
         mpProgram = GLU.Program(name: pName, inType: GL_POINTS.ui, outType: GL_TRIANGLE_STRIP.ui, outVert: 4)
         
         let nPID = mpProgram.program
@@ -345,7 +345,7 @@ extension NBody.Simulation.Visualizer {
         return nPID != 0
     }
     
-    private func acquire(rProperties: NBody.Simulation.Properties?) -> Bool {
+    private func acquire(_ rProperties: NBody.Simulation.Properties?) -> Bool {
         var bSuccess = rProperties?.mnParticles ?? 0 > 0
         
         if bSuccess {
@@ -403,7 +403,7 @@ extension NBody.Simulation.Visualizer {
     //MARK: -
     //MARK: Public - Destructor
     
-    private func destruct() {
+    fileprivate func destruct() {
         if m_Graphic.BufferID != 0 {
             
             glDeleteBuffers(1, &m_Graphic.BufferID);
@@ -415,7 +415,7 @@ extension NBody.Simulation.Visualizer {
     //MARK: -
     //MARK: Public - Utilities
     
-    public func reset(nDemo: Int) {
+    public func reset(_ nDemo: Int) {
         if nDemo < mnCount && !mpProperties.isEmpty {
             mnActiveDemo = nDemo
             
@@ -426,14 +426,14 @@ extension NBody.Simulation.Visualizer {
         }
     }
     
-    public func draw(pPosition: UnsafePointer<GLfloat>) {
+    public func draw(_ pPosition: UnsafePointer<GLfloat>?) {
         if pPosition != nil {
             update()
             
             projection()
-            lookAt(pPosition)
+            lookAt(pPosition!)
             
-            render(pPosition)
+            render(pPosition!)
         }
     }
     
@@ -463,15 +463,15 @@ extension NBody.Simulation.Visualizer {
         return m_Eye
     }
     
-    public func setIsResetting(bReset: Bool) {
+    public func setIsResetting(_ bReset: Bool) {
         m_Flag.IsResetting = bReset
     }
     
-    public func setShowEarthView(bShowView: Bool) {
+    public func setShowEarthView(_ bShowView: Bool) {
         m_Flag.IsEarthView = bShowView
     }
     
-    public func setFrame(rFrame: CGSize) {
+    public func setFrame(_ rFrame: CGSize) {
         if rFrame.width >= NBody.Window.kWidth.g && rFrame.height >= NBody.Window.kHeight.g {
             m_Frame = rFrame
             m_Bounds[0] = GLsizei(m_Frame.width + 0.5)
@@ -479,7 +479,7 @@ extension NBody.Simulation.Visualizer {
         }
     }
     
-    public func setProperties(nPropertiesCount: Int,
+    public func setProperties(_ nPropertiesCount: Int,
         _ Properties: [NBody.Simulation.Properties]) -> Bool {
             var bSuccess = m_Flag.IsAcquired
             
@@ -497,35 +497,35 @@ extension NBody.Simulation.Visualizer {
             return bSuccess
     }
     
-    public func setRotation(rRotation: CGPoint) {
+    public func setRotation(_ rRotation: CGPoint) {
         m_Rotation = rRotation
     }
     
-    public func setRotationChange(nDelta: GLfloat) {
+    public func setRotationChange(_ nDelta: GLfloat) {
         m_Property.RotationDelta = nDelta
     }
     
-    public func setRotationSpeed(nSpeed: GLfloat) {
+    public func setRotationSpeed(_ nSpeed: GLfloat) {
         m_Property.RotationSpeed = nSpeed
     }
     
-    public func setStarScale(nScale: GLfloat) {
+    public func setStarScale(_ nScale: GLfloat) {
         if nScale > 0.0 {
             m_Property.StarScale = nScale
         }
     }
     
-    public func setStarSize(nSize: GLfloat) {
+    public func setStarSize(_ nSize: GLfloat) {
         if nSize > 0.0 {
             m_Property.StarSize = m_Property.StarScale * nSize
         }
     }
     
-    public func setTimeScale(nScale: GLfloat) {
+    public func setTimeScale(_ nScale: GLfloat) {
         m_Property.TimeScale = nScale
     }
     
-    public func setViewDistance(nDelta: GLfloat) {
+    public func setViewDistance(_ nDelta: GLfloat) {
         m_Property.ViewDistance = m_Property.ViewDistance + nDelta * m_Property.ViewZoomSpeed
         
         if m_Property.ViewDistance < 1.0 {
@@ -533,19 +533,19 @@ extension NBody.Simulation.Visualizer {
         }
     }
     
-    public func setViewTime(nResetTime: GLfloat) {
+    public func setViewTime(_ nResetTime: GLfloat) {
         m_Property.ViewTime = nResetTime
     }
     
-    public func setViewRotation(rRotation: CGPoint) {
+    public func setViewRotation(_ rRotation: CGPoint) {
         m_ViewRotation = rRotation
     }
     
-    public func setViewZoom(nZoom: GLfloat) {
+    public func setViewZoom(_ nZoom: GLfloat) {
         m_Property.ViewZoom = nZoom
     }
     
-    public func setViewZoomSpeed(nSpeed: GLfloat) {
+    public func setViewZoomSpeed(_ nSpeed: GLfloat) {
         m_Property.ViewZoomSpeed = nSpeed
     }
 }

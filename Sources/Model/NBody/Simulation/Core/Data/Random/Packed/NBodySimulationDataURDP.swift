@@ -36,13 +36,13 @@ extension NBody.Simulation.Data {
         //MARK: -
         //MARK: Private - Utilities
         
-        private func configExpand(pPosition: UnsafeMutablePointer<Float4>,
+        private func configExpand(_ pPosition: UnsafeMutablePointer<Float4>,
             _ pVelocity: UnsafeMutablePointer<Float4>)
         {
             let pscale  = m_Scale[0] * max(1.0, mnBCScale)
             let vscale = pscale * m_Scale[1]
             
-            dispatch_apply(mnParticles, m_DQueue) {i in
+            DispatchQueue.concurrentPerform(iterations: mnParticles) {i in
                 let position = pscale * self.mpGenerator[NBody.RandIntervalLenIs.Two].rand()
                 let velocity = vscale * position
                 
@@ -52,13 +52,13 @@ extension NBody.Simulation.Data {
             }
         }
         
-        private func configRandom(pPosition: UnsafeMutablePointer<Float4>,
+        private func configRandom(_ pPosition: UnsafeMutablePointer<Float4>,
             _ pVelocity: UnsafeMutablePointer<Float4>)
         {
             let pscale = m_Scale[0] * max(1.0, mnBCScale)
             let vscale = m_Scale[1] * pscale
             
-            dispatch_apply(mnParticles, m_DQueue) {i in
+            DispatchQueue.concurrentPerform(iterations: mnParticles) {i in
                 let p = self.mpGenerator[NBody.RandIntervalLenIs.Two].nrand()
                 pPosition[i] = pscale * Float4(p.x, p.y, p.z, 1.0/* mass */)
                 
@@ -67,7 +67,7 @@ extension NBody.Simulation.Data {
             }
         }
         
-        private func configShell(pPosition: UnsafeMutablePointer<Float4>,
+        private func configShell(_ pPosition: UnsafeMutablePointer<Float4>,
             _ pVelocity: UnsafeMutablePointer<Float4>)
         {
             let pscale = m_Scale[0]
@@ -76,7 +76,7 @@ extension NBody.Simulation.Data {
             let outer  = 4.0 * pscale
             let length = outer - inner
             
-            dispatch_apply(mnParticles, m_DQueue) {i in
+            DispatchQueue.concurrentPerform(iterations: mnParticles) {i in
                 let nrpos    = self.mpGenerator[NBody.RandIntervalLenIs.Two].nrand()
                 let rpos     = self.mpGenerator[NBody.RandIntervalLenIs.One].rand()
                 let position = nrpos * (inner + (length * rpos))
@@ -99,7 +99,7 @@ extension NBody.Simulation.Data {
             }
         }
         
-        private func configMWM31(pPosition: UnsafeMutablePointer<Float4>,
+        private func configMWM31(_ pPosition: UnsafeMutablePointer<Float4>,
             _ pVelocity: UnsafeMutablePointer<Float4>)
         {
             let df = Galaxy(mnParticles)
@@ -154,25 +154,25 @@ extension NBody.Simulation.Data {
             mnVCScale = kBodyCountScale * mnCount
         }
         
-        func setTo(pInPosition: UnsafeMutablePointer<GLfloat>,
-            _ pInVelocity: UnsafeMutablePointer<GLfloat>) -> Bool
+        func setTo(_ pInPosition: UnsafeMutablePointer<GLfloat>?,
+            _ pInVelocity: UnsafeMutablePointer<GLfloat>?) -> Bool
         {
-            guard pInPosition != nil && pInVelocity != nil else {return false}
+            guard let pInPosition = pInPosition, let pInVelocity = pInVelocity else {return false}
             
-            let pPosition = UnsafeMutablePointer<Float4>(pInPosition)
-            let pVelocity = UnsafeMutablePointer<Float4>(pInVelocity)
+            let pPosition = UnsafeMutableRawPointer(pInPosition).assumingMemoryBound(to: Float4.self)
+            let pVelocity = UnsafeMutableRawPointer(pInVelocity).assumingMemoryBound(to: Float4.self)
             
             switch mnConfig {
-            case .Shell:
+            case .shell:
                 configShell(pPosition, pVelocity)
                 
-            case .MWM31:
+            case .mwm31:
                 configMWM31(pPosition, pVelocity)
                 
-            case .Expand:
+            case .expand:
                 configExpand(pPosition, pVelocity)
                 
-            case .Random:
+            case .random:
                 configRandom(pPosition, pVelocity)
             }
             

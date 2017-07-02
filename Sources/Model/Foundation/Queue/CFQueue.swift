@@ -19,11 +19,11 @@ import Foundation
 extension CF {
     class Queue {
         
-        var attribute: dispatch_queue_attr_t?
+        var attribute: DispatchQueue.Attributes?
         
         private var m_SQID: String
         
-        init(_ attrib: dispatch_queue_attr_t? = DISPATCH_QUEUE_SERIAL) {
+        init(_ attrib: DispatchQueue.Attributes? = DispatchQueue.Attributes()) {
             attribute = attrib
             m_SQID    = ""
         }
@@ -32,10 +32,10 @@ extension CF {
             return m_SQID
         }
         
-        func createQueue(label: String) -> dispatch_queue_t {
-            let qid = NSUUID()
+        func createQueue(_ label: String) -> DispatchQueue {
+            let qid = UUID()
             
-            let sqid = qid.UUIDString
+            let sqid = qid.uuidString
             
             if label.isEmpty {
                 m_SQID = sqid
@@ -43,7 +43,7 @@ extension CF {
                 m_SQID = "\(label).\(sqid)"
             }
             
-            return dispatch_queue_create(m_SQID, attribute)
+            return DispatchQueue(label: m_SQID, attributes: attribute!)
         }
     }
 }

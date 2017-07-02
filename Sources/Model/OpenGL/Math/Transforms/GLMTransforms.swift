@@ -34,12 +34,12 @@ extension GLM {
     //simd::float4x4 GLMGetMatrix(const bool& transpose,
     //                            const GLenum& name)
     //{
-    static func getMatrix(transpose: Bool, _ name: GLenum) -> Float4x4 {
+    static func getMatrix(_ transpose: Bool, _ name: GLenum) -> Float4x4 {
         //    simd::float4x4 M = 0.0f;
         var M = Float4x4()
         //
         //    GLfloat m[16];
-        var m: [GLfloat] = Array(count: 16, repeatedValue: 0)
+        var m: [GLfloat] = Array(repeating: 0, count: 16)
         //
         //    glGetFloatv(name, m);
         glGetFloatv(name, &m)
@@ -77,7 +77,7 @@ extension GLM {
     //
     //simd::float4x4 GLM::modelview(const bool& transpose)
     //{
-    static func modelview(transpose: Bool) -> Float4x4 {
+    static func modelview(_ transpose: Bool) -> Float4x4 {
         //    return GLMGetMatrix(transpose, GL_MODELVIEW_MATRIX);
         return getMatrix(transpose, GL_MODELVIEW_MATRIX.ui)
         //} // modelview
@@ -85,7 +85,7 @@ extension GLM {
     //
     //simd::float4x4 GLM::projection(const bool& transpose)
     //{
-    static func projection(transpose: Bool) -> Float4x4 {
+    static func projection(_ transpose: Bool) -> Float4x4 {
         //    return GLMGetMatrix(transpose, GL_PROJECTION_MATRIX);
         return getMatrix(transpose, GL_PROJECTION_MATRIX.ui)
         //} // projection
@@ -93,13 +93,13 @@ extension GLM {
     //
     //simd::float4x4 GLM::texture(const bool& transpose)
     //{
-    static func texture(transpose: Bool) -> Float4x4 {
+    static func texture(_ transpose: Bool) -> Float4x4 {
         //    return GLMGetMatrix(transpose, GL_TEXTURE_MATRIX);
         return getMatrix(transpose, GL_TEXTURE_MATRIX.ui)
         //} // texture
     }
     
-    public static func load(transpose: Bool, _ M: Float4x4) {
+    public static func load(_ transpose: Bool, _ M: Float4x4) {
         let m: [GLfloat]
         
         if transpose {
@@ -151,7 +151,7 @@ extension GLM {
         glLoadMatrixf(m)
     }
     
-    public static func identity(mode: GLenum) {
+    public static func identity(_ mode: GLenum) {
         glMatrixMode(mode)
         
         glLoadMatrixf(kIdentity)
@@ -160,7 +160,7 @@ extension GLM {
     //MARK: -
     //MARK: Public - Transformations - Scale
     
-    public static func scale(x: Float,
+    public static func scale(_ x: Float,
         _ y: Float,
         _ z: Float) -> Float4x4
     {
@@ -169,7 +169,7 @@ extension GLM {
         return Float4x4(diagonal: v)
     }
     
-    public static func scale(s: Float3) -> Float4x4 {
+    public static func scale(_ s: Float3) -> Float4x4 {
         let v = Float4(s.x, s.y, s.z, 1.0)
         
         return Float4x4(diagonal: v)
@@ -178,7 +178,7 @@ extension GLM {
     //MARK: -
     //MARK: Public - Transformations - Translate
     
-    public static func translate(t: Float3) -> Float4x4 {
+    public static func translate(_ t: Float3) -> Float4x4 {
         
         return Float4x4([
             Float4(1.0, 0.0, 0.0, 0.0),
@@ -189,7 +189,7 @@ extension GLM {
         
     }
     
-    public static func translate(x: Float,
+    public static func translate(_ x: Float,
         _ y: Float,
         _ z: Float) -> Float4x4
     {
@@ -206,7 +206,7 @@ extension GLM {
     //MARK: -
     //MARK: Public - Transformations - Rotate
     
-    public static func rotate(angle: Float,
+    public static func rotate(_ angle: Float,
         _ r: Float3) -> Float4x4
     {
         let a = angle / 180.0
@@ -246,13 +246,13 @@ extension GLM {
         return Float4x4([P, Q, R, S])
     }
     
-    public static func rotate(r: Float4) -> Float4x4 {
+    public static func rotate(_ r: Float4) -> Float4x4 {
         let R = Float3(r.x, r.y, r.z)
         
         return rotate(r.w, R)
     }
     
-    public static func rotate(angle: Float,
+    public static func rotate(_ angle: Float,
         _ x: Float,
         _ y: Float,
         _ z: Float) -> Float4x4
@@ -265,7 +265,7 @@ extension GLM {
     //MARK: -
     //MARK: Public - Transformations - Perspective
     
-    public static func perspective(fovy: Float,
+    public static func perspective(_ fovy: Float,
         _ aspect: Float,
         _ near: Float,
         _ far: Float) -> Float4x4
@@ -285,7 +285,7 @@ extension GLM {
         return Float4x4([P, Q, R, S])
     }
     
-    public static func perspective(fovy: Float,
+    public static func perspective(_ fovy: Float,
         _ width: Float,
         _ height: Float,
         _ near: Float,
@@ -300,7 +300,7 @@ extension GLM {
     //MARK: -
     //MARK: Public - Transformations - Projection
     
-    public static func projection(fovy: Float,
+    public static func projection(_ fovy: Float,
         _ aspect: Float,
         _ near: Float,
         _ far: Float) -> Float4x4
@@ -327,7 +327,7 @@ extension GLM {
         return Float4x4([P, Q, R, S])
     }
     
-    public static func projection(fovy: Float,
+    public static func projection(_ fovy: Float,
         _ width: Float,
         _ height: Float,
         _ near: Float,
@@ -342,7 +342,7 @@ extension GLM {
     //MARK: -
     //MARK: Public - Transformations - LookAt
     
-    public static func lookAt(eye: Float3,
+    public static func lookAt(_ eye: Float3,
         _ center: Float3,
         _ up: Float3) -> Float4x4
     {
@@ -362,7 +362,7 @@ extension GLM {
         return Float4x4([P, Q, R, S])
     }
     
-    public static func lookAt(pEye: [Float],
+    public static func lookAt(_ pEye: [Float],
         _ pCenter: [Float],
         _ pUp: [Float]) -> Float4x4
     {
@@ -376,7 +376,7 @@ extension GLM {
     //MARK: -
     //MARK: Public - Transformations - Orthographic
     
-    public static func ortho(left: Float,
+    public static func ortho(_ left: Float,
         _ right: Float,
         _ bottom: Float,
         _ top: Float,
@@ -398,7 +398,7 @@ extension GLM {
             return Float4x4([P, Q, R, S])
     }
     
-    public static func ortho(left: Float,
+    public static func ortho(_ left: Float,
         _ right: Float,
         _ bottom: Float,
         _ top: Float)
@@ -406,7 +406,7 @@ extension GLM {
             return ortho(left, right, bottom, top, 0.0, 1.0)
     }
     
-    public static func ortho(origin: Float3,
+    public static func ortho(_ origin: Float3,
         _ size: Float3) -> Float4x4
     {
         return ortho(origin.x, origin.y, origin.z, size.x, size.y, size.z)
@@ -415,7 +415,7 @@ extension GLM {
     //MARK: -
     //MARK: Public - Transformations - frustum
     
-    public static func frustum(left: Float,
+    public static func frustum(_ left: Float,
         _ right: Float,
         _ bottom: Float,
         _ top: Float,
@@ -436,7 +436,7 @@ extension GLM {
         return Float4x4([P, Q, R, S])
     }
     
-    public static func frustum(fovy: Float,
+    public static func frustum(_ fovy: Float,
         _ aspect: Float,
         _ near: Float,
         _ far: Float) -> Float4x4
@@ -464,7 +464,7 @@ extension GLM {
         return frustum(left, right, bottom, top, near, far)
     }
     
-    public static func frustum(fovy: Float,
+    public static func frustum(_ fovy: Float,
         _ width: Float,
         _ height: Float,
         _ near: Float,

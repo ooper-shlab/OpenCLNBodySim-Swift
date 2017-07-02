@@ -19,7 +19,7 @@ import OpenCL
 
 extension NBody.Simulation {
     
-    public class CPU: Base {
+    open class CPU: Base {
         private override init(_ properties: NBody.Simulation.Properties) {
             super.init(properties)
         }
@@ -30,11 +30,11 @@ extension NBody.Simulation {
         private var mbThreaded: Bool = false
         private var mbTerminated: Bool = false
         private var mnUnits: Int = 0
-        private var mpDevice: cl_device_id = nil
-        private var mpQueue: cl_command_queue = nil
-        private var mpContext: cl_context = nil
-        private var mpProgram: cl_program = nil
-        private var mpKernel: cl_kernel = nil
+        private var mpDevice: cl_device_id? = nil
+        private var mpQueue: cl_command_queue? = nil
+        private var mpContext: cl_context? = nil
+        private var mpProgram: cl_program? = nil
+        private var mpKernel: cl_kernel? = nil
         private var mpData: Data.Mediator!
         
         //MARK: -
@@ -49,38 +49,50 @@ extension NBody.Simulation {
                 var nTimeStamp: GLfloat      = m_Properties.mnTimeStep
                 
                 
-                var values: [UnsafePointer<Void>] = Array(count: 6, repeatedValue: nil)
-                values[0] =&! &nTimeStamp
-                values[1] =&! &m_Properties.mnDamping
-                values[2] =&! &m_Properties.mnSoftening
-                values[3] =&! &m_Properties.mnParticles
-                values[4] =&! &nWorkGroupCount
-                values[5] =&! &mnMinIndex
-                
-                var sizes: [size_t] = [
-                    mnSamples,
-                    mnSamples,
-                    mnSamples,
-                    GLM.Size.kInt,   //### sending lower 4 byte?
-                    GLM.Size.kInt,   //### sending lower 4 byte?
-                    GLM.Size.kInt,   //### sending lower 4 byte?
-                ]
-                
-                var indices: [cl_uint] = Array(14...19)
-                
-                for i in 0..<6 {
-                    err = clSetKernelArg(mpKernel, indices[i], sizes[i], values[i])
-                    
-                    if err != CL_SUCCESS {
-                        return err
-                    }
-                }
+//                var values: [UnsafeRawPointer] = Array(repeating: nil, count: 6)
+//                values[0] =&! &nTimeStamp
+//                values[1] =&! &m_Properties.mnDamping
+//                values[2] =&! &m_Properties.mnSoftening
+//                values[3] =&! &m_Properties.mnParticles
+//                values[4] =&! &nWorkGroupCount
+//                values[5] =&! &mnMinIndex
+//                
+//                var sizes: [size_t] = [
+//                    mnSamples,
+//                    mnSamples,
+//                    mnSamples,
+//                    GLM.Size.kInt,   //### sending lower 4 byte?
+//                    GLM.Size.kInt,   //### sending lower 4 byte?
+//                    GLM.Size.kInt,   //### sending lower 4 byte?
+//                ]
+//                
+//                var indices: [cl_uint] = Array(14...19)
+//                
+//                for i in 0..<6 {
+//                    err = clSetKernelArg(mpKernel, indices[i], sizes[i], values[i])
+//                    
+//                    if err != CL_SUCCESS {
+//                        return err
+//                    }
+//                }
+                err = clSetKernelArg(mpKernel, 14, mnSamples, &nTimeStamp)
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 15, mnSamples, &m_Properties.mnDamping)
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 16, mnSamples, &m_Properties.mnSoftening)
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 17, GLM.Size.kInt, &m_Properties.mnParticles)   //### sending lower 4 byte?
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 18, GLM.Size.kInt, &nWorkGroupCount)   //### sending lower 4 byte?
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 19, GLM.Size.kInt, &mnMinIndex)   //### sending lower 4 byte?
+                if err != CL_SUCCESS {return err}
             }
             
             return err
         }
         
-        private func setup(options: String,
+        private func setup(_ options: String,
             _ vectorized: Bool,
             _ threaded: Bool) -> cl_int
         {
@@ -137,7 +149,7 @@ extension NBody.Simulation {
             
             let source = file.string!
             err = source.withCString {pSource in
-                var pBuffer = pSource
+                var pBuffer: UnsafePointer<GLchar>? = pSource
                 var err: Int32 = 0
                 
                 mpProgram = clCreateProgramWithSource(mpContext,
@@ -165,7 +177,7 @@ extension NBody.Simulation {
             if err != CL_SUCCESS {
                 var length: size_t = 0
                 
-                var info_log: [CChar] = Array(count: 2000, repeatedValue: 0)
+                var info_log: [CChar] = Array(repeating: 0, count: 2000)
                 
                 clGetProgramBuildInfo(mpProgram,
                     mpDevice,
@@ -174,7 +186,7 @@ extension NBody.Simulation {
                     &info_log,
                     &length)
                 
-                NSLog(">> N-body Simulation:\n%@", GLstring.fromCString(info_log)!)
+                NSLog(">> N-body Simulation:\n%@", GLstring(cString: info_log))
                 
                 return err
             }
@@ -205,27 +217,38 @@ extension NBody.Simulation {
                 
                 var nWorkGroupCount: size_t = (mnMaxIndex - mnMinIndex) / mnUnits
                 
-                var values: [UnsafeMutablePointer<Void>] = [nil, nil]
-                values[0] =&! &nWorkGroupCount
-                values[1] =&! &mnMinIndex
+//                var values: [UnsafeMutableRawPointer] = [nil, nil]
+//                values[0] =&! &nWorkGroupCount
+//                values[1] =&! &mnMinIndex
+//                
+//                var sizes: [size_t] = [
+//                    GLM.Size.kInt,   //###
+//                    GLM.Size.kInt,   //###
+//                ]
+//                
+//                var indices: [cl_uint] = [18, 19]
+//                
+//                for i in 0..<2 {
+//                    err = clSetKernelArg(mpKernel,
+//                        indices[i],
+//                        sizes[i],
+//                        values[i])
+//                    
+//                    if err != CL_SUCCESS {
+//                        return err
+//                    }
+//                }
+                err = clSetKernelArg(mpKernel,
+                                     18,
+                                     GLM.Size.kInt,   //###
+                                     &nWorkGroupCount)
+                if err != CL_SUCCESS {return err}
                 
-                var sizes: [size_t] = [
-                    GLM.Size.kInt,   //###
-                    GLM.Size.kInt,   //###
-                ]
-                
-                var indices: [cl_uint] = [18, 19]
-                
-                for i in 0..<2 {
-                    err = clSetKernelArg(mpKernel,
-                        indices[i],
-                        sizes[i],
-                        values[i])
-                    
-                    if err != CL_SUCCESS {
-                        return err
-                    }
-                }
+                err = clSetKernelArg(mpKernel,
+                                     19,
+                                     GLM.Size.kInt,   //###
+                                     &mnMinIndex)
+                if err != CL_SUCCESS {return err}
                 
                 if mpQueue != nil {
                     
@@ -296,7 +319,7 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Utilities
         
-        public override func initialize(options: String) {
+        open override func initialize(_ options: String) {
             if !mbTerminated {
                 let err = setup(options, mbVectorized, mbThreaded)
                 
@@ -310,7 +333,7 @@ extension NBody.Simulation {
             }
         }
         
-        public override func reset() -> GLint {
+        open override func reset() -> GLint {
             let err = restart()
             
             if err != 0 {
@@ -320,7 +343,7 @@ extension NBody.Simulation {
             return err
         }
         
-        public override func step() {
+        open override func step() {
             if !isPaused || !isStopped {
                 let err = execute()
                 
@@ -335,7 +358,7 @@ extension NBody.Simulation {
             }
         }
         
-        public override func terminate() {
+        open override func terminate() {
             if !mbTerminated {
                 if mpQueue != nil {
                     clFinish(mpQueue)
@@ -374,23 +397,23 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Accessors
         
-        public override func positionInRange(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
+        open override func positionInRange(_ pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
             return mpData.positionInRange(mnMinIndex, mnMaxIndex, pDst)
         }
         
-        public override func position(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
+        open override func position(_ pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
             return mpData.position(mnMaxIndex, pDst)
         }
         
-        public override func setPosition(pSrc: UnsafePointer<GLfloat>) -> GLint {
+        open override func setPosition(_ pSrc: UnsafePointer<GLfloat>) -> GLint {
             return mpData.setPosition(pSrc)
         }
         
-        public override func velocity(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
+        open override func velocity(_ pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
             return mpData.velocity(pDst)
         }
         
-        public override func setVelocity(pSrc: UnsafePointer<GLfloat>) -> GLint {
+        open override func setVelocity(_ pSrc: UnsafePointer<GLfloat>) -> GLint {
             return mpData.setVelocity(pSrc)
         }
     }

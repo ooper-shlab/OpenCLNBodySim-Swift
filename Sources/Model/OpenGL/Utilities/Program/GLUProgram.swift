@@ -17,22 +17,22 @@ import Cocoa
 import OpenGL
 
 extension GLU {
-    public class Program {
+    open class Program {
         init() {}
         
         deinit {destruct()}
         
-        private var mnProgram: GLuint = 0
-        private var mnInType: GLenum = 0
-        private var mnOutType: GLenum = 0
-        private var mnOutVert: GLsizei = 0
-        private var m_Sources: GLsources = [:]
+        fileprivate var mnProgram: GLuint = 0
+        fileprivate var mnInType: GLenum = 0
+        fileprivate var mnOutType: GLenum = 0
+        fileprivate var mnOutVert: GLsizei = 0
+        fileprivate var m_Sources: GLsources = [:]
         
         //MARK: -
         //MARK: Private - Utilities - Shaders
         
         private enum Shader {
-            private static func sourceCreate(target: GLenum, _ pName: String) -> GLstring {
+            private static func sourceCreate(_ target: GLenum, _ pName: String) -> GLstring {
                 var pExt: String? = nil
                 //var shader: GLstring = "" //### not used
                 
@@ -58,7 +58,7 @@ extension GLU {
                 return file.string ?? ""
             }
             
-            private static func sourcesCreate(targets: GLtargets, _ pName: String) -> GLsources {
+            fileprivate static func sourcesCreate(_ targets: GLtargets, _ pName: String) -> GLsources {
                 var sources: GLsources = [:]
                 
                 for target in targets {
@@ -72,13 +72,13 @@ extension GLU {
                 return sources
             }
             
-            private static func getInfoLog(nShader: GLuint) {
+            private static func getInfoLog(_ nShader: GLuint) {
                 var nInfoLogLength: GLint = 0
                 
                 glGetShaderiv(nShader, GL_INFO_LOG_LENGTH.ui, &nInfoLogLength)
                 
                 if nInfoLogLength != 0 {
-                    var pInfoLog = [GLchar](count: Int(nInfoLogLength), repeatedValue: 0)
+                    var pInfoLog = [GLchar](repeating: 0, count: Int(nInfoLogLength))
                     
                     //                    var actualInfoLogLength: GLsizei = GLsizei(nInfoLogLength)
                     glGetShaderInfoLog(nShader,
@@ -88,12 +88,12 @@ extension GLU {
                         &nInfoLogLength,
                         &pInfoLog)
                     print(">> INFO: OpenGL Shader - Compile log:")
-                    print(GLstring.fromCString(pInfoLog)!)
+                    print(GLstring(cString: pInfoLog))
                     
                 }
             }
             
-            private static func validate(nShader: GLuint, _ source: String) -> Bool {
+            private static func validate(_ nShader: GLuint, _ source: String) -> Bool {
                 var nIsCompiled: GLint = 0
                 
                 glGetShaderiv(nShader, GL_COMPILE_STATUS.ui, &nIsCompiled)
@@ -112,7 +112,7 @@ extension GLU {
                 return nIsCompiled != 0
             }
             
-            private static func create(target: GLenum, _ source: String) -> GLuint {
+            fileprivate static func create(_ target: GLenum, _ source: String) -> GLuint {
                 var nShader: GLuint = 0
                 
                 if !source.isEmpty {
@@ -120,7 +120,7 @@ extension GLU {
                     
                     if nShader != 0 {
                         source.withCString {pSource in
-                            var ptrSource = pSource
+                            var ptrSource: UnsafePointer<GLchar>? = pSource
                             
                             glShaderSource(nShader, 1, &ptrSource, nil)
                             glCompileShader(nShader)
@@ -141,13 +141,13 @@ extension GLU {
         //MARK: -
         //MARK: Private - Utilities - Programs
         
-        private class func getInfoLog(nProgram: GLuint) {
+        private class func getInfoLog(_ nProgram: GLuint) {
             var nInfoLogLength: GLint = 0
             
             glGetProgramiv(nProgram, GL_INFO_LOG_LENGTH.ui, &nInfoLogLength)
             
             if nInfoLogLength != 0 {
-                var pInfoLog = [GLchar](count: Int(nInfoLogLength), repeatedValue: 0)
+                var pInfoLog = [GLchar](repeating: 0, count: Int(nInfoLogLength))
                 
                 glGetProgramInfoLog(nProgram,
                     nInfoLogLength,
@@ -155,12 +155,12 @@ extension GLU {
                     &pInfoLog)
                 
                 print(">> INFO: OpenGL Program - Link log:")
-                print(GLstring.fromCString(pInfoLog))
+                print(GLstring(cString: pInfoLog))
                 
             }
         }
         
-        private class func validate(nProgram: GLuint) -> Bool {
+        private class func validate(_ nProgram: GLuint) -> Bool {
             var nIsLinked: GLint = 0
             
             glGetProgramiv(nProgram, GL_LINK_STATUS.ui, &nIsLinked)
@@ -174,7 +174,7 @@ extension GLU {
             return nIsLinked != 0
         }
         
-        private class func createShaders(nProgram: GLuint, _ sources: GLsources) -> GLshaders {
+        private class func createShaders(_ nProgram: GLuint, _ sources: GLsources) -> GLshaders {
             var nShader: GLuint = 0
             
             var shaders: GLshaders = []
@@ -192,7 +192,7 @@ extension GLU {
             return shaders
         }
         
-        private class func deleteShaders(shaders: GLshaders) {
+        private class func deleteShaders(_ shaders: GLshaders) {
             for shader in shaders {
                 if shader != 0 {
                     glDeleteShader(shader)
@@ -200,12 +200,12 @@ extension GLU {
             }
         }
         
-        private class func hasGeometryShader(sources: GLsources) -> Bool {
+        private class func hasGeometryShader(_ sources: GLsources) -> Bool {
             
             return sources[GL_GEOMETRY_SHADER_EXT.ui] != nil
         }
         
-        private class func create(sources: GLsources,
+        private class func create(_ sources: GLsources,
             _ nInType: GLenum,
             _ nOutType: GLenum,
             _ nOutVert: GLsizei) -> GLuint {
@@ -287,15 +287,15 @@ extension GLU {
             
         }
         
-        public var program: GLuint {
+        open var program: GLuint {
             return mnProgram
         }
         
-        public func enable() {
+        open func enable() {
             glUseProgram(mnProgram)
         }
         
-        public func disable() {
+        open func disable() {
             glUseProgram(0)
         }
         

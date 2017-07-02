@@ -44,23 +44,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //### Very dangerous operator!!!
 //Use with extra caution! The assigned pointer may not be valid after assinment operation finished!!!
-infix operator =&! {associativity right precedence 90}
-func =&! <T>(inout p: UnsafeMutablePointer<T>, v: UnsafeMutablePointer<T>) {
+infix operator =&! :AssignmentPrecedence
+func =&! <T>(p: inout UnsafeMutablePointer<T>, v: UnsafeMutablePointer<T>) {
     p = v
 }
-func =&! <T>(inout p: UnsafePointer<T>, v: UnsafePointer<T>) {
+func =&! <T>(p: inout UnsafePointer<T>, v: UnsafePointer<T>) {
     p = v
 }
 
 //### Very dangerous operator!!!
 //Use with extra caution! The returned pointer may be pointing some temporary area!!!
-prefix operator &! {}
-prefix func &! <T>(inout v: T) -> UnsafeMutablePointer<T> {
+prefix operator &!
+prefix func &! <T>(v: inout T) -> UnsafeMutablePointer<T> {
     return unsafeMutablePointerTo(&v)
 }
-prefix func &! <T>(inout v: T) -> UnsafeMutablePointer<Void> {
-    return UnsafeMutablePointer(unsafeMutablePointerTo(&v))
+prefix func &! <T>(v: inout T) -> UnsafeMutableRawPointer {
+    return UnsafeMutableRawPointer(unsafeMutablePointerTo(&v))
 }
-private func unsafeMutablePointerTo<T>(ptr: UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> {
+private func unsafeMutablePointerTo<T>(_ ptr: UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> {
     return ptr
 }

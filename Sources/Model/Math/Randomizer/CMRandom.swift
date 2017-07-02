@@ -70,8 +70,8 @@ extension CM {
             // <http://www.cplusplus.com/reference/random/uniform_real_distribution/>
             //
             // The valid type names here are float, double, or long double.
-            private var m_Generator: DefaultRandomEngine
-            private var m_Distribution: UniformRealDistribution<Float>
+            fileprivate var m_Generator: DefaultRandomEngine
+            fileprivate var m_Distribution: UniformRealDistribution<Float>
             
             //MARK: -
             //MARK: Private - Implementation - Core
@@ -224,7 +224,7 @@ extension CM.URD3 {
     
     // A constructor for  creating a uniform real distribution
     // triplets with/without a bounding metric
-    static func create(min: Float, _ max: Float, _ len: Float, _ eps: Float) -> CM.URD3.Core {
+    static func create(_ min: Float, _ max: Float, _ len: Float, _ eps: Float) -> CM.URD3.Core {
         let pCore: CM.URD3.Core
         
         let nLen = len
@@ -304,9 +304,9 @@ class RandomDevice {
         sranddev()
     }
     var next: UInt64 {
-        let r1 = UInt64(random())
-        let r2 = UInt64(rand())
-        return r1<<31 | r2
+        let r1 = UInt64(arc4random())
+        let r2 = UInt64(arc4random())
+        return r1<<32 | r2
     }
 }
 class DefaultRandomEngine {
@@ -320,7 +320,7 @@ class DefaultRandomEngine {
         return 0
     }
     var max: UInt64 {
-        return UInt64(RAND_MAX)
+        return UInt64(UInt32.max)
     }
     var seed: UInt64 {
         return _seed
@@ -329,10 +329,10 @@ class DefaultRandomEngine {
         return UInt64(arc4random())
     }
     func advance() {
-        self.next
+        _ = self.next
     }
 }
-class UniformRealDistribution<F: FloatComputable> {
+class UniformRealDistribution<F: BinaryFloatingPoint> {
     private var min: F
     private var max: F
     init(min: F, max: F) {
@@ -340,7 +340,7 @@ class UniformRealDistribution<F: FloatComputable> {
         self.max = max
     }
     
-    func next(re: DefaultRandomEngine) -> F {
+    func next(_ re: DefaultRandomEngine) -> F {
         let rnd = re.next
         let drnd = Double(rnd - re.min)/Double(re.max + 1 - re.min)
         return F(drnd) * (max - min) + min

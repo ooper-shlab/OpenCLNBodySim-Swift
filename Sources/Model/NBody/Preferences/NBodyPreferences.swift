@@ -52,7 +52,7 @@ class NBodyPreferences: NSObject {
     private var _demos: Int = 0
     
     private var _demoType: Int = 0
-    private var _config: NBody.Config = .Random
+    private var _config: NBody.Config = .random
     private var _particles: Int = 0
     
     private var _maxUpdates: Int = 0
@@ -83,7 +83,7 @@ class NBodyPreferences: NSObject {
     
     private var _identifier: String?
     
-    private var mpPreferences: [String: AnyObject] = [:]
+    private var mpPreferences: [String: Any] = [:]
     
     private var mpFile: NSFile?
     
@@ -105,16 +105,16 @@ class NBodyPreferences: NSObject {
     //    } // if
     //} // _setUnsignedIntValue
     
-    private func _setConfigValue(inout value: NBody.Config, with pNumber: AnyObject?) {
+    private func _setConfigValue(_ value: inout NBody.Config, with pNumber: Any?) {
         if let
             integerValue = pNumber as? Int,
-            configValue = NBody.Config(rawValue: integerValue)
+            let configValue = NBody.Config(rawValue: integerValue)
         {
             value = configValue
         }
     }
     
-    private func _setIntegerValue(inout value: Int, with pNumber: AnyObject?) {
+    private func _setIntegerValue(_ value: inout Int, with pNumber: Any?) {
         if let integerValue = pNumber as? Int {
             value = integerValue
         }
@@ -129,31 +129,32 @@ class NBodyPreferences: NSObject {
     //    } // if
     //} // _setUnsignedLongValue
     
-    private func _setCGFloatValue(inout value: CGFloat, with pNumber: AnyObject?) {
+    private func _setCGFloatValue(_ value: inout CGFloat, with pNumber: Any?) {
         if let cgFloatValue = pNumber as? CGFloat {
             value = cgFloatValue
         }
     }
     
-    private func _setDoubleValue(inout value: Double, with pNumber: AnyObject?) {
+    private func _setDoubleValue(_ value: inout Double, with pNumber: Any?) {
         if let doubleValue = pNumber as? Double {
             value = doubleValue
         }
     }
     
-    private func _setFloatValue(inout value: Float, with pNumber: AnyObject?) {
+    private func _setFloatValue(_ value: inout Float, with pNumber: Any?) {
         if let floatValue = pNumber as? Float {
             value = floatValue
         }
     }
     
-    private func _setBoolValue(inout value: Bool, with pNumber: AnyObject?) {
+    private func _setBoolValue(_ value: inout Bool, with pNumber: Any?) {
         if let boolValue = pNumber as? Bool {
             value = boolValue
         }
     }
     
-    private func _setPreferences(pPrefs: [String: AnyObject]) -> Bool {
+    @discardableResult
+    private func _setPreferences(_ pPrefs: [String: Any]) -> Bool {
         let success = !pPrefs.isEmpty
         
         if success {
@@ -190,11 +191,11 @@ class NBodyPreferences: NSObject {
         return success
     }
     
-    private func _newPreferences() -> [String: AnyObject] {
-        return [kNBodyPrefDemos: 7,
-            kNBodyPrefDemoType: 1,
+    private func _newPreferences() -> [String: Any] {
+        return [kNBodyPrefDemos: 7 as AnyObject,
+            kNBodyPrefDemoType: 1 as AnyObject,
             kNBodyPrefParticles: NBody.Particles.kCount,
-            kNBodyPrefConfig: NBody.Config.Shell.rawValue,
+            kNBodyPrefConfig: NBody.Config.shell.rawValue,
             kNBodyPrefMaxUpdates: 120,
             kNBodyPrefMaxFrameRate: 120,
             kNBodyPrefMaxCPU: 100,
@@ -226,11 +227,11 @@ class NBodyPreferences: NSObject {
         
         var pPrefsDst = self._newPreferences()
         
-        _identifier = NSBundle.mainBundle().bundleIdentifier
+        _identifier = Bundle.main.bundleIdentifier
         
         if let _identifier = _identifier {
-            mpFile = NSFile(domain: .UserDomainMask,
-                search: .LibraryDirectory,
+            mpFile = NSFile(domain: .userDomainMask,
+                search: .libraryDirectory,
                 directory: "Preferences",
                 file: _identifier,
                 ofExtension: "plist")
@@ -263,7 +264,8 @@ class NBodyPreferences: NSObject {
     //    return([[[NBodyPreferences allocWithZone:[self zone]] init] autorelease]);
     //} // preferences
     
-    func addEntries(preferences: NBodyPreferences?) -> Bool {
+    @discardableResult
+    func addEntries(_ preferences: NBodyPreferences?) -> Bool {
         
         guard let preferences = preferences else {return false}
         let pPreferences = preferences.preferences
@@ -279,10 +281,11 @@ class NBodyPreferences: NSObject {
         return true
     }
     
-    var preferences: [String: AnyObject] {
+    var preferences: [String: Any] {
         return mpPreferences
     }
     
+    @discardableResult
     func write() -> Bool {
         mpFile?.replace(mpPreferences)
         
@@ -294,7 +297,7 @@ class NBodyPreferences: NSObject {
         set {
             _demos = newValue
             
-            mpPreferences[kNBodyPrefDemos] = _demos
+            mpPreferences[kNBodyPrefDemos] = _demos as AnyObject
         }
     }
     
@@ -303,7 +306,7 @@ class NBodyPreferences: NSObject {
         set {
             _particles = (newValue != 0) ? newValue : NBody.Particles.kCount
             
-            mpPreferences[kNBodyPrefParticles] = _particles
+            mpPreferences[kNBodyPrefParticles] = _particles as AnyObject
         }
     }
     
@@ -312,7 +315,7 @@ class NBodyPreferences: NSObject {
         set {
             _demoType = (newValue > 6 || newValue < 0) ? 1 : newValue
             
-            mpPreferences[kNBodyPrefDemoType] = _demoType
+            mpPreferences[kNBodyPrefDemoType] = _demoType as AnyObject
         }
     }
     
@@ -321,7 +324,7 @@ class NBodyPreferences: NSObject {
         set {
             _config = newValue
             
-            mpPreferences[kNBodyPrefConfig] = _config.rawValue
+            mpPreferences[kNBodyPrefConfig] = _config.rawValue as AnyObject
         }
     }
     
@@ -330,7 +333,7 @@ class NBodyPreferences: NSObject {
         set {
             _maxFramerate = newValue
             
-            mpPreferences[kNBodyPrefMaxFrameRate] = _maxFramerate
+            mpPreferences[kNBodyPrefMaxFrameRate] = _maxFramerate as AnyObject
         }
     }
     
@@ -339,7 +342,7 @@ class NBodyPreferences: NSObject {
         set {
             _maxCPU = newValue
             
-            mpPreferences[kNBodyPrefMaxCPU] = _maxCPU
+            mpPreferences[kNBodyPrefMaxCPU] = _maxCPU as AnyObject
         }
     }
     
@@ -348,7 +351,7 @@ class NBodyPreferences: NSObject {
         set {
             _maxPerf = newValue
             
-            mpPreferences[kNBodyPrefMaxPerf] = _maxPerf
+            mpPreferences[kNBodyPrefMaxPerf] = _maxPerf as AnyObject
         }
     }
     
@@ -357,7 +360,7 @@ class NBodyPreferences: NSObject {
         set {
             _maxUpdates = newValue
             
-            mpPreferences[kNBodyPrefMaxUpdates] = _maxUpdates
+            mpPreferences[kNBodyPrefMaxUpdates] = _maxUpdates as AnyObject
         }
     }
     
@@ -366,7 +369,7 @@ class NBodyPreferences: NSObject {
         set {
             _clearColor = newValue
             
-            mpPreferences[kNBodyPrefClearColor] = _clearColor
+            mpPreferences[kNBodyPrefClearColor] = _clearColor as AnyObject
         }
     }
     
@@ -375,7 +378,7 @@ class NBodyPreferences: NSObject {
         set {
             _starScale = (newValue >= 0.125) ? newValue : 1.0
             
-            mpPreferences[kNBodyPrefStarScale] = _starScale
+            mpPreferences[kNBodyPrefStarScale] = _starScale as AnyObject
         }
     }
     
@@ -384,8 +387,8 @@ class NBodyPreferences: NSObject {
         set {
             _rotate = newValue
             
-            mpPreferences[kNBodyPrefRotateX] = _rotate.x
-            mpPreferences[kNBodyPrefRotateY] = _rotate.y
+            mpPreferences[kNBodyPrefRotateX] = _rotate.x as AnyObject
+            mpPreferences[kNBodyPrefRotateY] = _rotate.y as AnyObject
         }
     }
     
@@ -395,8 +398,8 @@ class NBodyPreferences: NSObject {
             _size.width  = (newValue.width  > 256.0) ? newValue.width  : NBody.Window.kWidth.g
             _size.height = (newValue.height > 256.0) ? newValue.height : NBody.Window.kHeight.g
             
-            mpPreferences[kNBodyPrefSizeWidth]  = _size.width
-            mpPreferences[kNBodyPrefSizeHeight] = _size.height
+            mpPreferences[kNBodyPrefSizeWidth]  = _size.width as AnyObject
+            mpPreferences[kNBodyPrefSizeHeight] = _size.height as AnyObject
         }
     }
     
@@ -405,7 +408,7 @@ class NBodyPreferences: NSObject {
         set {
             _viewDistance = newValue
             
-            mpPreferences[kNBodyPrefViewDistance] = _viewDistance
+            mpPreferences[kNBodyPrefViewDistance] = _viewDistance as AnyObject
         }
     }
     
@@ -414,7 +417,7 @@ class NBodyPreferences: NSObject {
         set {
             _timeStep = newValue
             
-            mpPreferences[kNBodyPrefTimeStep] = _timeStep
+            mpPreferences[kNBodyPrefTimeStep] = _timeStep as AnyObject
         }
     }
     
@@ -423,7 +426,7 @@ class NBodyPreferences: NSObject {
         set {
             _clusterScale = newValue
             
-            mpPreferences[kNBodyPrefClusterScale] = _clusterScale
+            mpPreferences[kNBodyPrefClusterScale] = _clusterScale as AnyObject
         }
     }
     
@@ -432,7 +435,7 @@ class NBodyPreferences: NSObject {
         set {
             _velocityScale = newValue
             
-            mpPreferences[kNBodyPrefVelocityScale] = _velocityScale
+            mpPreferences[kNBodyPrefVelocityScale] = _velocityScale as AnyObject
         }
     }
     
@@ -441,7 +444,7 @@ class NBodyPreferences: NSObject {
         set {
             _softening = newValue
             
-            mpPreferences[kNBodyPrefSoftening] = _softening
+            mpPreferences[kNBodyPrefSoftening] = _softening as AnyObject
         }
     }
     
@@ -450,7 +453,7 @@ class NBodyPreferences: NSObject {
         set {
             _damping = newValue
             
-            mpPreferences[kNBodyPrefDamping] = _damping
+            mpPreferences[kNBodyPrefDamping] = _damping as AnyObject
         }
     }
     
@@ -459,7 +462,7 @@ class NBodyPreferences: NSObject {
         set {
             _pointSize = newValue
             
-            mpPreferences[kNBodyPrefPointSize] = _pointSize
+            mpPreferences[kNBodyPrefPointSize] = _pointSize as AnyObject
         }
     }
     
@@ -468,7 +471,7 @@ class NBodyPreferences: NSObject {
         set {
             _fullscreen = newValue
             
-            mpPreferences[kNBodyPrefFullScreen] = _fullscreen
+            mpPreferences[kNBodyPrefFullScreen] = _fullscreen as AnyObject
         }
     }
     
@@ -477,7 +480,7 @@ class NBodyPreferences: NSObject {
         set {
             _isGPUOnly = newValue
             
-            mpPreferences[kNBodyPrefIsGPUOnly] = _isGPUOnly
+            mpPreferences[kNBodyPrefIsGPUOnly] = _isGPUOnly as AnyObject
         }
     }
     
@@ -486,7 +489,7 @@ class NBodyPreferences: NSObject {
         set {
             _showUpdates = newValue
             
-            mpPreferences[kNBodyPrefShowUpdates] = _showUpdates
+            mpPreferences[kNBodyPrefShowUpdates] = _showUpdates as AnyObject
         }
     }
     
@@ -495,7 +498,7 @@ class NBodyPreferences: NSObject {
         set {
             _showFramerate = newValue
             
-            mpPreferences[kNBodyPrefShowFrameRate] = _showFramerate
+            mpPreferences[kNBodyPrefShowFrameRate] = _showFramerate as AnyObject
         }
     }
     
@@ -504,7 +507,7 @@ class NBodyPreferences: NSObject {
         set {
             _showPerf = newValue
             
-            mpPreferences[kNBodyPrefShowPerf] = _showPerf
+            mpPreferences[kNBodyPrefShowPerf] = _showPerf as AnyObject
         }
     }
     
@@ -513,7 +516,7 @@ class NBodyPreferences: NSObject {
         set {
             _showDock = newValue
             
-            mpPreferences[kNBodyPrefShowDock] = _showDock
+            mpPreferences[kNBodyPrefShowDock] = _showDock as AnyObject
         }
     }
     
@@ -522,7 +525,7 @@ class NBodyPreferences: NSObject {
         set {
             _showCPU = newValue
             
-            mpPreferences[kNBodyPrefShowCPU] = _showCPU
+            mpPreferences[kNBodyPrefShowCPU] = _showCPU as AnyObject
         }
     }
     

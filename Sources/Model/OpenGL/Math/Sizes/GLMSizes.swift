@@ -18,19 +18,19 @@ import OpenGL
 extension GLM {
     public struct Size {
         
-        private static let GLSizeChar = strideof(GLchar)
-        private static let GLSizeChrPtr = strideof(UnsafePointer<GLchar>)
-        private static let GLSizeFloat = strideof(GLfloat)
-        private static let GLSizeDouble = strideof(GLdouble)
-        private static let GLSizeSignedByte = strideof(GLbyte)
-        private static let GLSizeSignedBytePtr = strideof(UnsafePointer<GLbyte>)
-        private static let GLSizeSignedShort = strideof(GLshort)
-        private static let GLSizeSignedInt = strideof(GLint)
-        private static let GLSizeUnsignedByte = strideof(GLubyte)
-        private static let GLSizeUnsignedShort = strideof(GLushort)
-        private static let GLSizeUnsignedInt = strideof(GLuint)
-        private static let GLSizeLong = strideof(Int64)
-        private static let GLSizeULong = strideof(UInt64)
+        private static let GLSizeChar = MemoryLayout<GLchar>.stride
+        private static let GLSizeChrPtr = MemoryLayout<UnsafePointer<GLchar>>.stride
+        private static let GLSizeFloat = MemoryLayout<GLfloat>.stride
+        private static let GLSizeDouble = MemoryLayout<GLdouble>.stride
+        private static let GLSizeSignedByte = MemoryLayout<GLbyte>.stride
+        private static let GLSizeSignedBytePtr = MemoryLayout<UnsafePointer<GLbyte>>.stride
+        private static let GLSizeSignedShort = MemoryLayout<GLshort>.stride
+        private static let GLSizeSignedInt = MemoryLayout<GLint>.stride
+        private static let GLSizeUnsignedByte = MemoryLayout<GLubyte>.stride
+        private static let GLSizeUnsignedShort = MemoryLayout<GLushort>.stride
+        private static let GLSizeUnsignedInt = MemoryLayout<GLuint>.stride
+        private static let GLSizeLong = MemoryLayout<Int64>.stride
+        private static let GLSizeULong = MemoryLayout<UInt64>.stride
         
         public static let kByte = GLSizeSignedByte
         public static let kBytePtr = GLSizeSignedBytePtr

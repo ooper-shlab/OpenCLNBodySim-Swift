@@ -18,23 +18,23 @@ import OpenGL
 import OpenCL
 
 extension NBody.Simulation {
-    public class GPU: Base {
+    open class GPU: Base {
         
         private var mbTerminated: Bool = false
-        private var mpHostPosition: UnsafeMutablePointer<GLfloat> = nil
-        private var mpHostVelocity: UnsafeMutablePointer<GLfloat> = nil
+        private var mpHostPosition: UnsafeMutablePointer<GLfloat>? = nil
+        private var mpHostVelocity: UnsafeMutablePointer<GLfloat>? = nil
         private var mnReadIndex: Int = 0
         private var mnWriteIndex: Int = 0
         private var mnWorkItemX: GLuint = 0
         private var mnDeviceIndex: Int = 0
-        private var mpContext: cl_context = nil
-        private var mpProgram: cl_program = nil
-        private var mpKernel: cl_kernel = nil
-        private var mpDevice: [cl_device_id] = [nil, nil]
-        private var mpQueue: [cl_command_queue] = [nil, nil]
-        private var mpDevicePosition: [cl_mem] = [nil, nil]
-        private var mpDeviceVelocity: [cl_mem] = [nil, nil]
-        private var mpBodyRangeParams: cl_mem = nil
+        private var mpContext: cl_context? = nil
+        private var mpProgram: cl_program? = nil
+        private var mpKernel: cl_kernel? = nil
+        private var mpDevice: [cl_device_id?] = [nil, nil]
+        private var mpQueue: [cl_command_queue?] = [nil, nil]
+        private var mpDevicePosition: [cl_mem?] = [nil, nil]
+        private var mpDeviceVelocity: [cl_mem?] = [nil, nil]
+        private var mpBodyRangeParams: cl_mem? = nil
         
         //MARK: -
         //MARK: Private - Constants
@@ -43,16 +43,17 @@ extension NBody.Simulation {
         private let kWorkItemsY: GLuint = 1
         
         private let kKernelParams = 11
-        private let kSizeCLMem    = strideof(cl_mem)
+        private let kSizeCLMem    = MemoryLayout<cl_mem>.stride
         
         private var kIntegrateSystem: String = "IntegrateSystem"
         
         //MARK: -
         //MARK: Private - Utilities
         
-        private func readBuffer(compute_commands: cl_command_queue,
+        @discardableResult
+        private func readBuffer(_ compute_commands: cl_command_queue!,
             _ host_data: UnsafeMutablePointer<GLfloat>,
-            _ device_data: cl_mem,
+            _ device_data: cl_mem!,
             _ size: size_t,
             _ offset: size_t)
             -> cl_int {
@@ -67,9 +68,9 @@ extension NBody.Simulation {
                     nil)
         }
         
-        private func writeBuffer(compute_commands: cl_command_queue,
+        private func writeBuffer(_ compute_commands: cl_command_queue!,
             _ host_data: UnsafePointer<GLfloat>,
-            _ device_data: cl_mem,
+            _ device_data: cl_mem!,
             _ size: size_t)
             -> cl_int {
                 return clEnqueueWriteBuffer(compute_commands,
@@ -83,51 +84,74 @@ extension NBody.Simulation {
                     nil)
         }
         
+        @discardableResult
         private func bind() -> cl_int {
             var err = CL_INVALID_KERNEL
             
             if mpKernel != nil {
                 
-                var pValues: [UnsafePointer<Void>] = Array(count: kKernelParams, repeatedValue: nil)
-                pValues[0] =&! &mpDevicePosition[mnWriteIndex]
-                pValues[1] =&! &mpDeviceVelocity[mnWriteIndex]
-                pValues[2] =&! &mpDevicePosition[mnReadIndex]
-                pValues[3] =&! &mpDeviceVelocity[mnReadIndex]
-                pValues[4] =&! &m_Properties.mnTimeStep
-                pValues[5] =&! &m_Properties.mnDamping
-                pValues[6] =&! &m_Properties.mnSoftening
-                pValues[7] =&! &m_Properties.mnParticles   //### taking lower 4 bytes
-                pValues[8] =&! &mnMinIndex   //### taking lower 4 bytes
-                pValues[9] =&! &mnMaxIndex   //### taking lower 4 bytes
-                pValues[10] = nil
-                
-                let sizes: [size_t] = [
-                    kSizeCLMem,
-                    kSizeCLMem,
-                    kSizeCLMem,
-                    kSizeCLMem,
-                    mnSamples,
-                    mnSamples,
-                    mnSamples,
-                    GLM.Size.kInt,   //### taking lower 4 bytes
-                    GLM.Size.kInt,   //### taking lower 4 bytes
-                    GLM.Size.kInt,   //### taking lower 4 bytes
-                    4 * mnSamples * mnWorkItemX.l * kWorkItemsY.l,
-                ]
-                
-                for i in 0..<kKernelParams {
-                    err = clSetKernelArg(mpKernel, i.ui, sizes[i], pValues[i])
-                    
-                    if err != CL_SUCCESS {
-                        return err
-                    }
-                }
+//                var pValues: [UnsafeRawPointer] = Array(repeating: nil, count: kKernelParams)
+//                pValues[0] =&! &mpDevicePosition[mnWriteIndex]
+//                pValues[1] =&! &mpDeviceVelocity[mnWriteIndex]
+//                pValues[2] =&! &mpDevicePosition[mnReadIndex]
+//                pValues[3] =&! &mpDeviceVelocity[mnReadIndex]
+//                pValues[4] =&! &m_Properties.mnTimeStep
+//                pValues[5] =&! &m_Properties.mnDamping
+//                pValues[6] =&! &m_Properties.mnSoftening
+//                pValues[7] =&! &m_Properties.mnParticles   //### taking lower 4 bytes
+//                pValues[8] =&! &mnMinIndex   //### taking lower 4 bytes
+//                pValues[9] =&! &mnMaxIndex   //### taking lower 4 bytes
+//                pValues[10] = nil
+//                
+//                let sizes: [size_t] = [
+//                    kSizeCLMem,
+//                    kSizeCLMem,
+//                    kSizeCLMem,
+//                    kSizeCLMem,
+//                    mnSamples,
+//                    mnSamples,
+//                    mnSamples,
+//                    GLM.Size.kInt,   //### taking lower 4 bytes
+//                    GLM.Size.kInt,   //### taking lower 4 bytes
+//                    GLM.Size.kInt,   //### taking lower 4 bytes
+//                    4 * mnSamples * mnWorkItemX.l * kWorkItemsY.l,
+//                ]
+//                
+//                for i in 0..<kKernelParams {
+//                    err = clSetKernelArg(mpKernel, i.ui, sizes[i], pValues[i])
+//                    
+//                    if err != CL_SUCCESS {
+//                        return err
+//                    }
+//                }
+                err = clSetKernelArg(mpKernel,  0, kSizeCLMem, &mpDevicePosition[mnWriteIndex])
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  1, kSizeCLMem, &mpDeviceVelocity[mnWriteIndex])
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  2, kSizeCLMem, &mpDevicePosition[mnReadIndex])
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  3, kSizeCLMem, &mpDeviceVelocity[mnReadIndex])
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  4, mnSamples, &m_Properties.mnTimeStep)
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  5, mnSamples, &m_Properties.mnDamping)
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  6, mnSamples, &m_Properties.mnSoftening)
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  7, GLM.Size.kInt, &m_Properties.mnParticles)   //### taking lower 4 bytes
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  8, GLM.Size.kInt, &mnMinIndex)   //### taking lower 4 bytes
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel,  9, GLM.Size.kInt, &mnMaxIndex)   //### taking lower 4 bytes
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 10, 4 * mnSamples * mnWorkItemX.l * kWorkItemsY.l, nil)
+                if err != CL_SUCCESS {return err}
             }
             
             return err
         }
         
-        private func setup(options: String) -> cl_int {
+        private func setup(_ options: String) -> cl_int {
             let file_flags: cl_mem_flags = CL_MEM_READ_WRITE.ull
             
             let i = mnDeviceIndex
@@ -144,8 +168,8 @@ extension NBody.Simulation {
             
             var nSize: size_t = 0
             
-            var name: [CChar] = Array(count: 1024, repeatedValue: 0)
-            var vendor: [CChar] = Array(count: 1024, repeatedValue: 0)
+            var name: [CChar] = Array(repeating: 0, count: 1024)
+            var vendor: [CChar] = Array(repeating: 0, count: 1024)
             
             clGetDeviceInfo(mpDevice[i],
                 CL_DEVICE_NAME.ui,
@@ -159,7 +183,7 @@ extension NBody.Simulation {
                 &vendor,
                 &nSize)
             
-            m_DeviceName = GLstring.fromCString(name)!
+            m_DeviceName = GLstring(cString: name)
             
             print(">> N-body Simulation: Using Device[\(i)] = \"\(m_DeviceName)\"")
             
@@ -196,7 +220,7 @@ extension NBody.Simulation {
             let source  = file.string!
             err = source.withCString {pSource in
                 var err: GLint = 0
-                var ptrSource = pSource
+                var ptrSource: UnsafePointer<GLchar>? = pSource
                 
                 self.mpProgram = clCreateProgramWithSource(mpContext,
                     1,
@@ -224,7 +248,7 @@ extension NBody.Simulation {
             if err != CL_SUCCESS {
                 var length: size_t = 0
                 
-                var info_log: [CChar] = Array(count: 2000, repeatedValue: 0)
+                var info_log: [CChar] = Array(repeating: 0, count: 2000)
                 
                 for i in 0..<mnDeviceCount.l {
                     clGetProgramBuildInfo(mpProgram,
@@ -234,7 +258,7 @@ extension NBody.Simulation {
                         &info_log,
                         &length)
                     
-                    NSLog(">> N-body Simulation: Build Log for Device [\(i)]:\n%@", GLstring.fromCString(info_log)!)
+                    NSLog(">> N-body Simulation: Build Log for Device [\(i)]:\n%@", GLstring(cString: info_log))
                 }
                 
                 return err
@@ -343,23 +367,31 @@ extension NBody.Simulation {
                     1
                 ]
                 
-                var values: [UnsafePointer<Void>] = Array(count: 4, repeatedValue: nil)
-                values[0] =&! &mpDevicePosition[mnWriteIndex]
-                values[1] =&! &mpDeviceVelocity[mnWriteIndex]
-                values[2] =&! &mpDevicePosition[mnReadIndex]
-                values[3] =&! &mpDeviceVelocity[mnReadIndex]
-                
-                let sizes: [size_t] = [kSizeCLMem, kSizeCLMem, kSizeCLMem, kSizeCLMem]
-                
-                let indices: [GLuint] = [0, 1, 2, 3]
-                
-                for i in 0..<4 {
-                    err = clSetKernelArg(mpKernel, indices[i], sizes[i], values[i])
-                    
-                    if err != CL_SUCCESS {
-                        return err
-                    }
-                }
+//                var values: [UnsafeRawPointer] = Array(repeating: nil, count: 4)
+//                values[0] =&! &mpDevicePosition[mnWriteIndex]
+//                values[1] =&! &mpDeviceVelocity[mnWriteIndex]
+//                values[2] =&! &mpDevicePosition[mnReadIndex]
+//                values[3] =&! &mpDeviceVelocity[mnReadIndex]
+//                
+//                let sizes: [size_t] = [kSizeCLMem, kSizeCLMem, kSizeCLMem, kSizeCLMem]
+//                
+//                let indices: [GLuint] = [0, 1, 2, 3]
+//                
+//                for i in 0..<4 {
+//                    err = clSetKernelArg(mpKernel, indices[i], sizes[i], values[i])
+//                    
+//                    if err != CL_SUCCESS {
+//                        return err
+//                    }
+//                }
+                err = clSetKernelArg(mpKernel, 0, kSizeCLMem, &mpDevicePosition[mnWriteIndex])
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 1, kSizeCLMem, &mpDeviceVelocity[mnWriteIndex])
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 2, kSizeCLMem, &mpDevicePosition[mnReadIndex])
+                if err != CL_SUCCESS {return err}
+                err = clSetKernelArg(mpKernel, 3, kSizeCLMem, &mpDeviceVelocity[mnReadIndex])
+                if err != CL_SUCCESS {return err}
                 
                 for i in 0..<mnDeviceCount.l {
                     if mpQueue[i] != nil {
@@ -479,13 +511,13 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Utilities
         
-        public override func initialize(options: String) {
+        open override func initialize(_ options: String) {
             if !mbTerminated {
                 mnReadIndex  = 0
                 mnWriteIndex = 1
                 
-                mpHostPosition = UnsafeMutablePointer<GLfloat>.alloc(mnLength)
-                mpHostVelocity = UnsafeMutablePointer<GLfloat>.alloc(mnLength)
+                mpHostPosition = UnsafeMutablePointer<GLfloat>.allocate(capacity: mnLength)
+                mpHostVelocity = UnsafeMutablePointer<GLfloat>.allocate(capacity: mnLength)
                 
                 let err = setup(options)
                 
@@ -499,7 +531,7 @@ extension NBody.Simulation {
             }
         }
         
-        public override func reset() -> GLint {
+        open override func reset() -> GLint {
             let err = restart()
             
             if err != CL_SUCCESS {
@@ -509,7 +541,7 @@ extension NBody.Simulation {
             return err
         }
         
-        public override func step() {
+        open override func step() {
             if !isPaused || !isStopped {
                 let err = execute()
                 
@@ -520,7 +552,7 @@ extension NBody.Simulation {
                 if mbIsUpdated {
                     for i in 0..<mnDeviceCount.l {
                         readBuffer(mpQueue[i],
-                            mpHostPosition,
+                            mpHostPosition!,
                             mpDevicePosition[mnWriteIndex],
                             mnSize,
                             0)
@@ -533,7 +565,7 @@ extension NBody.Simulation {
             }
         }
         
-        public override func terminate() {
+        open override func terminate() {
             if !mbTerminated {
                 for i in 0..<mnDeviceCount.l {
                     if mpQueue[i] != nil {
@@ -598,13 +630,13 @@ extension NBody.Simulation {
                 }
                 
                 if mpHostPosition != nil {
-                    mpHostPosition.dealloc(mnLength)
+                    mpHostPosition?.deallocate(capacity: mnLength)
                     
                     mpHostPosition = nil
                 }
                 
                 if mpHostVelocity != nil {
-                    mpHostVelocity.dealloc(mnLength)
+                    mpHostVelocity?.deallocate(capacity: mnLength)
                     
                     mpHostVelocity = nil
                 }
@@ -616,7 +648,7 @@ extension NBody.Simulation {
         //MARK: -
         //MARK: Public - Accessors
         
-        public override func positionInRange(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
+        open override func positionInRange(_ pDst: UnsafeMutablePointer<GLfloat>?) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pDst != nil {
@@ -625,11 +657,11 @@ extension NBody.Simulation {
                 let data_size_in_floats   = (mnMaxIndex - mnMinIndex) * 4
                 let data_size_bytes       = data_size_in_floats * mnSamples
                 
-                let host_data = pDst.advancedBy(data_offset_in_floats)
+                let host_data = pDst?.advanced(by: data_offset_in_floats)
                 
                 for i in 0..<mnDeviceCount.l {
                     err = readBuffer(mpQueue[i],
-                        host_data,
+                        host_data!,
                         mpDevicePosition[mnReadIndex],
                         data_size_bytes,
                         data_offset_bytes)
@@ -642,14 +674,14 @@ extension NBody.Simulation {
             return err
         }
         
-        public override func position(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
+        open override func position(_ pDst: UnsafeMutablePointer<GLfloat>?) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pDst != nil {
                 
                 for i in 0..<mnDeviceCount.l {
                     err = readBuffer(mpQueue[i],
-                        pDst,
+                        pDst!,
                         mpDevicePosition[mnReadIndex],
                         mnSize,
                         0)
@@ -663,14 +695,14 @@ extension NBody.Simulation {
             return err
         }
         
-        public override func setPosition(pSrc: UnsafePointer<GLfloat>) -> GLint {
+        open override func setPosition(_ pSrc: UnsafePointer<GLfloat>?) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pSrc != nil {
                 
                 for i in 0..<mnDeviceCount.l {
                     err = writeBuffer(mpQueue[i],
-                        pSrc,
+                        pSrc!,
                         mpDevicePosition[mnReadIndex],
                         mnSize)
                     
@@ -683,14 +715,14 @@ extension NBody.Simulation {
             return err
         }
         
-        public override func velocity(pDst: UnsafeMutablePointer<GLfloat>) -> GLint {
+        open override func velocity(_ pDst: UnsafeMutablePointer<GLfloat>?) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pDst != nil {
                 
                 for i in 0..<mnDeviceCount.l {
                     err = readBuffer(mpQueue[i],
-                        pDst,
+                        pDst!,
                         mpDeviceVelocity[mnReadIndex],
                         mnSize,
                         0)
@@ -704,14 +736,14 @@ extension NBody.Simulation {
             return err
         }
         
-        public override func setVelocity(pSrc: UnsafePointer<GLfloat>) -> GLint {
+        open override func setVelocity(_ pSrc: UnsafePointer<GLfloat>?) -> GLint {
             var err = CL_INVALID_VALUE
             
             if pSrc != nil {
                 
                 for i in 0..<mnDeviceCount.l {
                     err = writeBuffer(mpQueue[i],
-                        pSrc,
+                        pSrc!,
                         mpDeviceVelocity[mnReadIndex],
                         mnSize)
                     

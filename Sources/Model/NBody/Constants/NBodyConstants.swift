@@ -67,21 +67,21 @@ extension NBody {
 
 extension NBody {
     public enum Config: Int {
-        case Random = 0
-        case Shell
-        case Expand
-        case MWM31
+        case random = 0
+        case shell
+        case expand
+        case mwm31
         
-        static let Count = MWM31.rawValue + 1
+        static let Count = mwm31.rawValue + 1
     }
     
     public enum MeterType: Int {
-        case Perf = 0
-        case Updates
-        case Frames
-        case CPU
+        case perf = 0
+        case updates
+        case frames
+        case cpu
         
-        static let Meters = CPU.rawValue + 1
+        static let Meters = cpu.rawValue + 1
         static let Max = Meters + 1
     }
     

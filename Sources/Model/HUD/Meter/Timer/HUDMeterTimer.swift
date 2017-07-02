@@ -23,19 +23,19 @@ extension HUD.Meter {
     public typealias Time = UInt64
     public typealias Duration = GLdouble
     
-    public class Timer {
+    open class Timer {
         
-        private var mbAscend: Bool = false
-        private var mnSize: Int = 0
-        private var mnCount: Int = 0
-        private var mnIndex: Int = 0
-        private var mnAspect: GLdouble = 0
-        private var mnRes: GLdouble = 0
-        private var mnScale: GLdouble = 0
-        private var mnStart: Time = 0
-        private var mnStop: Time = 0
-        private var mnDuration: Duration = 0
-        private var m_Vector: Vector = []
+        fileprivate var mbAscend: Bool = false
+        fileprivate var mnSize: Int = 0
+        fileprivate var mnCount: Int = 0
+        fileprivate var mnIndex: Int = 0
+        fileprivate var mnAspect: GLdouble = 0
+        fileprivate var mnRes: GLdouble = 0
+        fileprivate var mnScale: GLdouble = 0
+        fileprivate var mnStart: Time = 0
+        fileprivate var mnStop: Time = 0
+        fileprivate var mnDuration: Duration = 0
+        fileprivate var m_Vector: Vector = []
     }
     
     //MARK: -
@@ -76,7 +76,7 @@ extension HUD.Meter.Timer {
         mnStop     = 0
         mnDuration = 0.0
         
-        m_Vector = Array(count: mnSize, repeatedValue: 0.0)
+        m_Vector = Array(repeating: 0.0, count: mnSize)
     }
     
     public convenience init(timer: HUD.Meter.Timer) {
@@ -94,30 +94,30 @@ extension HUD.Meter.Timer {
         mbAscend   = timer.mbAscend
     }
     
-    public func resize(size: Int) -> Bool {
+    public func resize(_ size: Int) -> Bool {
         let bSuccess = (size != mnSize) && (size > 20)
         
         if bSuccess {
             mnSize = size
             
-            m_Vector = Array(count: mnSize, repeatedValue: 0)
+            m_Vector = Array(repeating: 0, count: mnSize)
         }
         
         return bSuccess
     }
     
-    public func setScale(scale: GLdouble) {
+    public func setScale(_ scale: GLdouble) {
         if scale > 0 {
             mnScale = scale
             mnRes = mnAspect * mnScale
         }
     }
     
-    public func setStart(time: HUD.Meter.Time) {
+    public func setStart(_ time: HUD.Meter.Time) {
         mnStart = time
     }
     
-    public func setStop(time: HUD.Meter.Time) {
+    public func setStop(_ time: HUD.Meter.Time) {
         mnStop = time
     }
     
@@ -134,11 +134,11 @@ extension HUD.Meter.Timer {
     }
     
     public func erase() {
-        m_Vector = Array(count: mnSize, repeatedValue: 0)
+        m_Vector = Array(repeating: 0, count: mnSize)
         mnCount = 0
     }
     
-    public func update(dx: GLdouble = 1.0) {
+    public func update(_ dx: GLdouble = 1.0) {
         let dt = mnRes * GLdouble(mnStop - mnStart)
         
         mnCount += 1
@@ -152,7 +152,7 @@ extension HUD.Meter.Timer {
         let nSize   = GLdouble(mnSize)
         let nMin    = GLdouble(min(mnCount, mnSize))
         let nMetric = mbAscend ? nSize : nMin
-        let nSum    = m_Vector.reduce(0, combine: +)
+        let nSum    = m_Vector.reduce(0, +)
         
         return nSum / nMetric
     }
