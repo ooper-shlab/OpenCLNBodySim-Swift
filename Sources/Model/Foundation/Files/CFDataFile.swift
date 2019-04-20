@@ -69,7 +69,7 @@ extension CF {
             
             if mpBuffer != nil {
                 mnTerminator = nTerminator
-                mnLength     = strlen(mpBuffer).l
+                mnLength     = (mpBuffer != nil) ? strlen(mpBuffer!) : 0
                 mpBufferPos  = strchr(mpBuffer, Int32(mnTerminator))
                 
                 let vec: [size_t] = readline()
@@ -149,7 +149,7 @@ extension CF {
                 mpBufferPos = strchr(mpBufferPos! + 1, Int32(mnTerminator))
             } else {
                 // The length of the last line of the input data file
-                let nLength = (mpBuffer != nil) ? strlen(mpBuffer).l : 0
+                let nLength = (mpBuffer != nil) ? strlen(mpBuffer!) : 0
                 
                 if nLength != 0 {
                     // Create a string with the specified length

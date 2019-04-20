@@ -36,7 +36,7 @@ extension GLU {
             var i = 0
             var j = 0
             
-            var w = Float2(-1.0)
+            var w = Float2(repeating: -1.0)
             
             DispatchQueue.concurrentPerform(iterations: nTexRes) {y in
                 w.y += nDelta

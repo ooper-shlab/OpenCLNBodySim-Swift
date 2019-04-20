@@ -13,12 +13,12 @@ You should not contact to Apple or SHLab(jp) about any faults caused by my trans
 ===========================================================================
 BUILD REQUIREMENTS:
 
-Xcode 8.3.3, OS X SDK 10.11
+Xcode 10.2, OS X SDK 10.14
 
 ===========================================================================
 ### Runtime
 
-EL Capitan (OS X 10.11)
+EL Capitan (OS X 10.11) / OpenCL 1.2 Capable Mac
 
 Many common utility files are not fully translated. Their license terms are kept there just to indicate the original files.
 

@@ -39,8 +39,6 @@ import Foundation
 
 extension Dictionary {
     mutating func addEntriesFromDictionary(_ other: [Key: Value]) {
-        for (key, value) in other {
-            self[key] = value
-        }
+        self.merge(other, uniquingKeysWith: {_, new in new})
     }
 }

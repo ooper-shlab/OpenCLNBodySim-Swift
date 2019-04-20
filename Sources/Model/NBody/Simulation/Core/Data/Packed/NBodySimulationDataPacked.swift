@@ -52,7 +52,7 @@ extension NBody.Simulation.Data {
         private var mnLength: Int = 0
         func alloc(_ length: Int) {
             if mpHost != nil {
-                mpHost?.deallocate(capacity: mnLength)
+                mpHost?.deallocate()
             }
             mnLength = length
             mpHost = UnsafeMutablePointer.allocate(capacity: length)
@@ -76,7 +76,7 @@ extension NBody.Simulation.Data {
         
         deinit {
             if mpHost != nil {
-                mpHost?.deallocate(capacity: mnLength)
+                mpHost?.deallocate()
             }
             if mpDevice != nil {
                 clReleaseMemObject(mpDevice)

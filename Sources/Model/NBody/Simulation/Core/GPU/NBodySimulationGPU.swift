@@ -630,13 +630,13 @@ extension NBody.Simulation {
                 }
                 
                 if mpHostPosition != nil {
-                    mpHostPosition?.deallocate(capacity: mnLength)
+                    mpHostPosition?.deallocate()
                     
                     mpHostPosition = nil
                 }
                 
                 if mpHostVelocity != nil {
-                    mpHostVelocity?.deallocate(capacity: mnLength)
+                    mpHostVelocity?.deallocate()
                     
                     mpHostVelocity = nil
                 }

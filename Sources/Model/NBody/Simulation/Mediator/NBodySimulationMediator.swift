@@ -264,8 +264,7 @@ extension NBody.Simulation.Mediator {
         
         if pPosition != nil {
             if mpPosition != nil {
-                let length = mpActive.dataLength
-                mpPosition?.deallocate(capacity: length)
+                mpPosition?.deallocate()
             }
             
             mpPosition = pPosition
@@ -276,12 +275,11 @@ extension NBody.Simulation.Mediator {
     public func reset() {
         if mpActive != nil {
             if mpPosition != nil {
-                let length = mpActive.dataLength
-                mpPosition?.deallocate(capacity: length)
+                mpPosition?.deallocate()
                 
                 mpPosition = nil
                 
-                mpActive.data()?.deallocate(capacity: length)
+                mpActive.data()?.deallocate()
             }
             
             mpActive.resetProperties(m_Properties)

@@ -42,7 +42,7 @@ class OpenGLView: NSOpenGLView {
     
     private var mbFullscreen: Bool = false
     
-    private var mpOptions: [String: AnyObject] = [:]
+    private var mpOptions: [NSView.FullScreenModeOptionKey: Any] = [:]
     private var mpContext: NSOpenGLContext?
     private var mpTimer: Timer?
     
@@ -111,25 +111,23 @@ class OpenGLView: NSOpenGLView {
     
     private func _toggleFullscreen() {
         if mpPrefs?.fullscreen ?? false {
-            self.enterFullScreenMode(NSScreen.main()!, withOptions: mpOptions)
+            self.enterFullScreenMode(NSScreen.main!, withOptions: mpOptions)
         }
     }
     
-    private func _alert(_ pMessage: String?) {
-        if pMessage != nil {
-            let pAlert = NSAlert()
-            
-            pAlert.addButton(withTitle: "OK")
-            pAlert.messageText = pMessage!
-            pAlert.alertStyle = .critical
-            
-            let response = pAlert.runModal()
-            
-            if response == NSAlertFirstButtonReturn {
-                NSLog(">> MESSAGE: %@", pMessage!)
-            }
-            
+    private func _alert(_ pMessage: String) {
+        let pAlert = NSAlert()
+        
+        pAlert.addButton(withTitle: "OK")
+        pAlert.messageText = pMessage
+        pAlert.alertStyle = .critical
+        
+        let response = pAlert.runModal()
+        
+        if response == NSApplication.ModalResponse.alertFirstButtonReturn {
+            NSLog(">> MESSAGE: %@", pMessage)
         }
+        
     }
     
     private func _query() -> Bool {
@@ -141,37 +139,28 @@ class OpenGLView: NSOpenGLView {
             "330M", "X1800", "2400",  "2600",
             "3000",  "4670", "4800",  "4870",
             "5600",  "8600", "8800", "9600M"
+            //
+            ,"630"  //Mac mini (2018) :Intel(R) UHD Graphics 630
         ]
         
-        Swift.print(">> N-body Simulation: Renderer = \"\(query.renderer)\"")
-        Swift.print(">> N-body Simulation: Vendor   = \"\(query.vendor)\"")
-        Swift.print(">> N-body Simulation: Version  = \"\(query.version)\"")
+        print(">> N-body Simulation: Renderer = \"\(query.renderer)\"")
+        print(">> N-body Simulation: Vendor   = \"\(query.vendor)\"")
+        print(">> N-body Simulation: Version  = \"\(query.version)\"")
         
         return query.match(keys)
     }
     
-    //- (NSOpenGLPixelFormat *) _newPixelFormat
-    //{
     private static func _newPixelFormat() -> NSOpenGLPixelFormat? {
-        //    NSOpenGLPixelFormat* pFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:kOpenGLAttribsLegacyProfile];
         var pFormat = NSOpenGLPixelFormat(attributes: kOpenGLAttribsLegacyProfile)
-        //
-        //    if(!pFormat)
-        //    {
+
         if pFormat == nil {
-            //        NSLog(@">> WARNING: Failed to initialize an OpenGL context with the desired pixel format!");
             NSLog(">> WARNING: Failed to initialize an OpenGL context with the desired pixel format!")
-            //        NSLog(@">> MESSAGE: Attempting to initialize with a fallback pixel format!");
             NSLog(">> MESSAGE: Attempting to initialize with a fallback pixel format!")
-            //
-            //        pFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:kOpenGLAttribsLegacyDefault];
+
             pFormat = NSOpenGLPixelFormat(attributes: kOpenGLAttribsLegacyDefault)
-            //    } // if
         }
-        //
-        //    return pFormat;
+
         return pFormat
-        //} // _newPixelFormat
     }
     
     //MARK: -
@@ -194,7 +183,7 @@ class OpenGLView: NSOpenGLView {
             
             exit(-1)
         } else {
-            let frame = NSScreen.main()!.frame
+            let frame = NSScreen.main!.frame
             
             mpEngine = NBodyEngine(preferences: mpPrefs)
             
@@ -207,12 +196,12 @@ class OpenGLView: NSOpenGLView {
     private func _prepareRunLoop() {
         mpTimer = Timer(timeInterval: 0.0,
             target: self,
-            selector: #selector(OpenGLView._idle),
+            selector: #selector(_idle),
             userInfo: self,
             repeats: true)
         
         RunLoop.current.add(mpTimer!,
-            forMode: RunLoopMode.commonModes)
+            forMode: .common)
     }
     
     //MARK: -
@@ -227,14 +216,15 @@ class OpenGLView: NSOpenGLView {
             mpContext = self.openGLContext
             bIsValid = mpContext != nil
             
-            mpOptions = [NSFullScreenModeSetting: true as AnyObject]
+            mpOptions = [NSView.FullScreenModeOptionKey.fullScreenModeSetting: true]
             
             // It's important to clean up our rendering objects before we terminate -- Cocoa will
             // not specifically release everything on application termination, so we explicitly
             // call our cleanup (private object destructor) routines.
             NotificationCenter.default.addObserver(self,
-                selector: #selector(OpenGLView._quit(_:)),
-                name: NSNotification.Name(rawValue: "NSApplicationWillTerminateNotification"),
+                selector: #selector(_quit(_:)),
+                name: NSApplication.willTerminateNotification,
+//                NSNotification.Name(rawValue: "NSApplicationWillTerminateNotification"),
                 object: NSApp)
             
         } else{
@@ -343,7 +333,7 @@ class OpenGLView: NSOpenGLView {
             
             mpPrefs?.fullscreen = false
         } else {
-            self.enterFullScreenMode(NSScreen.main()!, withOptions: mpOptions)
+            self.enterFullScreenMode(NSScreen.main!, withOptions: mpOptions)
             
             mpPrefs?.fullscreen = true
         }

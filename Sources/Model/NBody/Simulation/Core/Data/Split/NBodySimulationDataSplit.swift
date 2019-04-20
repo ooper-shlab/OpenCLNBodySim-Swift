@@ -119,12 +119,12 @@ extension NBody.Simulation.Data {
             for i in 0..<3 {
                 // Host Position
                 if m_Position[i].mpHost != nil {
-                    m_Position[i].mpHost?.deallocate(capacity: mnCount)
+                    m_Position[i].mpHost?.deallocate()
                 }
                 
                 // Host Velocity
                 if m_Velocity[i].mpHost != nil {
-                    m_Velocity[i].mpHost?.deallocate(capacity: mnCount)
+                    m_Velocity[i].mpHost?.deallocate()
                 }
                 
                 // Device Position
@@ -138,7 +138,7 @@ extension NBody.Simulation.Data {
                 }
             }
             if m_Mass.mpHost != nil {
-                m_Mass.mpHost?.deallocate(capacity: mnCount)
+                m_Mass.mpHost?.deallocate()
             }
             if m_Mass.mpDevice != nil {
                 clReleaseMemObject(m_Mass.mpDevice)

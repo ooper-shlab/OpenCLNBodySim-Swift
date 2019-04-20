@@ -170,7 +170,7 @@ extension NBody.Simulation {
             pthread_mutex_destroy(&m_RunLock)
             
             if mpData != nil {
-                mpData?.deallocate(capacity: mnLength)
+                mpData?.deallocate()
                 
             }
         }
@@ -283,7 +283,7 @@ extension NBody.Simulation {
                     
                     mpData = pDataDst
                     
-                    pDataSrc?.deallocate(capacity: mnLength)
+                    pDataSrc?.deallocate()
                     
                 }
             }

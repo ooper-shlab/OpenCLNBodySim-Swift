@@ -391,11 +391,11 @@ extension NBody.Simulation.Visualizer {
             m_ViewRotation.x = 0.0
             m_ViewRotation.y = 0.0
             
-            m_ModelView  = Float4x4(0.0);
-            m_Projection = Float4x4(0.0);
+            m_ModelView  = Float4x4(0.0)
+            m_Projection = Float4x4(0.0)
             
-            m_Eye    = Float3(0.0);
-            m_Center = Float3(0.0);
+            m_Eye    = Float3(repeating: 0.0)
+            m_Center = Float3(repeating: 0.0)
             m_Up     = Float3(0.0, 1.0, 0.0)
         }
     }

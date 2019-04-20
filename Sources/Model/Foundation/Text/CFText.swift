@@ -69,16 +69,17 @@ extension CF.Text {
     // Create an attributes dictionary with paragraph style, font, and colors
     private class func createAttributes(_ pStyle: NSParagraphStyle,
         _ pFont: NSFont,
-        _ pColor: CGColor) -> [String: AnyObject]
+        _ pColor: CGColor) -> [NSAttributedString.Key: Any]
     {
         
         // Create a dictionary of attributes for our string
         //let nsColor = NSColor(CGColor: pColor)!
         return [
-            NSParagraphStyleAttributeName as String: pStyle,
-            NSFontAttributeName: pFont,
+            .paragraphStyle: pStyle,
+            .font: pFont,
             //NSForegroundColorAttributeName: nsColor,
-            kCTForegroundColorAttributeName as String: pColor,
+            //kCTForegroundColorAttributeName as String: pColor,
+            .foregroundColor: pColor,
         ]
     }
     

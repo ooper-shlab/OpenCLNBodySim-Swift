@@ -68,10 +68,10 @@
 		D70385B11C30EDA90085EAB4 /* CFProcessorInfoArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70385B01C30EDA90085EAB4 /* CFProcessorInfoArray.swift */; };
 		D70385B31C30F9C60085EAB4 /* CPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70385B21C30F9C60085EAB4 /* CPU.swift */; };
 		D70385B51C30FA030085EAB4 /* CFCPUHostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70385B41C30FA030085EAB4 /* CFCPUHostInfo.swift */; };
+		D743F0AD2268B03A00C08BF1 /* simd+.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A6701C340AD3009A06F4 /* simd+.swift */; };
 		D791A66B1C33AF40009A06F4 /* NBodySimulationDataGalaxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A66A1C33AF40009A06F4 /* NBodySimulationDataGalaxy.swift */; };
 		D791A66D1C33B582009A06F4 /* NBodySimulationDataURDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A66C1C33B582009A06F4 /* NBodySimulationDataURDS.swift */; };
 		D791A66F1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A66E1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift */; };
-		D791A6711C340AD3009A06F4 /* simd+.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A6701C340AD3009A06F4 /* simd+.swift */; };
 		D791A6731C341998009A06F4 /* NBodySimulationDataURDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D791A6721C341998009A06F4 /* NBodySimulationDataURDP.swift */; };
 		D7EF24D71C31041B00E0A5E2 /* CFCPULoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF24D61C31041B00E0A5E2 /* CFCPULoad.swift */; };
 		D7EF24D91C312DF900E0A5E2 /* CFDataFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EF24D81C312DF900E0A5E2 /* CFDataFile.swift */; };
@@ -109,7 +109,6 @@
 		3663958D1863A72C00BEF119 /* nbody_cpu.ocl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nbody_cpu.ocl; sourceTree = "<group>"; };
 		3663958E1863A72C00BEF119 /* nbody_gpu.ocl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nbody_gpu.ocl; sourceTree = "<group>"; };
 		36663B701885F08400B02F82 /* OpenCL_NBody_Simulation-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OpenCL_NBody_Simulation-Info.plist"; sourceTree = "<group>"; };
-		36BE3F4213D6067E00D9C225 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		36C4D3A21AA6A4EE000946C7 /* NBodySimulationProperties.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NBodySimulationProperties.plist; sourceTree = "<group>"; };
 		D70385531C30DF3B0085EAB4 /* CGBitmap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGBitmap.swift; sourceTree = "<group>"; };
 		D70385551C30DF6E0085EAB4 /* CFFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFFile.swift; sourceTree = "<group>"; };
@@ -153,7 +152,6 @@
 		D70385B01C30EDA90085EAB4 /* CFProcessorInfoArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFProcessorInfoArray.swift; sourceTree = "<group>"; };
 		D70385B21C30F9C60085EAB4 /* CPU.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CPU.swift; sourceTree = "<group>"; };
 		D70385B41C30FA030085EAB4 /* CFCPUHostInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFCPUHostInfo.swift; sourceTree = "<group>"; };
-		D791A6551C336791009A06F4 /* PointerAssignment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointerAssignment.swift; sourceTree = "<group>"; };
 		D791A66A1C33AF40009A06F4 /* NBodySimulationDataGalaxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NBodySimulationDataGalaxy.swift; sourceTree = "<group>"; };
 		D791A66C1C33B582009A06F4 /* NBodySimulationDataURDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NBodySimulationDataURDS.swift; sourceTree = "<group>"; };
 		D791A66E1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NBodySimulationDataURDB.swift; sourceTree = "<group>"; };
@@ -162,6 +160,7 @@
 		D7A6EBD61C354E3900D10048 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		D7A6EBD71C354E3900D10048 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D7A6EBD81C354E3900D10048 /* README2.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README2.md; sourceTree = "<group>"; };
+		D7AA5E3D226B236B00383DBC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		D7EF24D61C31041B00E0A5E2 /* CFCPULoad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFCPULoad.swift; sourceTree = "<group>"; };
 		D7EF24D81C312DF900E0A5E2 /* CFDataFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFDataFile.swift; sourceTree = "<group>"; };
 		D7EF24DA1C31505000E0A5E2 /* Numeric+scannable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Numeric+scannable.swift"; sourceTree = "<group>"; };
@@ -915,7 +914,6 @@
 				D70385A41C30E3200085EAB4 /* NumTypes+Conversion.swift */,
 				D7EF24DA1C31505000E0A5E2 /* Numeric+scannable.swift */,
 				D7EF24E61C32953300E0A5E2 /* Dictionary+addEntriesFromDictionary.swift */,
-				D791A6551C336791009A06F4 /* PointerAssignment.swift */,
 				D791A6701C340AD3009A06F4 /* simd+.swift */,
 			);
 			path = OOPUtils;
@@ -948,19 +946,20 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 1020;
 				TargetAttributes = {
 					2E48DA501395F1750035FEC4 = {
-						LastSwiftMigration = 0830;
+						LastSwiftMigration = 1010;
 					};
 				};
 			};
 			buildConfigurationList = 2E48DA4B1395F1750035FEC4 /* Build configuration list for PBXProject "OpenCL_NBody_Simulation" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 2E48DA461395F1750035FEC4;
 			productRefGroup = 2E48DA521395F1750035FEC4 /* Products */;
@@ -1005,6 +1004,7 @@
 			files = (
 				D70385881C30E1FA0085EAB4 /* GLContainers.swift in Sources */,
 				D703856C1C30E0450085EAB4 /* NBody.swift in Sources */,
+				D743F0AD2268B03A00C08BF1 /* simd+.swift in Sources */,
 				D791A66F1C33B5CA009A06F4 /* NBodySimulationDataURDB.swift in Sources */,
 				D703858A1C30E2060085EAB4 /* GLM.swift in Sources */,
 				D7EF24E31C32526A00E0A5E2 /* NBodyButton.swift in Sources */,
@@ -1024,7 +1024,6 @@
 				D7EF24DD1C31C52000E0A5E2 /* NBodySimulationProperties.swift in Sources */,
 				D791A66D1C33B582009A06F4 /* NBodySimulationDataURDS.swift in Sources */,
 				D7EF25021C32C5D100E0A5E2 /* CMRandom.swift in Sources */,
-				D791A6711C340AD3009A06F4 /* simd+.swift in Sources */,
 				D703855C1C30DF920085EAB4 /* CTFrame.swift in Sources */,
 				D70385B31C30F9C60085EAB4 /* CPU.swift in Sources */,
 				D70385A01C30E2F30085EAB4 /* AppDelegate.swift in Sources */,
@@ -1073,7 +1072,7 @@
 		36BE3F4113D6067E00D9C225 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				36BE3F4213D6067E00D9C225 /* en */,
+				D7AA5E3D226B236B00383DBC /* Base */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -1085,19 +1084,34 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1125,18 +1139,33 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1151,6 +1180,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				VALID_ARCHS = x86_64;
 			};
 			name = Release;
@@ -1159,6 +1189,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -1168,7 +1199,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.apple-samplecode.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = OpenCL_NBody_Simulation;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1177,13 +1209,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				INFOPLIST_FILE = "Sources/Other/OpenCL_NBody_Simulation-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.apple-samplecode.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = OpenCL_NBody_Simulation;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

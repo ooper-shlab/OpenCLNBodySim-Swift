@@ -42,7 +42,7 @@ extension HUD.Meter {
     //MARK: Private - Constants
     
     public enum TimeScale {
-        static let kSeconds = 1.0e-9
+        public static let kSeconds = 1.0e-9
         static let kMilliSeconds = 1.0e-6
         static let kMicroSeconds = 1.0e-3
         static let kNanoSeconds = 1.0
